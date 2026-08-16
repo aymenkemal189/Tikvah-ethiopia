@@ -1,604 +1,3238 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="am">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>TIKVAH Airdrop & PTC Platform</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- Adsgram SDK for Telegram Mini Apps -->
-  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-  <!-- Single Line Elegant Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
-  <style>
-    :root {
-      --bg-white: #FFFFFF;
-      --card-bg: #F8FAFC;
-      --card-inner: #EDF2F7;
-      --primary-cyan: #009ACA;
-      --success-green: #00CB00;
-      --text-dark: #0F172A;
-      --text-muted: #64748B;
-      --border-color: #E2E8F0;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Swap Money V3 💰</title>
+<script src="https://telegram.org/js/telegram-web-app.js" defer></script>
+<script src='https://libtl.com/sdk.js' data-zone='11460944' data-sdk='show_11460944' async></script>
+<style>
+:root{
+  --bg:#07080d;--surface:#0d0f1a;--card:#111520;--card2:#161d2a;
+  --border:rgba(255,198,26,.15);--border2:rgba(255,255,255,.06);
+  --gold:#FFD700;--gold2:#FFA500;
+  --gold-grad:linear-gradient(135deg,#FFD700 0%,#FFA500 60%,#B8860B 100%);
+  --gold-glow:rgba(255,198,26,.2);
+  --green:#10b981;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;
+  --neon:#39FF88;--neon-glow:rgba(57,255,136,.35);
+  --text:#ffffff;--muted:#8892aa;--muted2:#3d4a63;
+  --font:'Segoe UI',-apple-system,Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(rgba(255,198,26,.05) 1px,transparent 0),
+    radial-gradient(ellipse 60% 40% at 15% 0%, rgba(255,198,26,.07), transparent 60%),
+    radial-gradient(ellipse 55% 35% at 85% 15%, rgba(57,255,136,.05), transparent 60%);
+  background-size:24px 24px, 100% 100%, 100% 100%;
+  background-attachment:fixed;
+  color:var(--text);font-family:var(--font);font-size:12.5px;
+  height:100dvh;display:flex;flex-direction:column;overflow:hidden;
+}
+::-webkit-scrollbar{width:2px;height:2px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
+/* ── APP SHELL: header + nav fixed, page content scrolls between them ── */
+.app-scroll{
+  flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
+}
 
-    body {
-      background-color: var(--bg-white);
-      color: var(--text-dark);
-      padding-bottom: 85px;
-    }
+/* ── HEADER ── */
+header{
+  flex-shrink:0;z-index:80;
+  background:rgba(7,8,13,.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:7px 14px;display:flex;align-items:center;gap:8px;
+}
+.hdr-av{width:32px;height:32px;border-radius:50%;background:var(--gold-grad);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#000;box-shadow:0 0 12px var(--gold-glow);flex-shrink:0}
+.hdr-info{flex:1;min-width:0}
+.hdr-info h4{font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-info p{font-size:9px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.hdr-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.hdr-bal{background:rgba(255,198,26,.1);border:1px solid rgba(255,198,26,.28);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:800;color:var(--gold);display:flex;align-items:center;gap:5px;cursor:pointer;white-space:nowrap}
+.hdr-bal img{width:13px;height:13px;object-fit:contain}
+.hdr-btn{width:28px;height:28px;border-radius:50%;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.hdr-btn svg{width:15px;height:15px;fill:var(--muted)}
+.level-chip{background:rgba(255,198,26,.12);border:1px solid rgba(255,198,26,.3);border-radius:12px;padding:1px 7px;font-size:8.5px;font-weight:800;color:var(--gold)}
+.streak-chip{font-size:10px;font-weight:800;color:#FF6B35}
 
-    /* Top Navigation Header */
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      background: var(--bg-white);
-      border-bottom: 1px solid var(--border-color);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+/* ── PAGES ── */
+.page{display:none;padding:9px 12px;animation:fadeUp .2s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-    .brand-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+/* ── BOTTOM NAV ── */
+.bnav{flex-shrink:0;background:rgba(7,8,13,.98);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:4px 0 calc(4px + env(safe-area-inset-bottom));z-index:90}
+.ni{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;background:none;border:none;color:var(--muted);font-size:9px;font-weight:800;padding:3px 8px;transition:color .2s;flex:1;font-family:var(--font)}
+.ni svg{width:20px;height:20px;fill:var(--muted);transition:fill .2s}
+.ni.active{color:var(--gold)}.ni.active svg{fill:var(--gold)}
 
-    .brand-logo i {
-      font-size: 24px;
-      color: var(--primary-cyan);
-    }
+/* ── CARD ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px;margin-bottom:8px;backdrop-filter:blur(12px);box-shadow:0 10px 26px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06)}
+.card-title{font-size:13px;font-weight:900;display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.card-title i{color:var(--gold)}
 
-    .brand-text {
-      font-size: 16px;
-      font-weight: 800;
-      color: var(--primary-cyan);
-      line-height: 1.1;
-    }
+/* ── SECTION HEADER ── */
+.sh{display:flex;align-items:center;justify-content:space-between;margin:9px 0 6px}
+.sh h3{font-size:13px;font-weight:900}
+.sh a{font-size:11px;color:var(--gold);font-weight:700;cursor:pointer}
 
-    .kyc-badge {
-      font-size: 10px;
-      color: var(--success-green);
-      background: rgba(0, 203, 0, 0.1);
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-weight: 600;
-    }
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:12px;font-weight:800;font-size:12px;cursor:pointer;transition:all .15s;padding:10px 16px;font-family:var(--font)}
+.btn:active{transform:scale(.96)}
+.btn-gold{background:var(--gold-grad);color:#000;box-shadow:0 4px 14px var(--gold-glow)}
+.btn-gold:disabled{background:var(--card2);color:var(--muted);box-shadow:none;cursor:not-allowed}
+.btn-gold:active{box-shadow:0 0 0 4px var(--neon-glow), 0 4px 14px var(--gold-glow)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--gold)}
+.btn-green{background:linear-gradient(135deg,#10b981,#059669);color:#fff}
+.btn-block{width:100%}
 
-    .lang-toggle {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      color: var(--text-dark);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-    }
+/* ── HERO WALLET ── */
+.hero-wallet{
+  background:linear-gradient(145deg,#1a1508,#0e1018,#080a12);
+  border:1px solid rgba(255,215,0,.28);border-radius:18px;padding:12px 14px;
+  margin-bottom:8px;position:relative;overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,.55), 0 2px 8px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06);
+  transition:box-shadow .3s ease, border-color .3s ease;
+}
+.hero-wallet::before{content:'';position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,.1),transparent 70%)}
+.hero-wallet .hw-mesh{
+  position:absolute;inset:0;pointer-events:none;opacity:.55;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,198,26,.16), transparent 45%),
+    radial-gradient(circle at 80% 30%, rgba(57,255,136,.12), transparent 50%),
+    radial-gradient(circle at 40% 90%, rgba(255,198,26,.08), transparent 55%);
+  background-size:180% 180%;
+  animation:hwMeshDrift 10s ease-in-out infinite;
+}
+@keyframes hwMeshDrift{
+  0%{background-position:0% 0%}
+  50%{background-position:100% 60%}
+  100%{background-position:0% 0%}
+}
+.hero-wallet::after{
+  content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;
+  background:linear-gradient(115deg,transparent 0%,rgba(255,255,255,.07) 45%,rgba(255,215,0,.14) 50%,rgba(255,255,255,.07) 55%,transparent 100%);
+  transform:skewX(-18deg);animation:hwShimmer 6s ease-in-out infinite;pointer-events:none;
+}
+@keyframes hwShimmer{
+  0%{left:-60%}
+  35%{left:130%}
+  100%{left:130%}
+}
+.hero-wallet.success-pulse{
+  border-color:rgba(57,255,136,.55);
+  box-shadow:0 10px 30px rgba(0,0,0,.55), 0 0 0 1px var(--neon-glow), 0 0 26px var(--neon-glow), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.hw-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.hw-logo{font-size:11px;font-weight:900;color:var(--gold);letter-spacing:.5px}
+.hw-wallet-img{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 3px 8px rgba(255,198,26,.25))}
+.hw-label{font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px}
+.hw-amount{font-size:34px;font-weight:900;color:#fff;line-height:1;letter-spacing:-1px;text-shadow:0 0 40px rgba(255,208,0,.4);display:flex;align-items:baseline;gap:6px}
+.hw-currency{font-size:18px;font-weight:700;color:var(--gold)}
+.hw-sub{font-size:10px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:5px}
+.hw-sub .up{color:var(--neon)}
 
-    .container {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+/* ── SC CARD ── */
+.sc-card{background:linear-gradient(145deg,#0f1520,#0a0e18);border:1px solid rgba(255,198,26,.2);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:8px;position:relative;overflow:hidden}
 
-    .tab-content {
-      display: none;
-    }
+/* ── DUAL GRID (Swap Coin + Airdrop Crate side by side) ── */
+.dual-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.dual-card{
+  position:relative;overflow:hidden;border-radius:15px;padding:11px;cursor:pointer;
+  display:flex;flex-direction:column;gap:7px;min-height:118px;
+  box-shadow:0 10px 24px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.05);
+  transition:transform .15s ease;
+}
+.dual-card:active{transform:scale(.96)}
+.dual-card.sc-variant{
+  background:linear-gradient(150deg,#0f1520,#0a0e18 60%,#080a12);
+  border:1px solid rgba(255,198,26,.25);
+}
+.dual-card.sc-variant::before{
+  content:'';position:absolute;top:-24px;right:-24px;width:100px;height:100px;border-radius:50%;
+  background:radial-gradient(circle, rgba(255,198,26,.14), transparent 70%);pointer-events:none;
+}
+.dual-card.crate-variant{
+  background:linear-gradient(150deg,#1a1508,#12160f 55%,#080a12);
+  border:1px solid rgba(57,255,136,.28);
+}
+.dual-card.crate-variant::before{
+  content:'';position:absolute;top:-24px;right:-24px;width:100px;height:100px;border-radius:50%;
+  background:radial-gradient(circle, rgba(57,255,136,.16), transparent 70%);pointer-events:none;
+}
+.dual-card-top{display:flex;align-items:flex-start;justify-content:space-between;position:relative;z-index:1}
+.dual-card-badge{font-size:7.5px;font-weight:900;padding:2px 7px;border-radius:8px;letter-spacing:.3px}
+.dual-card.sc-variant .dual-card-badge{background:rgba(255,198,26,.14);color:var(--gold);border:1px solid rgba(255,198,26,.3)}
+.dual-card.crate-variant .dual-card-badge{background:rgba(57,255,136,.14);color:var(--neon);border:1px solid rgba(57,255,136,.35);box-shadow:0 0 8px rgba(57,255,136,.25)}
+.dual-card-img{width:34px;height:34px;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(255,198,26,.3))}
+.dual-card.sc-variant .dual-card-img{animation:cratePromoBob 3s ease-in-out infinite}
+.dual-card.crate-variant .dual-card-img{animation:cratePromoBob 2.6s ease-in-out infinite .3s}
+.dual-card-title{font-size:11.5px;font-weight:900;position:relative;z-index:1}
+.dual-card-amt{font-size:16px;font-weight:900;position:relative;z-index:1;line-height:1}
+.dual-card.sc-variant .dual-card-amt{color:var(--gold)}
+.dual-card.crate-variant .dual-card-amt{color:var(--neon)}
+.dual-card-sub{font-size:8.5px;color:var(--muted);position:relative;z-index:1;line-height:1.3}
+.dual-card-foot{
+  display:flex;align-items:center;justify-content:space-between;margin-top:auto;position:relative;z-index:1;
+  padding-top:6px;border-top:1px solid rgba(255,255,255,.06);
+}
+.dual-card-cta{font-size:8.5px;font-weight:800;display:flex;align-items:center;gap:3px}
+.dual-card.sc-variant .dual-card-cta{color:var(--gold)}
+.dual-card.crate-variant .dual-card-cta{color:var(--neon)}
 
-    .tab-content.active {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+.dual-card-badge.has-keys{animation:badgeKeyPulse 1.6s ease-in-out infinite}
+@keyframes badgeKeyPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(57,255,136,.4)}
+  50%{box-shadow:0 0 0 5px rgba(57,255,136,0)}
+}
+.sc-img{width:36px;height:36px;flex-shrink:0;object-fit:contain}
+.sc-info{flex:1}
+.sc-title-row{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:900}
+.sc-new-badge{font-size:8px;background:var(--gold-grad);color:#000;padding:1px 6px;border-radius:10px;font-weight:900}
+.sc-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.sc-amount{font-size:16px;font-weight:900;color:var(--gold);margin-top:2px}
 
-    /* Main Balance Display Card */
-    .balance-card {
-      background: linear-gradient(135deg, var(--primary-cyan) 0%, #00769A 100%);
-      color: white;
-      border-radius: 20px;
-      padding: 20px;
-      position: relative;
-      box-shadow: 0 4px 15px rgba(0, 154, 202, 0.15);
-    }
+/* ── QA ROW ── */
+.qa-row{display:flex;justify-content:space-around;margin:8px 0 10px}
+.qa-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.qa-circle{width:40px;height:40px;border-radius:50%;background:var(--gold-grad);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px var(--gold-glow);transition:.15s}
+.qa-circle:active{transform:scale(.92)}
+.qa-circle svg{width:21px;height:21px;fill:#000}
+.qa-label{font-size:9px;font-weight:800;color:var(--muted)}
 
-    .balance-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      opacity: 0.9;
-    }
+/* ── STATS GRID (unified 2x2, all 4 equal) ── */
+.stats-4{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;margin-bottom:8px}
+.stat-box{
+  position:relative;overflow:hidden;background:var(--card);border:1px solid var(--border2);border-radius:16px;
+  padding:10px;display:flex;flex-direction:column;justify-content:space-between;gap:6px;min-height:74px;
+  backdrop-filter:blur(10px);cursor:pointer;
+  box-shadow:0 8px 20px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.05);
+  transition:transform .15s ease, box-shadow .2s ease;
+}
+.stat-box:active{transform:scale(.96);box-shadow:0 8px 20px rgba(0,0,0,.4), 0 0 0 1px var(--neon-glow), inset 0 1px 0 rgba(255,255,255,.05)}
+.stat-box::before{
+  content:'';position:absolute;top:-26px;right:-26px;width:90px;height:90px;border-radius:50%;
+  background:radial-gradient(circle, var(--sb-glow, rgba(255,198,26,.14)), transparent 70%);pointer-events:none;
+}
+.stat-top-row{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.stat-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stat-icon svg{width:16px;height:16px}
+.stat-info{position:relative;z-index:1}
+.stat-info b{display:block;font-size:19px;font-weight:900;color:#fff;letter-spacing:-.4px;line-height:1.05}
+.stat-info span{font-size:9px;color:var(--muted);font-weight:700;display:block;margin-top:2px}
+.stat-change{font-size:9px;font-weight:800;color:var(--neon);margin-top:3px;display:inline-flex;align-items:center;gap:2px}
 
-    .main-balance {
-      font-size: 32px;
-      font-weight: 800;
-      margin: 4px 0;
-    }
+.stat-spark{
+  width:100%;height:3px;border-radius:3px;margin-top:2px;position:relative;overflow:hidden;
+  background:rgba(255,255,255,.06);z-index:1;
+}
+.stat-spark
 
-    .etb-subtext {
-      font-size: 15px;
-      color: #E2F6FF;
-      font-weight: 600;
-    }
+  content:'';position:absolute;inset:0;width:40%;border-radius:3px;
+  background:linear-gradient(90deg, transparent, var(--sb-accent, var(--neon)), transparent);
+  animation:statSparkMove 2.6s ease-in-out infinite;
+}
+@keyframes statSparkMove{
+  0%{transform:translateX(-100%)}
+  100%{transform:translateX(340%)}
+}
 
-    .action-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-top: 16px;
-    }
+/* ── BANNER ── */
+.banner-wrap{width:100%;border-radius:14px;overflow:hidden;position:relative;height:88px;margin-bottom:8px;border:1px solid var(--border);box-shadow:0 6px 20px rgba(0,0,0,.5);cursor:grab}
+.banner-wrap img{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0;transition:opacity .5s;pointer-events:none}
+.banner-wrap img.active{opacity:1}
+.b-dots{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);display:flex;gap:4px}
+.b-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.3);transition:.3s}
+.b-dot.active{background:var(--gold);width:12px;border-radius:6px}
 
-    .action-btn {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      padding: 10px 4px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-      color: white;
-      cursor: pointer;
-      backdrop-filter: blur(5px);
-    }
+/* ── TASKS GRID ── */
+.tasks-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.task-grid-item{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:9px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;text-align:center;transition:.15s}
+.task-grid-item:active{transform:scale(.96);background:rgba(255,198,26,.06)}
+.task-grid-item .tgi-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.task-grid-item .tgi-icon img{width:100%;height:100%;object-fit:contain}
+.task-grid-item h4{font-size:11px;font-weight:800}
+.task-grid-item .tgi-reward{font-size:10px;color:var(--gold);font-weight:700}
+.task-grid-item .tgi-btn{background:var(--gold-grad);color:#000;border:none;border-radius:8px;padding:5px 14px;font-size:10px;font-weight:900;cursor:pointer;font-family:var(--font);width:100%}
+.task-grid-item .tgi-btn:disabled{background:var(--card2);color:var(--muted);cursor:not-allowed}
 
-    /* Section Cards */
-    .widget-box {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 16px;
-    }
+/* ── INVITE BANNER ── */
+.invite-banner{background:linear-gradient(135deg,#1a1005,#0e1018);border:1px solid rgba(255,198,26,.25);border-radius:14px;padding:11px;display:flex;align-items:center;gap:10px;margin-bottom:8px;position:relative;overflow:hidden}
+.invite-gift{width:44px;height:44px;object-fit:contain;flex-shrink:0}
+.invite-info h3{font-size:14px;font-weight:900;margin-bottom:3px}
+.invite-info p{font-size:10px;color:var(--muted);line-height:1.5;margin-bottom:7px}
+.invite-pct{position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;background:var(--gold-grad);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#000;line-height:1.1}
+.invite-pct small{font-size:7px;font-weight:900}
 
-    .widget-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
+/* ── LIVE FEED ── */
+.feed-item{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;backdrop-filter:blur(10px);box-shadow:0 4px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.05)}
+.feed-av{width:34px;height:34px;border-radius:50%;background:var(--gold-grad);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;flex-shrink:0}
+.feed-info h5{font-size:12px;font-weight:800}
+.feed-info p{font-size:10px;color:var(--muted);margin-top:1px}
+.feed-amount{font-size:14px;font-weight:900;color:var(--neon);text-shadow:0 0 12px rgba(57,255,136,.35)}
+.feed-live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--neon);box-shadow:0 0 6px var(--neon);margin-right:4px;animation:feedLivePulse 1.4s ease-in-out infinite}
+@keyframes feedLivePulse{0%,100%{opacity:1}50%{opacity:.35}}
 
-    .widget-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-dark);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+/* ── EARN TAB ── */
+.earn-hero{background:linear-gradient(135deg,#1a1008,#0d1018);border:1px solid var(--border);border-radius:16px;padding:10px;text-align:center;margin-bottom:8px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.earn-hero img{width:44px;height:44px;object-fit:contain}
+.earn-hero h2{font-size:15px;font-weight:900}
+.earn-hero p{font-size:10px;color:var(--muted);line-height:1.4}
 
-    /* Task Item Styling */
-    .task-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+/* ── WATCH ADS PAGE ── */
+.ads-hero{
+  position:relative;overflow:hidden;border-radius:18px;padding:14px;margin-bottom:8px;text-align:center;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -20%, rgba(255,198,26,.25), transparent 65%),
+    linear-gradient(160deg,#1c1608,#0d0f1a 55%,#080a12);
+  border:1px solid rgba(255,198,26,.35);
+  box-shadow:0 14px 32px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.ads-hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:radial-gradient(circle at 20% 10%, rgba(255,198,26,.16), transparent 40%),
+             radial-gradient(circle at 85% 90%, rgba(57,255,136,.1), transparent 45%);
+  background-size:200% 200%;animation:hwMeshDrift 11s ease-in-out infinite;
+}
+.ads-hero-icon{
+  width:46px;height:46px;border-radius:50%;margin:0 auto 6px;position:relative;z-index:1;
+  background:var(--gold-grad);display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 6px 18px var(--gold-glow);animation:cratePromoBob 2.4s ease-in-out infinite;
+}
+.ads-hero h2{font-size:15px;font-weight:900;position:relative;z-index:1;margin-bottom:2px}
+.ads-hero p{font-size:10.5px;color:var(--gold);font-weight:800;position:relative;z-index:1}
 
-    .task-card {
-      background: var(--bg-white);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+.prize-banner{
+  position:relative;overflow:hidden;border-radius:18px;padding:14px;margin-bottom:8px;cursor:pointer;
+  border:1px solid rgba(255,198,26,.4);box-shadow:0 12px 28px rgba(0,0,0,.5), 0 0 24px rgba(255,198,26,.1);
+  background:#120c02;
+}
+.prize-banner img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:.85;pointer-events:none}
+.prize-banner::after{
+  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.15) 60%, transparent 100%);
+}
+.prize-content{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between}
+.prize-label{font-size:9px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;display:flex;align-items:center;gap:4px}
+.prize-label .dot{width:5px;height:5px;border-radius:50%;background:var(--neon);box-shadow:0 0 5px var(--neon);animation:feedLivePulse 1.4s ease-in-out infinite}
+.prize-amount{font-size:25px;font-weight:900;color:var(--gold);line-height:1;font-family:var(--font);text-shadow:0 0 20px rgba(255,198,26,.4)}
+.prize-amount span{font-size:13px;color:#fff}
+.prize-btn{padding:9px 18px;font-size:12px;border-radius:22px;box-shadow:0 4px 15px rgba(255,215,0,.3);pointer-events:auto;white-space:nowrap}
 
-    .task-info {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+.video-card{padding:10px;margin-bottom:8px}
+.video-card .card-title{font-size:11px;margin-bottom:8px}
+.video-row{display:flex;gap:9px;align-items:center}
+.video-thumb{flex:1;border-radius:10px;overflow:hidden;height:70px;background:#000;flex-shrink:0}
+.video-thumb iframe{width:100%;height:100%;border:none}
+.video-text{flex:1;font-size:9.5px;color:var(--muted);line-height:1.4}
+.video-text strong{color:#fff;display:block;margin-bottom:2px;font-size:10.5px}
 
-    .task-title {
-      font-size: 13px;
-      font-weight: 700;
-    }
+.ads-grid-label{font-size:9.5px;color:var(--muted);margin-bottom:7px;font-weight:600}
+.hot-badge{font-size:8.5px;background:rgba(239,68,68,.15);color:var(--red);padding:2px 6px;border-radius:8px;font-weight:800}
 
-    .task-reward {
-      font-size: 12px;
-      color: var(--success-green);
-      font-weight: 700;
-    }
+/* ── COMING SOON AD NETWORKS ── */
+.soon-card{
+  position:relative;overflow:hidden;background:linear-gradient(150deg,#12160f,#0d0f1a 55%,#080a12);
+  border:1px solid rgba(57,255,136,.25);border-radius:16px;padding:12px;margin-top:10px;margin-bottom:8px;
+  backdrop-filter:blur(10px);box-shadow:0 10px 24px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.soon-card::before{
+  content:'';position:absolute;top:-30px;right:-25px;width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle, rgba(57,255,136,.14), transparent 70%);pointer-events:none;
+}
+.soon-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;position:relative;z-index:1}
+.soon-head h3{font-size:11.5px;font-weight:900;display:flex;align-items:center;gap:6px}
+.soon-badge{font-size:8px;font-weight:900;color:var(--neon);background:rgba(57,255,136,.12);border:1px solid rgba(57,255,136,.35);padding:2px 8px;border-radius:10px;letter-spacing:.4px}
+.soon-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;position:relative;z-index:1}
+.soon-item{
+  background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:13px;padding:11px 9px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;position:relative;overflow:hidden;
+}
+.soon-item-icon{
+  width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;
+  background:rgba(255,255,255,.05);filter:grayscale(.4) opacity(.75);
+}
+.soon-item-name{font-size:10.5px;font-weight:800;color:#fff}
+.soon-item-desc{font-size:8.5px;color:var(--muted);line-height:1.3}
+.soon-item-lock{
+  position:absolute;top:7px;right:7px;font-size:8px;font-weight:900;color:var(--muted);
+  background:rgba(0,0,0,.4);border:1px solid var(--border2);padding:1px 6px;border-radius:8px;
+}
+.soon-notify-btn{
+  width:100%;margin-top:9px;padding:9px;background:rgba(57,255,136,.1);border:1px solid rgba(57,255,136,.35);
+  border-radius:11px;color:var(--neon);font-size:10.5px;font-weight:800;cursor:pointer;font-family:var(--font);
+  display:flex;align-items:center;justify-content:center;gap:6px;position:relative;z-index:1;transition:.15s;
+}
+.soon-notify-btn:active{transform:scale(.97);background:rgba(57,255,136,.18)}
 
-    .btn-action {
-      background: var(--primary-cyan);
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
+/* ── GAME CARDS ── */
+.games-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.game-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:7px 5px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.game-card::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.35))}
+.game-card:active{transform:scale(.96)}
+.game-card-img{width:34px;height:34px;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.game-card-name{font-size:9.5px;font-weight:900;position:relative;z-index:1;text-align:center;line-height:1.2}
+.game-card-btn{background:var(--gold-grad);color:#000;border:none;border-radius:8px;padding:4px 0;font-size:9px;font-weight:900;cursor:pointer;position:relative;z-index:1;width:100%;font-family:var(--font)}
 
-    .btn-green {
-      background: var(--success-green);
-    }
+/* ── TASKS + ADS UNIFIED GRID ── */
+.earn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.earn-grid-item{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:9px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;position:relative;overflow:hidden}
+.earn-grid-item::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.earn-grid-item.tg-type::before{background:linear-gradient(90deg,#0088cc,#00b4d8)}
+.earn-grid-item.yt-type::before{background:linear-gradient(90deg,#ff0000,#ff4444)}
+.earn-grid-item.ad-type::before{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.egi-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.egi-icon img{width:100%;height:100%;object-fit:contain}
+.egi-title{font-size:9.5px;font-weight:800;line-height:1.25}
+.egi-reward{font-size:11px;font-weight:900;color:var(--gold)}
+.egi-meta{font-size:8px;color:var(--muted);font-weight:700}
+.egi-btn{width:100%;padding:5px 0;background:var(--gold-grad);border:none;border-radius:7px;font-size:9px;font-weight:900;color:#000;cursor:pointer;font-family:var(--font);transition:.15s;margin-top:1px}
+.egi-btn:disabled{background:var(--card2);color:var(--muted);cursor:not-allowed}
+.egi-btn:active{transform:scale(.95);box-shadow:0 0 0 3px var(--neon-glow)}
+.egi-done-badge{position:absolute;top:6px;right:6px;font-size:10px}
 
-    /* Live Crypto Market List */
-    .crypto-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border-color);
-    }
+/* ── STREAK (EARN TAB) ── */
+.streak-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px;margin-bottom:8px}
+.streak-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.streak-top h4{font-size:12px;font-weight:900}
+.streak-top p{font-size:9px;color:var(--muted)}
+.streak-days{display:flex;gap:4px;justify-content:space-between}
+.streak-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--card2);border:1px solid var(--border2);border-radius:9px;padding:6px 2px;font-size:7.5px;font-weight:800;color:var(--muted)}
+.streak-day.done{background:rgba(255,198,26,.1);border-color:rgba(255,198,26,.35);color:var(--gold)}
+.streak-day.today{background:rgba(255,198,26,.14);border-color:var(--gold);color:var(--gold)}
+.streak-day-icon{font-size:14px}
 
-    .crypto-item:last-child {
-      border-bottom: none;
-    }
+/* ── REFERRAL TAB ── */
+.ref-hero{
+  position:relative;overflow:hidden;border-radius:20px;padding:16px 16px;text-align:center;margin-bottom:10px;
+  background:
+    radial-gradient(ellipse 80% 55% at 20% -10%, rgba(139,92,246,.22), transparent 60%),
+    radial-gradient(ellipse 70% 45% at 100% 100%, rgba(57,255,136,.12), transparent 60%),
+    linear-gradient(160deg,#160f1e,#0d0f1a 55%,#080a12);
+  border:1px solid rgba(139,92,246,.32);
+  box-shadow:0 16px 36px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.ref-hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:radial-gradient(circle at 20% 20%, rgba(139,92,246,.14), transparent 40%),
+             radial-gradient(circle at 85% 75%, rgba(57,255,136,.1), transparent 45%);
+  background-size:200% 200%;animation:hwMeshDrift 12s ease-in-out infinite;
+}
+.ref-ring-wrap{position:relative;width:104px;height:104px;margin:0 auto 8px;z-index:1}
+.ref-ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ref-ring-bg{fill:none;stroke:rgba(255,255,255,.07);stroke-width:8}
+.ref-ring-fill{
+  fill:none;stroke:url(#refRingGrad);stroke-width:8;stroke-linecap:round;
+  stroke-dasharray:339.3;stroke-dashoffset:339.3;transition:stroke-dashoffset .6s cubic-bezier(.4,.1,.2,1);
+  filter:drop-shadow(0 0 6px rgba(139,92,246,.5));
+}
+.ref-ring-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;
+}
+.ref-ring-center img{width:38px;height:38px;object-fit:contain;margin-bottom:2px;filter:drop-shadow(0 4px 10px rgba(139,92,246,.4))}
+.ref-ring-count{font-size:9.5px;font-weight:900;color:var(--muted)}
+.ref-ring-count b{color:#fff;font-size:13px}
+.ref-hero-badge{
+  display:inline-flex;align-items:center;gap:5px;background:rgba(139,92,246,.14);border:1px solid rgba(139,92,246,.4);
+  color:#a78bfa;font-size:9.5px;font-weight:900;padding:3px 11px;border-radius:20px;margin-bottom:8px;position:relative;z-index:1;
+}
+.ref-hero h2{font-size:24px;font-weight:900;margin:1px 0 3px;position:relative;z-index:1;
+  background:linear-gradient(135deg,#fff 10%,var(--gold) 70%);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.ref-hero p{font-size:10px;color:var(--muted);line-height:1.4;position:relative;z-index:1}
+.ref-hero-progrow{display:flex;justify-content:space-between;font-size:10px;font-weight:800;margin-top:9px;margin-bottom:4px;position:relative;z-index:1}
+.ref-prog-bg{width:100%;height:7px;background:rgba(255,255,255,.07);border-radius:10px;overflow:hidden;position:relative;z-index:1}
+.ref-prog-fill{height:100%;background:linear-gradient(90deg,#a78bfa,var(--gold));border-radius:10px;transition:.5s;box-shadow:0 0 10px rgba(139,92,246,.5)}
 
-    .crypto-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+.ref-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
+.ref-stat{
+  position:relative;overflow:hidden;background:var(--card);border:1px solid var(--border2);border-radius:12px;
+  padding:9px 6px;text-align:center;backdrop-filter:blur(10px);
+  box-shadow:0 8px 18px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.ref-stat b{display:block;font-size:15px;font-weight:900;background:linear-gradient(135deg,#fff,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ref-stat span{font-size:8px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
 
-    .crypto-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-    }
+.ref-link-box{
+  position:relative;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:11px;
+  margin-bottom:10px;backdrop-filter:blur(12px);box-shadow:0 14px 30px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.ref-link-title{font-size:10.5px;font-weight:900;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.ref-link-row{display:flex;gap:7px;margin-bottom:11px}
+.ref-link-inp{
+  flex:1;padding:9px 11px;background:var(--card2);border:1px solid var(--border);border-radius:11px;
+  color:#fff;font-size:10px;font-weight:700;outline:none;font-family:var(--font);
+}
+.ref-link-copybtn{
+  flex-shrink:0;width:40px;background:linear-gradient(135deg,#a78bfa,#7c5cf0);border:none;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 16px rgba(139,92,246,.3);
+}
+.ref-link-copybtn svg{width:16px;height:16px;fill:#fff}
+.ref-link-copybtn:active{transform:scale(.92)}
+.share-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.share-btn{
+  background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:8px 4px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:.15s;
+}
+.share-btn:active{transform:scale(.92);border-color:#a78bfa}
+.share-btn img{width:22px;height:22px;object-fit:contain}
+.share-btn span{font-size:7.5px;font-weight:800;color:var(--muted)}
 
-    /* Input & Forms */
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
+.how-card{
+  position:relative;background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:4px 12px;
+  margin-bottom:8px;backdrop-filter:blur(10px);box-shadow:0 10px 24px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.how-step{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border2);position:relative}
+.how-step:last-child{border-bottom:none}
+.how-step::before{
+  content:'';position:absolute;left:12px;top:32px;bottom:-9px;width:2px;
+  background:linear-gradient(to bottom, rgba(139,92,246,.35), transparent);
+}
+.how-step:last-child::before{display:none}
+.how-num{
+  width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#7c5cf0);
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;
+  flex-shrink:0;box-shadow:0 4px 10px rgba(139,92,246,.35);position:relative;z-index:1;
+}
+.how-text h5{font-size:11px;font-weight:800}
+.how-text p{font-size:9px;color:var(--muted);line-height:1.4;margin-top:1px}
 
-    .form-group label {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
+/* ── WITHDRAW TAB ── */
+.wd-hero{
+  position:relative;overflow:hidden;border-radius:20px;padding:18px 16px 16px;
+  margin-bottom:10px;text-align:center;
+  background:
+    radial-gradient(ellipse 90% 60% at 30% -10%, rgba(255,198,26,.25), transparent 60%),
+    radial-gradient(ellipse 80% 50% at 90% 100%, rgba(57,255,136,.14), transparent 60%),
+    linear-gradient(160deg,#171307,#0d0f1a 55%,#080a12);
+  border:1px solid rgba(255,198,26,.3);
+  box-shadow:0 16px 36px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.wd-hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background:radial-gradient(circle at 15% 15%, rgba(255,198,26,.14), transparent 40%),
+             radial-gradient(circle at 85% 80%, rgba(57,255,136,.1), transparent 45%);
+  background-size:200% 200%;animation:hwMeshDrift 12s ease-in-out infinite;
+}
+.wd-hero-label{
+  font-size:9px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;position:relative;z-index:1;
+}
+.wd-hero-label .dot{width:5px;height:5px;border-radius:50%;background:var(--neon);box-shadow:0 0 6px var(--neon);animation:feedLivePulse 1.4s ease-in-out infinite}
+.wd-hero-amt{
+  position:relative;z-index:1;display:flex;align-items:baseline;justify-content:center;gap:7px;
+  line-height:1;margin:3px 0 2px;
+}
+.wd-hero-amt #wdBalDisplay{
+  font-size:42px;font-weight:900;letter-spacing:-1.5px;
+  background:linear-gradient(135deg,#fff 10%,var(--gold) 60%,var(--gold2) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 50px rgba(255,198,26,.35);
+  filter:drop-shadow(0 4px 18px rgba(255,198,26,.3));
+}
+.wd-hero-cur{font-size:16px;font-weight:800;color:var(--gold);opacity:.85}
+.wd-hero-min{
+  position:relative;z-index:1;display:inline-flex;align-items:center;gap:5px;
+  font-size:9.5px;font-weight:700;color:var(--muted);margin-top:6px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border2);
+  padding:4px 10px;border-radius:20px;
+}
+.wd-hero-min b{color:var(--gold);font-weight:900}
 
-    .form-control {
-      background: var(--bg-white);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 13px;
-      outline: none;
-    }
+.wd-method-label{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:900;margin:3px 0 8px;color:var(--text)}
+.method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
+.method-btn{
+  position:relative;background:var(--card);border:1px solid var(--border2);border-radius:13px;
+  padding:9px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;
+  transition:.18s;backdrop-filter:blur(8px);box-shadow:0 6px 16px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.method-btn:active{transform:scale(.94)}
+.method-btn.sel{
+  border-color:var(--gold);background:rgba(255,198,26,.08);
+  box-shadow:0 6px 16px rgba(0,0,0,.35), 0 0 0 1px var(--gold), 0 0 18px rgba(255,198,26,.25);
+}
+.method-btn.sel::after{
+  content:'✓';position:absolute;top:5px;right:6px;width:15px;height:15px;border-radius:50%;
+  background:var(--gold);color:#000;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;
+}
+.method-btn img{width:30px;height:30px;object-fit:contain;border-radius:7px}
+.method-btn span{font-size:8.5px;font-weight:800;color:var(--muted)}
+.method-btn.sel span{color:var(--gold)}
 
-    /* Bottom Navigation Bar */
-    .nav-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 65px;
-      background: var(--bg-white);
-      border-top: 1px solid var(--border-color);
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      align-items: center;
-      z-index: 1000;
-    }
+.wd-form{
+  position:relative;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px;
+  backdrop-filter:blur(12px);box-shadow:0 14px 32px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.wd-form-title{font-size:11.5px;font-weight:900;margin-bottom:9px;display:flex;align-items:center;gap:6px}
+.min-notice{
+  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.22);border-radius:11px;
+  padding:7px 10px;font-size:10px;font-weight:700;color:var(--red);margin-bottom:9px;
+  display:flex;align-items:center;gap:6px;
+}
+.wd-field{position:relative;margin-bottom:9px}
+.form-label{display:block;font-size:9px;font-weight:900;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.6px}
+.form-input{
+  width:100%;padding:11px 12px;background:var(--card2);border:1px solid var(--border);border-radius:12px;
+  color:#fff;font-size:13px;font-weight:800;outline:none;font-family:var(--font);transition:.2s;
+}
+.form-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,198,26,.12)}
+.wd-amt-field{position:relative}
+.wd-amt-field .form-input{padding-left:36px;font-size:16px}
+.wd-amt-currency{
+  position:absolute;left:13px;top:30px;font-size:13px;font-weight:900;color:var(--gold);
+  pointer-events:none;
+}
+.wd-quick-row{display:flex;gap:6px;margin-bottom:9px}
+.wd-quick-btn{
+  flex:1;padding:6px 0;background:var(--card2);border:1px solid var(--border2);border-radius:9px;
+  color:var(--muted);font-size:9.5px;font-weight:800;cursor:pointer;font-family:var(--font);transition:.15s;
+}
+.wd-quick-btn:active{transform:scale(.94);border-color:var(--gold);color:var(--gold)}
 
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      color: var(--text-muted);
-      font-size: 10px;
-      text-decoration: none;
-      cursor: pointer;
-    }
+.wd-task-notice{
+  display:none;background:rgba(255,198,26,.07);border:1px solid rgba(255,198,26,.22);border-radius:11px;
+  padding:7px 10px;font-size:10px;font-weight:700;color:var(--gold);margin-bottom:9px;
+}
+.wd-btn{
+  width:100%;padding:13px;background:var(--gold-grad);border:none;border-radius:14px;
+  font-size:13px;font-weight:900;color:#000;cursor:pointer;font-family:var(--font);
+  box-shadow:0 10px 26px var(--gold-glow);transition:.15s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.wd-btn:active{transform:scale(.97);box-shadow:0 0 0 4px var(--neon-glow),0 10px 26px var(--gold-glow)}
+.wd-btn:disabled{background:var(--card2);color:var(--muted);box-shadow:none;cursor:not-allowed}
+.wd-secure-note{
+  display:flex;align-items:center;justify-content:center;gap:5px;margin-top:9px;
+  font-size:8.5px;color:var(--muted);font-weight:700;
+}
 
-    .nav-item i {
-      font-size: 18px;
-    }
+/* ── GAME MODAL ── */
+.game-modal{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:200;display:none;flex-direction:column}
+.game-modal.open{display:flex}
+.gm-hdr{background:rgba(7,8,13,.98);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.gm-title{font-size:14px;font-weight:900;color:var(--gold)}
+.gm-right{display:flex;align-items:center;gap:8px}
+.gm-sc-pill{display:flex;align-items:center;gap:4px;background:rgba(255,198,26,.1);border:1px solid rgba(255,198,26,.25);border-radius:14px;padding:4px 10px;font-size:11px;font-weight:800;color:var(--gold)}
+.gm-sc-pill img{width:14px;height:14px;object-fit:contain}
+.gm-close{width:30px;height:30px;border-radius:50%;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--muted)}
+.gm-iframe{flex:1;border:none;width:100%;background:var(--bg)}
+.gm-footer{background:rgba(7,8,13,.98);border-top:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.gm-session{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:var(--gold)}
+.gm-session img{width:18px;height:18px;object-fit:contain}
 
-    .nav-item.active {
-      color: var(--primary-cyan);
-      font-weight: 700;
-    }
-  </style>
+/* ── AD MODAL ── */
+.ad-modal{position:fixed;inset:0;background:rgba(7,8,13,.95);backdrop-filter:blur(14px);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+.ad-modal.active{display:flex}
+.ad-modal-card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:24px 20px;text-align:center;max-width:340px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.9)}
+.ad-play-ring{width:60px;height:60px;border-radius:50%;background:var(--gold-grad);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 0 20px var(--gold-glow)}
+.ad-play-ring svg{width:26px;height:26px;fill:#fff;margin-left:3px}
+.ad-title{font-size:16px;font-weight:900;margin-bottom:5px}
+.ad-desc{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.ad-bar-bg{width:100%;height:7px;background:rgba(255,255,255,.07);border-radius:10px;overflow:hidden;margin-bottom:8px}
+.ad-bar-fill{height:100%;background:var(--gold-grad);border-radius:10px;width:0%;transition:width 1s linear}
+.ad-timer-txt{font-size:12px;font-weight:900;color:var(--gold)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:400;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.active{display:flex}
+.modal-sheet{background:var(--card);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:20px 16px 28px;width:100%;max-width:480px}
+.modal-handle{width:36px;height:3px;background:var(--border);border-radius:3px;margin:0 auto 16px}
+.modal-title{font-size:16px;font-weight:900;color:var(--gold);margin-bottom:10px}
+.modal-body{font-size:12px;color:var(--text);line-height:1.7;margin-bottom:16px}
+
+/* ── TOAST ── */
+#toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid var(--gold);color:#fff;padding:10px 16px;border-radius:12px;font-size:12px;font-weight:800;box-shadow:0 10px 28px rgba(0,0,0,.8);opacity:0;pointer-events:none;transition:.22s;z-index:600;width:86%;max-width:360px;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── GREEN SUCCESS GLOW ── */
+.glow-success{
+  animation:glowSuccessPulse 1.1s ease;
+}
+@keyframes glowSuccessPulse{
+  0%{box-shadow:0 0 0 0 var(--neon-glow)}
+  30%{box-shadow:0 0 0 6px var(--neon-glow), 0 0 22px var(--neon-glow)}
+  100%{box-shadow:0 0 0 0 rgba(57,255,136,0)}
+}
+.text-flash-green{ color:var(--neon) !important; transition:color .25s ease; }
+
+/* ── WHAT'S NEW MODAL ── */
+.wn-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);z-index:700;display:none;align-items:center;justify-content:center;padding:20px}
+.wn-overlay.active{display:flex}
+.wn-card{
+  background:linear-gradient(160deg,#141a12,#0d0f1a 55%,#0a0e18);
+  border:1px solid rgba(57,255,136,.3);border-radius:22px;padding:22px 18px;
+  max-width:360px;width:100%;text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,.9), 0 0 30px rgba(57,255,136,.12);
+  position:relative;overflow:hidden;
+}
+.wn-card::before{content:'';position:absolute;top:-30px;left:-30px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(57,255,136,.14),transparent 70%)}
+.wn-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(57,255,136,.12);border:1px solid rgba(57,255,136,.35);color:var(--neon);font-size:10px;font-weight:900;padding:4px 12px;border-radius:20px;margin-bottom:10px;letter-spacing:.4px}
+.wn-title{font-size:19px;font-weight:900;margin-bottom:14px;position:relative}
+.wn-list{text-align:left;display:flex;flex-direction:column;gap:10px;margin-bottom:18px;position:relative}
+.wn-item{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:12px;padding:9px 11px}
+.wn-item-icon{font-size:16px;flex-shrink:0;line-height:1.3}
+.wn-item-text b{display:block;font-size:11.5px;font-weight:800;margin-bottom:1px}
+.wn-item-text span{font-size:10px;color:var(--muted);line-height:1.4}
+.wn-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--neon),#0dbf63);border:none;border-radius:13px;font-size:13px;font-weight:900;color:#03210f;cursor:pointer;font-family:var(--font);box-shadow:0 8px 22px rgba(57,255,136,.25);transition:.15s}
+.wn-btn:active{transform:scale(.97)}
+
+/* ── TOP-UP / WELCOME BONUS MODAL ── */
+.tu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);z-index:800;display:none;align-items:center;justify-content:center;padding:20px;overflow:hidden}
+.tu-overlay.active{display:flex}
+.tu-card{
+  background:linear-gradient(160deg,#1c1608,#0d0f1a 55%,#0a0e18);
+  border:1px solid rgba(255,215,0,.4);border-radius:26px;padding:0 20px 22px;
+  max-width:340px;width:100%;text-align:center;position:relative;overflow:hidden;
+  box-shadow:0 30px 70px rgba(0,0,0,.9), 0 0 50px rgba(255,198,26,.15);
+  animation:tuCardIn .5s cubic-bezier(.2,1.4,.4,1);
+}
+@keyframes tuCardIn{
+  0%{opacity:0;transform:scale(.75) translateY(20px)}
+  100%{opacity:1;transform:scale(1) translateY(0)}
+}
+.tu-card::before{content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,.22),transparent 70%);pointer-events:none}
+.tu-glow-ring{width:112px;height:112px;border-radius:50%;margin:22px auto 6px;position:relative;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(255,215,0,.18),transparent 72%)}
+.tu-glow-ring::before{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,215,0,.4);animation:tuRingPulse 1.8s ease-out infinite}
+.tu-glow-ring::after{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid rgba(57,255,136,.35);animation:tuRingPulse 1.8s ease-out infinite .5s}
+@keyframes tuRingPulse{
+  0%{transform:scale(.85);opacity:1}
+  100%{transform:scale(1.5);opacity:0}
+}
+.tu-img{width:78px;height:78px;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 6px 16px rgba(255,198,26,.4));animation:tuImgFloat 2.4s ease-in-out infinite}
+@keyframes tuImgFloat{
+  0%,100%{transform:translateY(0) rotate(-2deg)}
+  50%{transform:translateY(-6px) rotate(2deg)}
+}
+.tu-title{font-size:18px;font-weight:900;margin:8px 0 4px;position:relative}
+.tu-sub{font-size:11px;color:var(--muted);margin-bottom:14px;position:relative}
+.tu-amount-pill{
+  display:inline-flex;align-items:baseline;gap:6px;
+  background:var(--gold-grad);color:#000;border-radius:16px;padding:10px 22px;
+  font-size:28px;font-weight:900;box-shadow:0 8px 26px rgba(255,198,26,.35);
+  margin-bottom:16px;position:relative;
+}
+.tu-amount-pill span{font-size:14px;font-weight:800}
+.tu-btn{width:100%;padding:13px;background:var(--gold-grad);border:none;border-radius:13px;font-size:13px;font-weight:900;color:#000;cursor:pointer;font-family:var(--font);box-shadow:0 8px 22px var(--gold-glow);transition:.15s;position:relative}
+.tu-btn:active{transform:scale(.97)}
+.tu-confetti{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;border-radius:26px}
+.tu-piece{position:absolute;top:-10%;width:7px;height:7px;opacity:0;animation-name:tuFall;animation-timing-function:linear;animation-iteration-count:1;border-radius:2px}
+@keyframes tuFall{
+  0%{opacity:1;transform:translateY(0) rotate(0deg)}
+  100%{opacity:0;transform:translateY(420px) rotate(540deg)}
+}
+
+/* ── LEVEL-UP CELEBRATION MODAL ── */
+.lvl-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);backdrop-filter:blur(14px);z-index:850;display:none;align-items:center;justify-content:center;padding:20px}
+.lvl-overlay.active{display:flex}
+.lvl-card{
+  position:relative;max-width:320px;width:100%;text-align:center;overflow:hidden;
+  background:linear-gradient(160deg,#1c1608,#0d0f1a 55%,#080a12);
+  border:1px solid rgba(255,198,26,.45);border-radius:26px;padding:26px 20px 22px;
+  box-shadow:0 30px 70px rgba(0,0,0,.9), 0 0 60px rgba(255,198,26,.18);
+  animation:tuCardIn .5s cubic-bezier(.2,1.4,.4,1);
+}
+.lvl-burst-icon{
+  width:88px;height:88px;border-radius:50%;margin:0 auto 12px;position:relative;
+  background:radial-gradient(circle, rgba(255,198,26,.2), transparent 70%);
+  display:flex;align-items:center;justify-content:center;font-size:44px;
+  animation:lvlIconPop .6s cubic-bezier(.3,1.6,.4,1);
+}
+@keyframes lvlIconPop{0%{transform:scale(0) rotate(-20deg)}70%{transform:scale(1.15) rotate(6deg)}100%{transform:scale(1) rotate(0)}}
+.lvl-burst-icon::before,.lvl-burst-icon::after{
+  content:'';position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,198,26,.4);
+  animation:tuRingPulse 1.6s ease-out infinite;
+}
+.lvl-burst-icon::after{border-color:rgba(57,255,136,.35);animation-delay:.4s}
+.lvl-eyebrow{font-size:10px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--neon);margin-bottom:4px}
+.lvl-title{font-size:26px;font-weight:900;margin-bottom:6px;
+  background:linear-gradient(135deg,#fff 10%,var(--gold) 70%);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.lvl-sub{font-size:11.5px;color:var(--muted);line-height:1.5;margin-bottom:16px}
+.lvl-perk-box{
+  background:rgba(255,198,26,.08);border:1px solid rgba(255,198,26,.25);border-radius:13px;
+  padding:10px 12px;margin-bottom:16px;font-size:11px;font-weight:700;color:var(--gold);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.lvl-btn{width:100%;padding:13px;background:var(--gold-grad);border:none;border-radius:13px;font-size:13px;font-weight:900;color:#000;cursor:pointer;font-family:var(--font);box-shadow:0 8px 22px var(--gold-glow)}
+.lvl-btn:active{transform:scale(.97)}
+
+/* ── ACHIEVEMENT TOAST ── */
+.ach-toast-wrap{position:fixed;left:0;right:0;bottom:64px;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:750;pointer-events:none;padding:0 14px}
+.ach-toast{
+  display:flex;align-items:center;gap:9px;background:rgba(15,17,24,.95);border:1px solid rgba(255,198,26,.4);
+  border-radius:14px;padding:9px 14px;box-shadow:0 12px 28px rgba(0,0,0,.6), 0 0 20px rgba(255,198,26,.12);
+  backdrop-filter:blur(14px);max-width:320px;width:100%;
+  opacity:0;transform:translateY(14px) scale(.95);transition:.35s cubic-bezier(.2,1,.3,1);
+}
+.ach-toast.show{opacity:1;transform:translateY(0) scale(1)}
+.ach-toast-icon{width:32px;height:32px;border-radius:9px;background:var(--gold-grad);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;box-shadow:0 4px 12px var(--gold-glow)}
+.ach-toast-text b{display:block;font-size:11.5px;font-weight:900;color:#fff}
+.ach-toast-text span{font-size:9.5px;color:var(--muted)}
+
+/* ── BADGES GRID ── */
+.badges-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px;margin-bottom:8px;backdrop-filter:blur(10px);box-shadow:0 8px 20px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.05)}
+.badges-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.badges-head h3{font-size:11.5px;font-weight:900;display:flex;align-items:center;gap:5px}
+.badges-count{font-size:9px;font-weight:800;color:var(--gold);background:rgba(255,198,26,.1);border:1px solid rgba(255,198,26,.25);padding:2px 8px;border-radius:10px}
+.badges-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.badge-chip{
+  aspect-ratio:1;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  background:var(--card2);border:1px solid var(--border2);position:relative;overflow:hidden;transition:.2s;
+}
+.badge-chip.unlocked{background:linear-gradient(150deg,rgba(255,198,26,.14),rgba(57,255,136,.08));border-color:rgba(255,198,26,.4);box-shadow:0 4px 14px rgba(255,198,26,.15)}
+.badge-chip .b-icon{font-size:17px;filter:grayscale(1) opacity(.35)}
+.badge-chip.unlocked .b-icon{filter:none}
+.badge-chip .b-lbl{font-size:6.5px;font-weight:800;color:var(--muted);text-align:center;line-height:1.1;padding:0 2px}
+.badge-chip.unlocked .b-lbl{color:var(--gold)}
+.badge-chip.unlocked::after{content:'';position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:var(--neon);box-shadow:0 0 5px var(--neon)}
+
+/* ── PULL TO REFRESH ── */
+.ptr-indicator{
+  position:absolute;top:-46px;left:50%;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;
+  background:var(--card);border:1px solid rgba(255,198,26,.4);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 16px rgba(0,0,0,.5);z-index:60;transition:top .2s ease;
+}
+.ptr-indicator svg{width:16px;height:16px;fill:none;stroke:var(--gold);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}
+.ptr-indicator.ready svg{transform:rotate(180deg)}
+.ptr-indicator.spinning svg{animation:ptrSpin .7s linear infinite}
+@keyframes ptrSpin{to{transform:rotate(360deg)}}
+
+/* ── DEPOSIT MODAL ── */
+.dep-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);z-index:820;display:none;align-items:flex-end;justify-content:center}
+.dep-overlay.active{display:flex}
+.dep-sheet{
+  width:100%;max-width:480px;max-height:88vh;overflow-y:auto;background:var(--bg2,#0d0f1a);
+  border:1px solid var(--border);border-top-left-radius:24px;border-top-right-radius:24px;
+  padding:8px 16px 20px;animation:depSheetUp .3s cubic-bezier(.2,1,.3,1);
+  box-shadow:0 -20px 50px rgba(0,0,0,.6);
+}
+@keyframes depSheetUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.dep-handle{width:36px;height:4px;background:var(--border2);border-radius:4px;margin:8px auto 12px}
+.dep-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.dep-title{font-size:15px;font-weight:900;display:flex;align-items:center;gap:7px}
+.dep-close{width:30px;height:30px;border-radius:50%;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:15px}
+.dep-sub{font-size:10.5px;color:var(--muted);margin-bottom:14px}
+
+.dep-tabs{display:flex;gap:6px;margin-bottom:12px;background:var(--card2);border-radius:12px;padding:3px}
+.dep-tab{flex:1;text-align:center;padding:8px 0;border-radius:10px;font-size:11px;font-weight:800;color:var(--muted);cursor:pointer;transition:.15s}
+.dep-tab.active{background:var(--gold-grad);color:#000;box-shadow:0 4px 12px var(--gold-glow)}
+
+.dep-panel{display:none}
+.dep-panel.active{display:block;animation:fadeUp .2s ease}
+
+.dep-bank-list{display:flex;flex-direction:column;gap:8px}
+.dep-bank-item{
+  display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--border2);
+  border-radius:14px;padding:10px 12px;cursor:pointer;transition:.15s;backdrop-filter:blur(8px);
+  box-shadow:0 6px 16px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.dep-bank-item:active{transform:scale(.98)}
+.dep-bank-item img{width:34px;height:34px;object-fit:contain;border-radius:8px;flex-shrink:0}
+.dep-bank-info{flex:1;min-width:0}
+.dep-bank-info b{font-size:12px;font-weight:800;display:block}
+.dep-bank-info span{font-size:9.5px;color:var(--muted)}
+.dep-bank-arrow{color:var(--muted);font-size:16px;flex-shrink:0}
+
+.dep-crypto-item{
+  display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--border2);
+  border-radius:14px;padding:10px 12px;margin-bottom:8px;backdrop-filter:blur(8px);
+  box-shadow:0 6px 16px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.dep-crypto-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.dep-crypto-info{flex:1;min-width:0}
+.dep-crypto-info b{font-size:11.5px;font-weight:800;display:block}
+.dep-crypto-info span{font-size:8.5px;color:var(--muted);display:block;margin-top:1px}
+.dep-crypto-addr{
+  font-size:9px;color:var(--gold);background:rgba(255,198,26,.08);border:1px solid rgba(255,198,26,.2);
+  padding:4px 8px;border-radius:8px;margin-top:5px;font-family:monospace;word-break:break-all;
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+}
+.dep-copy-btn{
+  flex-shrink:0;width:26px;height:26px;border-radius:7px;background:rgba(57,255,136,.12);border:1px solid rgba(57,255,136,.3);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.dep-copy-btn svg{width:12px;height:12px;fill:var(--neon)}
+.dep-copy-btn:active{transform:scale(.9)}
+
+.dep-detail-view{display:none}
+.dep-detail-view.active{display:block;animation:fadeUp .2s ease}
+.dep-detail-back{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:var(--muted);margin-bottom:12px;cursor:pointer}
+.dep-detail-card{
+  background:linear-gradient(150deg,#171307,#0d0f1a 55%,#080a12);border:1px solid rgba(255,198,26,.3);
+  border-radius:16px;padding:16px;text-align:center;margin-bottom:12px;
+}
+.dep-detail-card img{width:48px;height:48px;object-fit:contain;margin-bottom:8px}
+.dep-detail-acct{font-size:20px;font-weight:900;color:var(--gold);letter-spacing:.5px;margin-bottom:4px}
+.dep-detail-name{font-size:11px;color:var(--muted);font-weight:700}
+.dep-detail-copybtn{
+  margin-top:12px;width:100%;padding:11px;background:var(--gold-grad);border:none;border-radius:12px;
+  font-size:12px;font-weight:900;color:#000;cursor:pointer;font-family:var(--font);box-shadow:0 6px 18px var(--gold-glow);
+}
+.dep-detail-copybtn:active{transform:scale(.97)}
+.dep-note{
+  background:rgba(255,198,26,.06);border:1px solid rgba(255,198,26,.2);border-radius:11px;padding:9px 11px;
+  font-size:9.5px;color:var(--muted);line-height:1.5;
+}
+.dep-note b{color:var(--gold)}
+
+/* ── AIRDROP CRATE MODAL ── */
+.crate-modal{position:fixed;inset:0;background:radial-gradient(circle at 50% 30%, #14180e, #05060a 75%);z-index:900;display:none;flex-direction:column}
+.crate-modal.open{display:flex}
+.crate-hdr{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.crate-hdr-title{font-size:14px;font-weight:900;color:var(--gold);display:flex;align-items:center;gap:6px}
+.crate-close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--muted)}
+.crate-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
+
+.crate-keys-pill{
+  display:inline-flex;align-items:center;gap:6px;background:rgba(255,198,26,.1);
+  border:1px solid rgba(255,198,26,.3);border-radius:20px;padding:6px 14px;
+  font-size:12px;font-weight:900;color:var(--gold);margin-bottom:22px;
+}
+
+.crate-stage{width:180px;height:180px;perspective:900px;position:relative;margin-bottom:18px}
+.crate-fall{
+  position:absolute;inset:0;
+  animation:crateFallIn .9s cubic-bezier(.25,.8,.3,1.2) forwards;
+}
+@keyframes crateFallIn{
+  0%{transform:translateY(-220px) scale(.7);opacity:0}
+  70%{transform:translateY(6px) scale(1.03);opacity:1}
+  85%{transform:translateY(-4px) scale(.99)}
+  100%{transform:translateY(0) scale(1);opacity:1}
+}
+.crate-dust{
+  position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);
+  width:120px;height:24px;border-radius:50%;
+  background:radial-gradient(ellipse, rgba(255,198,26,.35), transparent 70%);
+  opacity:0;animation:crateDustPuff .6s ease-out .78s forwards;
+}
+@keyframes crateDustPuff{
+  0%{opacity:0;transform:translateX(-50%) scale(.4)}
+  40%{opacity:1;transform:translateX(-50%) scale(1.3)}
+  100%{opacity:0;transform:translateX(-50%) scale(1.8)}
+}
+.crate-box{
+  width:100%;height:100%;position:relative;transform-style:preserve-3d;
+  transition:transform .8s cubic-bezier(.4,.2,.2,1);cursor:pointer;
+}
+.crate-box.opened{transform:rotateY(180deg) scale(1.06)}
+.crate-face{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  backface-visibility:hidden;border-radius:20px;
+}
+.crate-face-front{
+  background:linear-gradient(145deg,#2a2008,#161206);
+  border:2px solid rgba(255,198,26,.5);
+  box-shadow:0 14px 34px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.crate-face-front img{width:70%;height:70%;object-fit:contain;filter:drop-shadow(0 6px 14px rgba(255,198,26,.4))}
+.crate-face-back{
+  background:radial-gradient(circle, rgba(255,255,255,.9), rgba(255,198,26,.5) 45%, transparent 75%);
+  transform:rotateY(180deg);
+}
+.crate-tap-hint{font-size:11px;color:var(--gold);font-weight:800;opacity:.85;animation:crateHintPulse 1.4s ease-in-out infinite;margin-bottom:6px}
+@keyframes crateHintPulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+.crate-burst{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0}
+.crate-burst.show{animation:crateBurstFlash .7s ease-out forwards}
+@keyframes crateBurstFlash{
+  0%{opacity:0}
+  15%{opacity:1}
+  100%{opacity:0}
+}
+.crate-burst-ring{position:absolute;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,.95), transparent 70%)}
+.crate-ray{position:absolute;width:4px;height:160px;background:linear-gradient(to top, transparent, rgba(255,255,255,.9), transparent);left:50%;top:50%;transform-origin:center bottom}
+
+.crate-reward{
+  text-align:center;opacity:0;transform:translateY(14px) scale(.9);
+  transition:opacity .4s ease .1s, transform .4s cubic-bezier(.2,1.3,.4,1) .1s;
+}
+.crate-reward.show{opacity:1;transform:translateY(0) scale(1)}
+.crate-reward-tier{
+  display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:900;
+  padding:4px 14px;border-radius:14px;margin-bottom:10px;letter-spacing:.4px;
+}
+.tier-common .crate-reward-tier{background:rgba(200,200,210,.12);color:#c9ccd6;border:1px solid rgba(200,200,210,.3)}
+.tier-uncommon .crate-reward-tier{background:rgba(57,255,136,.14);color:var(--neon);border:1px solid rgba(57,255,136,.4)}
+.tier-rare .crate-reward-tier{background:rgba(139,92,246,.16);color:#a78bfa;border:1px solid rgba(139,92,246,.42)}
+.tier-legendary .crate-reward-tier{background:rgba(255,198,26,.16);color:var(--gold);border:1px solid rgba(255,198,26,.45)}
+.crate-reward-amt{font-size:32px;font-weight:900;margin-bottom:4px}
+.tier-common .crate-reward-amt{color:#e4e6ec;text-shadow:0 0 18px rgba(200,200,210,.3)}
+.tier-uncommon .crate-reward-amt{color:var(--neon);text-shadow:0 0 22px var(--neon-glow)}
+.tier-rare .crate-reward-amt{color:#a78bfa;text-shadow:0 0 22px rgba(139,92,246,.45)}
+.tier-legendary .crate-reward-amt{color:var(--gold);text-shadow:0 0 26px rgba(255,198,26,.5)}
+.crate-reward-label{font-size:11px;color:var(--muted);margin-bottom:18px}
+.crate-claim-btn{padding:12px 30px;border:none;border-radius:14px;font-size:13px;font-weight:900;cursor:pointer;font-family:var(--font);color:#000;background:var(--gold-grad);box-shadow:0 8px 22px var(--gold-glow)}
+.crate-claim-btn:active{transform:scale(.96)}
+
+.crate-particles{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.crate-particle{position:absolute;border-radius:50%;top:50%;left:50%;opacity:0;animation-name:crateParticleFly;animation-timing-function:cubic-bezier(.15,.7,.3,1);animation-fill-mode:forwards}
+@keyframes crateParticleFly{
+  0%{opacity:1;transform:translate(-50%,-50%) translate(0,0) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) translate(var(--px),var(--py)) scale(.3)}
+}
+
+.crate-history{
+  width:100%;max-width:320px;background:rgba(255,255,255,.03);border:1px solid var(--border2);
+  border-radius:14px;padding:8px 12px;margin-top:6px;overflow:hidden;
+  backdrop-filter:blur(8px);
+}
+.crate-history-row{display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--muted);padding:4px 0}
+.crate-history-row b{color:var(--text);font-weight:800}
+.crate-history-tag{font-size:8px;font-weight:900;padding:1px 6px;border-radius:8px;flex-shrink:0}
+.ch-common{background:rgba(200,200,210,.14);color:#c9ccd6}
+.ch-uncommon{background:rgba(57,255,136,.14);color:var(--neon)}
+.ch-rare{background:rgba(139,92,246,.16);color:#a78bfa}
+.ch-legendary{background:rgba(255,198,26,.16);color:var(--gold)}
+
+.crate-cooldown-note{font-size:10px;color:var(--muted);margin-top:14px;text-align:center}
+</style>
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
-  <header class="top-bar">
-    <div class="brand-logo">
-      <i class="fa-solid fa-paper-plane"></i>
-      <div>
-        <div class="brand-text">TIKVAH AIRDROP</div>
-        <span class="kyc-badge" id="kycBadge">KYC Verified ✓</span>
+<!-- ── AD MODAL ── -->
+<div class="ad-modal" id="adModal">
+  <div class="ad-modal-card">
+    <button id="adCloseBtn" onclick="closeAdAndShowAnother()" style="display:none;position:absolute;top:12px;right:14px;background:var(--card2);border:1px solid var(--border);border-radius:50%;width:28px;height:28px;color:var(--muted);font-size:14px;cursor:pointer;font-family:var(--font)">✕</button>
+    <div class="ad-play-ring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+    <div class="ad-title" id="adTitle">ማስታወቂያ #1 በሂደት ላይ</div>
+    <div class="ad-desc" id="adDesc">17 ሰከንድ ያዩ — ካጠናቀቁ <strong style="color:var(--gold)">50 ETB</strong> ይጨምራሉ!</div>
+    <div class="ad-bar-bg"><div class="ad-bar-fill" id="adBarFill"></div></div>
+    <div class="ad-timer-txt" id="adTimerTxt">17s ቀርቷል</div>
+  </div>
+</div>
+
+<!-- ── GAME MODAL ── -->
+<div class="game-modal" id="gameModal">
+  <div class="gm-hdr">
+    <span class="gm-title" id="gmTitle">🎮 Game</span>
+    <div class="gm-right">
+      <div class="gm-sc-pill">
+        <img src="https://i.postimg.cc/DwzKHM7q/20260805-173329.png" alt="sc">
+        <span id="gmSCDisplay">0 SC</span>
+      </div>
+      <div class="gm-close" onclick="closeGame()">✕</div>
+    </div>
+  </div>
+  <iframe class="gm-iframe" id="gmIframe" title="Game" allow="autoplay; fullscreen" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms" allowfullscreen></iframe>
+  <div class="gm-footer">
+    <div class="gm-session">
+      <img src="https://i.postimg.cc/DwzKHM7q/20260805-173329.png" alt="sc">
+      ይህ ጨዋታ: <span id="gmSessionCoins">0 SC</span>
+    </div>
+    <button class="btn btn-green" style="padding:7px 14px;font-size:11px" onclick="closeGame()">✓ ጨርስ</button>
+  </div>
+</div>
+
+<!-- ── WD NOTICE MODAL ── -->
+<div class="modal-overlay" id="wdModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-size:44px;text-align:center;margin-bottom:8px">✅</div>
+    <div class="modal-title" style="text-align:center">ጥያቄዎ ተቀብሏል!</div>
+    <div class="modal-body" style="text-align:center">የማውጫ ጥያቄዎ ተቀብሏል። <strong>በ24 ሰዓት ውስጥ</strong> ወደ አካውንትዎ ይላካል።</div>
+    <button class="btn btn-gold btn-block" onclick="document.getElementById('wdModal').classList.remove('active')">እሺ</button>
+  </div>
+</div>
+
+<!-- ── WHAT'S NEW MODAL ── -->
+<div class="wn-overlay" id="wnOverlay">
+  <div class="wn-card">
+    <span class="wn-badge">✨ NEW UPDATE</span>
+    <div class="wn-title">Swap Money</div>
+    <div class="wn-list">
+      <div class="wn-item">
+        <div class="wn-item-icon">💚</div>
+        <div class="wn-item-text"><b>Green Success Glow</b><span>ገንዘብ ሲያገኙ ካርዱ በአረንጓዴ ያበራል</span></div>
+      </div>
+      <div class="wn-item">
+        <div class="wn-item-icon">🔢</div>
+        <div class="wn-item-text"><b>Smooth Balance Animation</b><span>ሂሳብዎ ሲጨምር በለስላሳ ይቆጠራል</span></div>
+      </div>
+      <div class="wn-item">
+        <div class="wn-item-icon">✨</div>
+        <div class="wn-item-text"><b>New Wallet Design</b><span>የሚያብረቀርቅ shimmer እና ጥልቅ shadow ተጨምሯል</span></div>
       </div>
     </div>
-    <button class="lang-toggle" id="langBtn" onclick="toggleLanguage()">EN | አማ</button>
-  </header>
+    <button class="wn-btn" onclick="closeWhatsNew()">🔥 ገባኝ!</button>
+  </div>
+</div>
 
-  <div class="container">
+<!-- ── AIRDROP CRATE MODAL ── -->
+<div class="crate-modal" id="crateModal">
+  <div class="crate-hdr">
+    <span class="crate-hdr-title">🎁 Airdrop Crate</span>
+    <div class="crate-close" onclick="closeCrateModal()">✕</div>
+  </div>
+  <div class="crate-body">
+    <div class="crate-keys-pill">🔑 <span id="crateKeysPillCount">0</span> Keys Available</div>
 
-    <!-- TAB 1: HOME -->
-    <div id="tab-home" class="tab-content active">
-      <!-- Balance Card -->
-      <div class="balance-card">
-        <div class="balance-title" data-i18n="total_balance">Total Wallet Balance</div>
-        <div class="main-balance" id="usdBal">$12.50</div>
-        <div class="etb-subtext" id="etbBal">≈ 1,562.50 ETB</div>
-
-        <div class="action-row">
-          <div class="action-btn" onclick="switchTab('tab-withdraw', document.querySelectorAll('.nav-item')[3])">
-            <i class="fa-solid fa-plus"></i>
-            <span data-i18n="deposit">Deposit</span>
+    <div class="crate-stage" id="crateStage">
+      <div class="crate-fall" id="crateFallWrap">
+        <div class="crate-dust"></div>
+        <div class="crate-box" id="crateBox" onclick="tapOpenCrate()">
+          <div class="crate-face crate-face-front">
+            <img src="https://i.postimg.cc/gkQTRy6n/20260809-161458.png" alt="crate">
           </div>
-          <div class="action-btn" onclick="switchTab('tab-withdraw', document.querySelectorAll('.nav-item')[3])">
-            <i class="fa-solid fa-arrow-up-from-bracket"></i>
-            <span data-i18n="withdraw">Withdraw</span>
-          </div>
-          <div class="action-btn" onclick="switchTab('tab-exchange', document.querySelectorAll('.nav-item')[1])">
-            <i class="fa-solid fa-rotate"></i>
-            <span data-i18n="swap">Swap</span>
-          </div>
-          <div class="action-btn" onclick="switchTab('tab-ptc', document.querySelectorAll('.nav-item')[2])">
-            <i class="fa-solid fa-bullseye"></i>
-            <span data-i18n="earn">Earn</span>
-          </div>
+          <div class="crate-face crate-face-back"></div>
         </div>
-      </div>
-
-      <!-- Adsgram Quick Task Preview -->
-      <div class="widget-box">
-        <div class="widget-header">
-          <span class="widget-title"><i class="fa-solid fa-play" style="color: var(--primary-cyan);"></i> <span data-i18n="featured_ad">Featured Adsgram Task</span></span>
+        <div class="crate-burst" id="crateBurst">
+          <div class="crate-burst-ring"></div>
         </div>
-        <div class="task-card">
-          <div class="task-info">
-            <span class="task-title">Watch Adsgram Video Ad</span>
-            <span class="task-reward">+12.50 ETB ($0.10)</span>
-          </div>
-          <button class="btn-action btn-green" onclick="showAdsgramAd()">Watch Ad</button>
-        </div>
-      </div>
-
-      <!-- Live Crypto Market Free API -->
-      <div class="widget-box">
-        <div class="widget-header">
-          <span class="widget-title"><i class="fa-solid fa-chart-line" style="color: var(--primary-cyan);"></i> <span data-i18n="crypto_market">Live Crypto Market</span></span>
-        </div>
-        <div id="cryptoList">Loading live rates...</div>
-      </div>
-    </div>
-
-    <!-- TAB 2: EXCHANGE -->
-    <div id="tab-exchange" class="tab-content">
-      <div class="widget-box">
-        <div class="widget-header">
-          <span class="widget-title" data-i18n="swap_title">Currency Exchange</span>
-        </div>
-        <div class="form-group">
-          <label>From</label>
-          <input type="number" class="form-control" id="exFromVal" value="1" oninput="calculateSwap()">
-        </div>
-        <div class="form-group">
-          <label>To</label>
-          <input type="number" class="form-control" id="exToVal" readonly>
-        </div>
-        <div style="font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 10px;">1 USD = 125.00 ETB</div>
-        <button class="btn-action" style="width: 100%; padding: 12px;" onclick="alert('Swap Completed!')" data-i18n="confirm_swap">Confirm Swap</button>
-      </div>
-    </div>
-
-    <!-- TAB 3: PTC & AD TASKS (ADSGRAM INTEGRATED) -->
-    <div id="tab-ptc" class="tab-content">
-      <div class="widget-box">
-        <div class="widget-header">
-          <span class="widget-title" data-i18n="ptc_title">Adsgram & PTC Monetization</span>
-        </div>
-        <div class="task-list">
-          <div class="task-card">
-            <div class="task-info">
-              <span class="task-title">Watch Adsgram Rewarded Video</span>
-              <span class="task-reward">+15.00 ETB ($0.12 USD)</span>
-            </div>
-            <button class="btn-action" onclick="showAdsgramAd()">Start Ad</button>
-          </div>
-          <div class="task-card">
-            <div class="task-info">
-              <span class="task-title">Daily Check-In Reward</span>
-              <span class="task-reward">+25.00 ETB ($0.20 USD)</span>
-            </div>
-            <button class="btn-action btn-green" onclick="alert('Claimed Daily Reward!')">Claim</button>
-          </div>
-        </div>
+        <div class="crate-particles" id="crateParticles"></div>
       </div>
     </div>
 
-    <!-- TAB 4: WITHDRAWAL & ETHIOPIAN KYC -->
-    <div id="tab-withdraw" class="tab-content">
-      <!-- KYC Section -->
-      <div class="widget-box" style="border: 1px solid var(--primary-cyan);">
-        <div class="widget-header">
-          <span class="widget-title" style="color: var(--primary-cyan);"><i class="fa-solid fa-id-card"></i> Ethiopian KYC Verification</span>
-        </div>
-        <div class="form-group">
-          <label>Document Type</label>
-          <select class="form-control" id="kycDoc">
-            <option value="fayda">Ethiopian National ID (ፋይዳ ID)</option>
-            <option value="passport">Ethiopian Passport</option>
-            <option value="license">Driver's License (መንጃ ፈቃድ)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>ID Number</label>
-          <input type="text" class="form-control" placeholder="Enter ID Number" id="kycIdInput">
-        </div>
-        <button class="btn-action" style="width: 100%; margin-top: 6px;" onclick="verifyKYC()">Submit KYC</button>
+    <div class="crate-tap-hint" id="crateTapHint">👆 ክፍት ለማድረግ ይንኩ</div>
+
+    <div class="crate-reward" id="crateRewardCard">
+      <div class="crate-reward-tier" id="crateRewardTierLabel">⚪ Common</div>
+      <div class="crate-reward-amt" id="crateRewardAmt">+0</div>
+      <div class="crate-reward-label" id="crateRewardLabel">Swap Coin</div>
+      <button class="crate-claim-btn" onclick="claimCrateReward()">✅ ተቀበል</button>
+    </div>
+
+    <div class="crate-history" id="crateHistory"></div>
+    <div class="crate-cooldown-note" id="crateCooldownNote"></div>
+  </div>
+</div>
+
+<!-- ── DEPOSIT MODAL ── -->
+<div class="dep-overlay" id="depOverlay">
+  <div class="dep-sheet">
+    <div class="dep-handle"></div>
+
+    <div class="dep-list-view" id="depListView">
+      <div class="dep-title-row">
+        <div class="dep-title">💳 Deposit / ገንዘብ ማስገባት</div>
+        <div class="dep-close" onclick="closeDepositModal()">✕</div>
+      </div>
+      <div class="dep-sub">የገንዘብ ማስገቢያ መንገድ ይምረጡ</div>
+
+      <div class="dep-tabs">
+        <div class="dep-tab active" id="depTabBank" onclick="switchDepTab('bank')">🏦 Ethiopian Banks</div>
+        <div class="dep-tab" id="depTabCrypto" onclick="switchDepTab('crypto')">₿ Crypto</div>
       </div>
 
-      <!-- Withdrawal Methods -->
-      <div class="widget-box">
-        <div class="widget-header">
-          <span class="widget-title" data-i18n="withdraw_options">Withdrawal Options</span>
-        </div>
-        <div class="form-group">
-          <label>Gateway Method</label>
-          <select class="form-control">
-            <option>Telebirr (ኢትዮ ቴሌኮም)</option>
-            <option>CBE Birr / Ethiopian Commercial Banks</option>
-            <option>Ethio Telecom Airtime Transfer</option>
-            <option>TON Wallet (Crypto)</option>
-            <option>USDT (TRC-20/BEP-20)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Account Number / Wallet</label>
-          <input type="text" class="form-control" placeholder="09... or Crypto Wallet Address">
-        </div>
-        <button class="btn-action btn-green" style="width: 100%; padding: 12px;" onclick="alert('Withdrawal Submitted!')" data-i18n="withdraw_btn">Request Withdrawal</button>
+      <div class="dep-panel active" id="depPanelBank">
+        <div class="dep-bank-list" id="depBankList"></div>
+      </div>
+
+      <div class="dep-panel" id="depPanelCrypto">
+        <div id="depCryptoList"></div>
+        <div class="dep-note">⚠️ <b>ማሳሰቢያ፡</b> ትክክለኛውን የ Network ይምረጡ። የተሳሳተ Network ገንዘብ ካጡ ኃላፊነቱ የደንበኛው ነው። ካስገቡ በኋላ screenshot ለ Support ይላኩ።</div>
       </div>
     </div>
 
+    <div class="dep-detail-view" id="depDetailView">
+      <div class="dep-detail-back" onclick="backToDepList()">← ተመለስ</div>
+      <div class="dep-detail-card">
+        <img id="depDetailImg" src="" alt="bank">
+        <div class="dep-detail-acct" id="depDetailAcct">0000 0000 0000</div>
+        <div class="dep-detail-name" id="depDetailName">Swap Money PLC</div>
+        <button class="dep-detail-copybtn" onclick="copyDepositDetail()">📋 Account Number ቅዳ</button>
+      </div>
+      <div class="dep-note">💰 ካስገቡ በኋላ የክፍያ screenshot ወደ Telegram Support ይላኩ፣ ገንዘቡ በ<b>15-30 ደቂቃ</b> ውስጥ ወደ ሂሳብዎ ይገባል።</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── LEVEL-UP CELEBRATION MODAL ── -->
+<div class="lvl-overlay" id="lvlOverlay">
+  <div class="lvl-card">
+    <div class="lvl-burst-icon">🏆</div>
+    <div class="lvl-eyebrow">LEVEL UP</div>
+    <div class="lvl-title" id="lvlTitle">Level 2</div>
+    <div class="lvl-sub" id="lvlSub">እንኳን ደስ አለዎት! ወደ አዲስ ደረጃ ደርሰዋል 🎉</div>
+    <div class="lvl-perk-box">⭐ <span id="lvlPerkText">አዲስ Perks ተከፍተዋል</span></div>
+    <button class="lvl-btn" onclick="closeLevelUp()">🔥 ቀጥል!</button>
+  </div>
+</div>
+
+<!-- ── ACHIEVEMENT TOAST STACK ── -->
+<div class="ach-toast-wrap" id="achToastWrap"></div>
+
+<!-- ── TOP-UP / WELCOME BONUS MODAL ── -->
+<div class="tu-overlay" id="tuOverlay">
+  <div class="tu-card">
+    <div class="tu-confetti" id="tuConfetti"></div>
+    <div class="tu-glow-ring">
+      <img class="tu-img" src="https://i.postimg.cc/gkQTRy6n/20260809-161458.png" alt="bonus">
+    </div>
+    <div class="tu-title">🎉 እንኳን ደህና መጡ!</div>
+    <div class="tu-sub">የመግቢያ ስጦታ ወደ ሂሳብዎ ተጨምሯል</div>
+    <div class="tu-amount-pill">+<span id="tuAmount">50</span><span>ETB</span></div>
+    <button class="tu-btn" onclick="closeTopUpBonus()">🚀 ገንዘብ ማግኘት ጀምር</button>
+  </div>
+</div>
+
+<!-- ════════════════════════
+     HEADER
+════════════════════════ -->
+<header>
+  <div class="hdr-av" id="hdrAv">U</div>
+  <div class="hdr-info">
+    <h4 id="hdrWelcome">Welcome Back 👋🔥</h4>
+    <p>
+      <span id="hdrUser">@user</span>
+      <span class="level-chip" id="levelChip">⭐ Level 1</span>
+      <span class="streak-chip" id="streakChip"></span>
+    </p>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-bal" onclick="showPage('withdraw')" id="hdrBal">
+      <img src="https://i.postimg.cc/DwzKHM7q/20260805-173329.png" alt="sc">
+      <span id="hdrSC">0.00</span> SWAP
+    </div>
+    <div class="hdr-btn" onclick="syncFromSheet()" title="Refresh" style="position:relative">
+      <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+      <span id="syncDot" style="display:none;position:absolute;top:2px;right:2px;width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green)"></span>
+    </div>
+  </div>
+</header>
+
+<div class="app-scroll" id="appScroll">
+<div class="ptr-indicator" id="ptrIndicator">
+  <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+</div>
+
+<!-- ════════════════════════
+     HOME PAGE
+════════════════════════ -->
+<section class="page active" id="page-home">
+
+  <!-- Hero Wallet -->
+  <div class="hero-wallet">
+    <div class="hw-mesh"></div>
+    <div class="hw-top">
+      <div class="hw-logo">SWAP Money 💰</div>
+</div> img class="hw-wallet-img" src="https://i.postimg.cc/gkQTRy6n/20260809-161458.png" alt="wallet"
+    <div class="hw-label">Wallet Balance <span style="opacity:.5;cursor:pointer">👁</span></div>
+    <div class="hw-amount">
+      <span id="mainBalance">0</span>
+      <span class="hw-currency">ETB</span>
+    </div>
+    <div class="hw-sub">
+      <span class="up">↑ Syncing…</span>
+      <span id="balSub">ሂሳቡ ከ sheet ይመጣል</span>
+    </div>
   </div>
 
-  <!-- Bottom Navigation Bar -->
-  <nav class="nav-bar">
-    <div class="nav-item active" onclick="switchTab('tab-home', this)">
-      <i class="fa-solid fa-house"></i>
-      <span data-i18n="nav_home">Home</span>
+  <!-- Swap Coin + Airdrop Crate -->
+  <div class="dual-grid">
+    <div class="dual-card sc-variant" onclick="showPage('earn')">
+      <div class="dual-card-top">
+        <img class="dual-card-img" src="https://i.postimg.cc/DwzKHM7q/20260805-173329.png" alt="SC">
+        <span class="dual-card-badge">GAME SC</span>
+      </div>
+      <div>
+        <div class="dual-card-title">Swap Coin</div>
+        <div class="dual-card-amt"><span id="scBalance">0</span> SC</div>
+        <div class="dual-card-sub">Mini-Games ተጫውተው ያግኙ</div>
+      </div>
+      <div class="dual-card-foot">
+        <span class="dual-card-cta">Play Games →</span>
+      </div>
     </div>
-    <div class="nav-item" onclick="switchTab('tab-exchange', this)">
-      <i class="fa-solid fa-right-left"></i>
-      <span data-i18n="nav_swap">Swap</span>
+
+    <div class="dual-card crate-variant" onclick="openCrateModal()">
+      <div class="dual-card-top">
+        <img class="dual-card-img" src="https://i.postimg.cc/gkQTRy6n/20260809-161458.png" alt="crate">
+        <span class="dual-card-badge" id="crateBadgePulse">✨ NEW</span>
+      </div>
+      <div>
+        <div class="dual-card-title">🎁 Airdrop Crate</div>
+        <div class="dual-card-amt">🔑 <span id="crateKeysCount">0</span></div>
+        <div class="dual-card-sub">ETB/SC/Ticket ያግኙ</div>
+      </div>
+      <div class="dual-card-foot">
+        <span class="dual-card-cta">Open Crate →</span>
+      </div>
     </div>
-    <div class="nav-item" onclick="switchTab('tab-ptc', this)">
-      <i class="fa-solid fa-circle-dollar-to-slot"></i>
-      <span data-i18n="nav_earn">Earn</span>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="qa-row">
+    <div class="qa-item" onclick="openDepositModal()">
+      <div class="qa-circle"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
+      <span class="qa-label">Deposit</span>
     </div>
-    <div class="nav-item" onclick="switchTab('tab-withdraw', this)">
-      <i class="fa-solid fa-wallet"></i>
-      <span data-i18n="nav_wallet">Wallet</span>
+    <div class="qa-item" onclick="showPage('earn')">
+      <div class="qa-circle"><svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg></div>
+      <span class="qa-label">Earn</span>
     </div>
-  </nav>
+    <div class="qa-item" onclick="showPage('ads')">
+      <div class="qa-circle"><svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zM8 8l8 4-8 4V8z"/></svg></div>
+      <span class="qa-label">Watch Ads</span>
+    </div>
+    <div class="qa-item" onclick="showPage('withdraw')">
+      <div class="qa-circle"><svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8z"/></svg></div>
+      <span class="qa-label">Withdraw</span>
+    </div>
+    <div class="qa-item" onclick="showPage('invite')">
+      <div class="qa-circle"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+      <span class="qa-label">Invite</span>
+    </div>
+  </div>
 
-  <script>
-    // Initialize Telegram WebApp
-    const tg = window.Telegram?.WebApp;
-    if (tg) { tg.expand(); tg.setHeaderColor('#FFFFFF'); }
+  <!-- Stats -->
+  <div class="stats-4">
+    <div class="stat-box" style="--sb-glow:rgba(16,185,129,.16);--sb-accent:var(--neon)" onclick="showPage('withdraw')">
+      <div class="stat-top-row">
+        <div class="stat-icon" style="background:rgba(16,185,129,.14)"><svg viewBox="0 0 24 24" style="fill:var(--green)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/></svg></div>
+        <div class="stat-change" id="stEarnSub">↑ Today</div>
+      </div>
+      <div class="stat-info"><b id="stEarn">0 ETB</b><span>Total Earnings</span></div>
+      <div class="stat-spark"></div>
+    </div>
+    <div class="stat-box" style="--sb-glow:rgba(239,68,68,.16);--sb-accent:#ff6b6b" onclick="showPage('ads')">
+      <div class="stat-top-row">
+        <div class="stat-icon" style="background:rgba(239,68,68,.14)"><svg viewBox="0 0 24 24" style="fill:var(--red)"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg></div>
+        <div class="stat-change">↑ Total</div>
+      </div>
+      <div class="stat-info"><b id="stAds">0</b><span>Ads Watched</span></div>
+      <div class="stat-spark"></div>
+    </div>
+    <div class="stat-box" style="--sb-glow:rgba(139,92,246,.16);--sb-accent:#a78bfa" onclick="showPage('invite')">
+      <div class="stat-top-row">
+        <div class="stat-icon" style="background:rgba(139,92,246,.14)"><svg viewBox="0 0 24 24" style="fill:var(--purple)"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+        <div class="stat-change">+<span id="stRefBonus">0</span> ETB</div>
+      </div>
+      <div class="stat-info"><b id="stRefs">0</b><span>Referrals</span></div>
+      <div class="stat-spark"></div>
+    </div>
+    <div class="stat-box" style="--sb-glow:rgba(255,198,26,.16);--sb-accent:var(--gold)" onclick="showPage('earn')">
+      <div class="stat-top-row">
+        <div class="stat-icon" style="background:rgba(255,198,26,.12)"><svg viewBox="0 0 24 24" style="fill:var(--gold)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>
+        <div class="stat-change">Points</div>
+      </div>
+      <div class="stat-info"><b id="stSC">0 SC</b><span>Swap Coins</span></div>
+      <div class="stat-spark"></div>
+    </div>
+  </div>
 
-    // Initialize Adsgram SDK with your Block ID
-    // ⚠️ Replace 'YOUR_ADSGRAM_BLOCK_ID' with your actual Adsgram Block Controller ID
-    const AdsgramController = window.Adsgram?.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" });
+  <!-- Badges / Achievements -->
+  <div class="badges-card">
+    <div class="badges-head">
+      <h3>🏅 Achievements</h3>
+      <span class="badges-count" id="badgesCount">0/10</span>
+    </div>
+    <div class="badges-row" id="badgesRow"></div>
+  </div>
 
-    let usdRate = 125.00;
-    let currentLang = 'en';
+  <!-- Banner -->
+  <div class="banner-wrap" id="bannerSlider">
+    <img src="https://i.postimg.cc/VLr7YSHL/20260809-161005.jpg" class="active" alt="">
+    <img src="https://i.postimg.cc/nLZTY3VT/20260809-161044.jpg" alt="">
+    <img src="https://i.postimg.cc/rmZJTc15/20260809-161113.jpg" alt="">
+    <img src="https://i.postimg.cc/T1ycYSQp/20260809-161154.jpg" alt="">
+    <img src="https://i.postimg.cc/QtCQ0P2x/20260809-161227.jpg" alt="">
+    <img src="https://i.postimg.cc/PfLcqFCP/20260809-161327.jpg" alt="">
+    <img src="https://i.postimg.cc/9FZndRtz/20260809-161351.jpg" alt="">
+    <div class="b-dots" id="bDots"></div>
+  </div>
 
-    const i18n = {
-      en: {
-        total_balance: "Total Wallet Balance",
-        deposit: "Deposit", withdraw: "Withdraw", swap: "Swap", earn: "Earn",
-        featured_ad: "Featured Adsgram Task", crypto_market: "Live Crypto Market",
-        swap_title: "Currency Exchange", confirm_swap: "Confirm Swap",
-        ptc_title: "Adsgram & PTC Monetization", withdraw_options: "Withdrawal Options",
-        withdraw_btn: "Request Withdrawal", nav_home: "Home", nav_swap: "Swap", nav_earn: "Earn", nav_wallet: "Wallet"
-      },
-      am: {
-        total_balance: "ጠቅላላ የኪስ ቦርሳ የሂሳብ መጠን",
-        deposit: "አስገባ", withdraw: "ወደ ውጭ አውጣ", swap: "ቀይር", earn: "ስራ",
-        featured_ad: "የAdsgram ልዩ ማስታወቂያ", crypto_market: "የቀጥታ ክሪፕቶ ገበያ",
-        swap_title: "የምንዛሬ መቀየሪያ", confirm_swap: "ምንዛሬውን ፈጽም",
-        ptc_title: "ማስታወቂያ አይተው የሚያገኙበት", withdraw_options: "የገንዘብ ማውጫ አማራጮች",
-        withdraw_btn: "ገንዘብ ለማውጣት ጠይቅ", nav_home: "መነሻ", nav_swap: "ቀይር", nav_earn: "ስራ", nav_wallet: "ቦርሳ"
+  <!-- Tasks Grid (Home) -->
+  <div class="sh"><h3>📋 Tasks</h3><a onclick="showPage('earn')">ሁሉም →</a></div>
+  <div class="tasks-grid" id="homeTasksGrid"></div>
+
+  <!-- Invite Banner -->
+  <div class="invite-banner">
+    <img class="invite-gift" src="https://i.postimg.cc/cJwy699g/20260809-161701.png" alt="gift">
+    <div class="invite-info">
+      <h3>Invite &amp; Earn More!</h3>
+      <p>ጓደኛ ሲጋብዙ <span style="color:var(--gold);font-weight:800">50 ETB</span> ቦነስ!</p>
+      <button class="btn btn-gold" style="padding:7px 16px;font-size:11px" onclick="showPage('invite')">Invite Now</button>
+    </div>
+    <div class="invite-pct">10%<small>bonus</small></div>
+  </div>
+
+  <!-- Live Withdrawal -->
+  <div class="sh"><h3>💸 Live Withdrawals</h3><span style="font-size:9px;background:rgba(16,185,129,.15);color:var(--green);padding:2px 7px;border-radius:8px;font-weight:800">● LIVE</span></div>
+  <div id="liveFeed"></div>
+
+</section>
+
+<!-- ════════════════════════
+     EARN PAGE
+════════════════════════ -->
+<section class="page" id="page-earn">
+
+  <div class="earn-hero">
+    <img src="https://i.postimg.cc/cJwy699g/20260809-161701.png" alt="earn">
+    <h2>Earn &amp; Get Rewards ✨</h2>
+    <p>ማስታወቂያ ያዩ፣ Tasks ያጠናቅቁ — ዕለታዊ ሽልማት ያግኙ!</p>
+  </div>
+
+  <!-- Games -->
+  <div class="sh"><h3>🎮 Mini Games</h3><div style="font-size:9px;background:rgba(255,198,26,.1);border:1px solid rgba(255,198,26,.25);border-radius:8px;padding:2px 8px;color:var(--gold);font-weight:800">SC ያስገኛሉ</div></div>
+  <div class="games-grid">
+    <div class="game-card" onclick="openGame('spin')" style="background:linear-gradient(145deg,#1a1008,#111520)">
+      <img class="game-card-img" src="https://i.postimg.cc/RZj4tTzf/20260805-175624.png" alt="Spin">
+      <div class="game-card-name">Spin Wheel</div>
+      <div class="game-card-sub">Spin &amp; Win SC</div>
+      <button class="game-card-btn">Spin Now</button>
+    </div>
+    <div class="game-card" onclick="openGame('scratch')" style="background:linear-gradient(145deg,#0e1520,#111520)">
+      <img class="game-card-img" src="https://i.postimg.cc/LX97gqhV/20260805-175646.png" alt="Scratch">
+      <div class="game-card-name">Scratch Card</div>
+      <div class="game-card-sub">Win Big SC</div>
+      <button class="game-card-btn">Scratch</button>
+    </div>
+    <div class="game-card" onclick="openGame('coin')" style="background:linear-gradient(145deg,#0e1808,#111520)">
+      <img class="game-card-img" src="https://i.postimg.cc/zvWP9TQf/20260805-175704.png" alt="Coin">
+      <div class="game-card-name">Coin Flip</div>
+      <div class="game-card-sub">Flip &amp; Earn SC</div>
+      <button class="game-card-btn">Flip Now</button>
+    </div>
+    <div class="game-card" onclick="openGame('guess')" style="background:linear-gradient(145deg,#12081a,#111520)">
+      <img class="game-card-img" src="https://i.postimg.cc/rsCN1jbr/20260805-175722.png" alt="Guess">
+      <div class="game-card-name">Number Guess</div>
+      <div class="game-card-sub">Guess &amp; Win SC</div>
+      <button class="game-card-btn">Play Now</button>
+    </div>
+  </div>
+
+  <!-- Daily Streak -->
+  <div class="streak-card">
+    <div class="streak-top">
+      <span style="font-size:20px">🔥</span>
+      <div><h4>Daily Streak</h4><p>ዕለታዊ ቦነስ ያግኙ!</p></div>
+      <div style="margin-left:auto;font-size:11px;font-weight:800;color:var(--gold)" id="earnStreakCount">0🔥</div>
+    </div>
+    <div class="streak-days" id="streakDaysEl"></div>
+    <button class="btn btn-gold btn-block" id="streakClaimBtn" style="margin-top:8px" onclick="claimStreakReward()">ይቀበሉ</button>
+  </div>
+
+  <!-- Tasks Grid -->
+  <div class="sh"><h3>📋 Tasks</h3>
+    <span style="font-size:9px;background:rgba(16,185,129,.12);color:var(--green);padding:2px 8px;border-radius:8px;font-weight:800">Daily</span>
+  </div>
+  <div class="earn-grid" id="earnTaskGrid"></div>
+
+  <!-- Ads Grid -->
+  <div class="sh">
+    <h3>📺 Watch Ads &amp; Earn</h3>
+    <span style="font-size:9px;background:rgba(239,68,68,.15);color:var(--red);padding:2px 6px;border-radius:8px;font-weight:800">HOT</span>
+  </div>
+  <p style="font-size:10px;color:var(--muted);margin-bottom:8px;font-weight:600">17 ሰከንድ ያዩ — 50 ETB ወደ ሂሳብዎ ይገባል</p>
+  <div class="earn-grid" id="earnAdGrid"></div>
+
+</section>
+
+<!-- ════════════════════════
+     WATCH ADS PAGE (NEW MIDDLE TAB)
+════════════════════════ -->
+<section class="page" id="page-ads">
+  <div class="ads-hero">
+    <div class="ads-hero-icon">📺</div>
+    <h2>Watch Ads &amp; Earn Money</h2>
+    <p>"ሙሉ ማስታወቂያ በማየት ገንዘብዎን ይስሩ!"</p>
+  </div>
+
+  <!-- 200,000 ETB Prediction Prize Pool Banner -->
+  <div class="prize-banner" onclick="openGame('predict')">
+    <img src="https://i.postimg.cc/D0xgjfWM/20260813-164722.jpg" alt="banner">
+    <div class="prize-content">
+      <div>
+        <div class="prize-label"><span class="dot"></span>PRIZE POOL</div>
+        <div class="prize-amount">200,000 <span>ETB</span></div>
+      </div>
+      <button class="btn btn-gold prize-btn" onclick="openGame('predict')">Predict &gt;</button>
+    </div>
+  </div>
+
+  <!-- Video Tutorial Guide -->
+  <div class="card video-card">
+    <div class="card-title">▶️ ብር እንዴት እንደሚያገኙ ለማየት</div>
+    <div class="video-row">
+      <div class="video-thumb">
+        <iframe src="https://www.youtube.com/embed/WgRzYGYDDOs" title="Tutorial Video" allowfullscreen></iframe>
+      </div>
+      <div class="video-text">
+        <strong>አሰራሩን ይረዱ!</strong>
+        ቪዲዮውን በመመልከት እንዴት ማስታወቂያ አይተው ብር ማሰብሰብ እንደሚችሉ ይወቁ።
+      </div>
+    </div>
+  </div>
+
+  <!-- Unlimited Ads Grid -->
+  <div class="sh">
+    <h3>📺 Unlimited Ads Grid</h3>
+    <span class="hot-badge">HOT</span>
+  </div>
+  <p class="ads-grid-label">17 ሰከንድ ያዩ — ገንዘብ ወደ ሂሳብዎ ይገባል (ከ 91 በኋላ በ 10 ETB)</p>
+  <div class="earn-grid" id="mainAdGrid"></div>
+
+  <!-- Coming Soon Ad Networks -->
+  <div class="soon-card">
+    <div class="soon-head">
+      <h3>🚀 New Ad Networks</h3>
+      <span class="soon-badge">COMING SOON</span>
+    </div>
+    <div class="soon-grid">
+      <div class="soon-item">
+        <span class="soon-item-lock">🔒 Soon</span>
+        <div class="soon-item-icon">🎥</div>
+        <div class="soon-item-name">AdSense Video</div>
+        <div class="soon-item-desc">ከፍተኛ ክፍያ ያለው ቪዲዮ ማስታወቂያ</div>
+      </div>
+      <div class="soon-item">
+        <span class="soon-item-lock">🔒 Soon</span>
+        <div class="soon-item-icon">🎮</div>
+        <div class="soon-item-name">Playable Ads</div>
+        <div class="soon-item-desc">ጨዋታ ተጫውተው ተጨማሪ ያግኙ</div>
+      </div>
+      <div class="soon-item">
+        <span class="soon-item-lock">🔒 Soon</span>
+        <div class="soon-item-icon">📋</div>
+        <div class="soon-item-name">Offerwall</div>
+        <div class="soon-item-desc">Survey እና Sign-up ስራዎች</div>
+      </div>
+      <div class="soon-item">
+        <span class="soon-item-lock">🔒 Soon</span>
+        <div class="soon-item-icon">💎</div>
+        <div class="soon-item-name">Premium Zone</div>
+        <div class="soon-item-desc">2x ክፍያ ያለው VIP ማስታወቂያ</div>
+      </div>
+    </div>
+    <button class="soon-notify-btn" onclick="notifyMeAdNetworks()">🔔 ሲከፈት አሳውቀኝ</button>
+  </div>
+</section>
+
+<!-- ════════════════════════
+     REFERRAL PAGE
+════════════════════════ -->
+<section class="page" id="page-invite">
+  <div class="ref-hero">
+    <div class="ref-hero-badge">🎯 REFERRAL PROGRAM</div>
+
+    <div class="ref-ring-wrap">
+      <svg viewBox="0 0 120 120">
+        <defs>
+          <linearGradient id="refRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#a78bfa"/>
+            <stop offset="100%" stop-color="#FFD700"/>
+          </linearGradient>
+        </defs>
+        <circle class="ref-ring-bg" cx="60" cy="60" r="54"/>
+        <circle class="ref-ring-fill" id="refRingFill" cx="60" cy="60" r="54"/>
+      </svg>
+      <div class="ref-ring-center">
+        <img src="https://i.postimg.cc/cJwy699g/20260809-161701.png" alt="gift">
+        <div class="ref-ring-count"><b id="refProgText">0/10</b></div>
+      </div>
+    </div>
+
+    <h2>500 ETB</h2>
+    <p>10 ሰው ሲጋብዙ Milestone Bonus! · አንድ ሰው ሲጋብዙ <strong style="color:var(--gold)">50 ETB</strong> ወዲያውኑ</p>
+
+    <div class="ref-hero-progrow"><span style="color:var(--muted)">Progress to next milestone</span><span style="color:#a78bfa" id="refProgTextDup">0/10</span></div>
+    <div class="ref-prog-bg"><div class="ref-prog-fill" id="refProgFill" style="width:0%"></div></div>
+  </div>
+
+  <div class="ref-stats">
+    <div class="ref-stat"><b id="refCount">0</b><span>Referrals</span></div>
+    <div class="ref-stat"><b id="refEarned">0</b><span>ETB Earned</span></div>
+    <div class="ref-stat"><b>50 ETB</b><span>Per Invite</span></div>
+  </div>
+
+  <div class="ref-link-box">
+    <div class="ref-link-title">🔗 ልዩ የግብዣ ሊንክዎ</div>
+    <div class="ref-link-row">
+      <input class="ref-link-inp" id="refLinkInp" readonly>
+      <button class="ref-link-copybtn" onclick="copyRefLink()">
+        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+      </button>
+    </div>
+    <div class="ref-link-title">📤 Share via</div>
+    <div class="share-grid">
+      <div class="share-btn" onclick="shareSocial('telegram')">
+        <img src="https://static.vecteezy.com/system/resources/previews/023/986/562/non_2x/telegram-logo-telegram-logo-transparent-telegram-icon-transparent-free-free-png.png" alt="Telegram">
+        <span>Telegram</span>
+      </div>
+      <div class="share-btn" onclick="shareSocial('whatsapp')">
+        <img src="https://static.vecteezy.com/system/resources/previews/022/493/583/non_2x/3d-render-whatsapp-logo-icon-with-new-notification-isolated-on-transparent-background-free-png.png" alt="WhatsApp">
+        <span>WhatsApp</span>
+      </div>
+      <div class="share-btn" onclick="shareSocial('facebook')">
+        <img src="https://marketplace.canva.com/KrzKM/MAGzNqKrzKM/1/tl/canva-facebook-logo-MAGzNqKrzKM.png" alt="Facebook">
+        <span>Facebook</span>
+      </div>
+      <div class="share-btn" onclick="shareSocial('messenger')">
+        <img src="https://static.vecteezy.com/system/resources/previews/021/495/995/non_2x/messenger-social-media-logo-icon-free-png.png" alt="Messenger">
+        <span>Messenger</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sh"><h3>🧭 How it Works</h3></div>
+  <div class="how-card">
+    <div class="how-step"><div class="how-num">1</div><div class="how-text"><h5>ሊንክ ያጋሩ</h5><p>ልዩ የግብዣ ሊንክዎን ከጓደኞችዎ ጋር ያጋሩ</p></div></div>
+    <div class="how-step"><div class="how-num">2</div><div class="how-text"><h5>ጓደኛዎ ይቀላቀሉ</h5><p>ጓደኛዎ Swap Money ያዎርዱ &amp; ይቀላቀሉ</p></div></div>
+    <div class="how-step"><div class="how-num">3</div><div class="how-text"><h5>ቦነስ ያግኙ</h5><p>ወዲያውኑ 50 ETB ወደ ሂሳብዎ ይገባል</p></div></div>
+    <div class="how-step"><div class="how-num">4</div><div class="how-text"><h5>500 ETB Milestone!</h5><p>10 ሰው ሲሞላ ልዩ 500 ETB bonus ያኛሉ</p></div></div>
+  </div>
+</section>
+
+<!-- ════════════════════════
+     WITHDRAW PAGE
+════════════════════════ -->
+<section class="page" id="page-withdraw">
+  <div class="wd-hero">
+    <div class="wd-hero-label"><span class="dot"></span>ጠቅላላ ቀሪ ሂሳብ</div>
+    <div class="wd-hero-amt">
+      <span id="wdBalDisplay">0</span><span class="wd-hero-cur">ETB</span>
+    </div>
+    <div class="wd-hero-min">አነስተኛ የማውጫ መጠን: <b>2,500 ETB</b></div>
+  </div>
+
+  <div class="wd-method-label">🏦 Bank / Provider ይምረጡ</div>
+  <div class="method-grid" id="methodGrid">
+    <div class="method-btn sel" id="mb_tele" onclick="selMethod('Telebirr',this)">
+      <img src="https://i.postimg.cc/1zH5wqRj/20260805-174415.png" alt="Telebirr"><span>Telebirr</span>
+    </div>
+    <div class="method-btn" id="mb_cbe" onclick="selMethod('CBE Bank',this)">
+      <img src="https://i.postimg.cc/Hk1pN2VS/20260805-174301.png" alt="CBE"><span>CBE Bank</span>
+    </div>
+    <div class="method-btn" id="mb_awash" onclick="selMethod('Awash Bank',this)">
+      <img src="https://i.postimg.cc/NMntk7hh/20260805-174324.png" alt="Awash"><span>Awash</span>
+    </div>
+    <div class="method-btn" id="mb_aby" onclick="selMethod('Abyssinia',this)">
+      <img src="https://i.postimg.cc/BbCdwxk4/20260805-174346.png" alt="Abyssinia"><span>Abyssinia</span>
+    </div>
+    <div class="method-btn" id="mb_ethio" onclick="selMethod('Ethio Telecom',this)">
+      <img src="https://i.postimg.cc/8kHyrPVY/20260805-181423.png" alt="Ethio"><span>Ethio Telecom</span>
+    </div>
+    <div class="method-btn" id="mb_safari" onclick="selMethod('Safaricom',this)">
+      <img src="https://i.postimg.cc/kgDhCrzw/20260805-181354.png" alt="Safaricom"><span>Safaricom</span>
+    </div>
+  </div>
+
+  <div class="wd-form">
+    <div class="wd-form-title">📝 የማውጫ ዝርዝር</div>
+    <div class="min-notice">⚠️ አነስተኛ የማውጫ መጠን: 2,500 ETB</div>
+
+    <div class="wd-field">
+      <label class="form-label" id="wdAcctLabel">የስልክ ቁጥር (Telebirr)</label>
+      <input class="form-input" id="wdAcct" placeholder="09... ወይም 07...">
+    </div>
+
+    <div class="wd-field wd-amt-field">
+      <label class="form-label">Amount (ETB)</label>
+      <span class="wd-amt-currency">ETB</span>
+      <input class="form-input" id="wdAmt" type="number" placeholder="2500+" min="2500">
+    </div>
+
+    <div class="wd-quick-row">
+      <button type="button" class="wd-quick-btn" onclick="setWdAmount(2500)">2,500</button>
+      <button type="button" class="wd-quick-btn" onclick="setWdAmount(5000)">5,000</button>
+      <button type="button" class="wd-quick-btn" onclick="setWdAmount(10000)">10,000</button>
+      <button type="button" class="wd-quick-btn" onclick="setWdAmount('max')">MAX</button>
+    </div>
+
+    <div class="wd-task-notice" id="wdTaskNotice"></div>
+    <button class="wd-btn" id="wdBtn" onclick="submitWithdraw()">💸 Confirm Withdrawal</button>
+    <div class="wd-secure-note">🔒 የተጠበቀ ግብይት · በ24 ሰዓት ውስጥ ይላካል</div>
+  </div>
+</section>
+</div>
+
+<!-- ── BOTTOM NAVIGATION (5 TABS) ── -->
+<nav class="bnav">
+  <button class="ni active" data-p="home" onclick="showPage('home')">
+    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Home
+  </button>
+  <button class="ni" data-p="earn" onclick="showPage('earn')">
+    <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>Earn
+  </button>
+  <button class="ni" data-p="ads" onclick="showPage('ads')">
+    <svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zM8 8l8 4-8 4V8z"/></svg>Watch Ads
+  </button>
+  <button class="ni" data-p="invite" onclick="showPage('invite')">
+    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Referral
+  </button>
+  <button class="ni" data-p="withdraw" onclick="showPage('withdraw')">
+    <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8z"/></svg>Withdraw
+  </button>
+</nav>
+<div id="toast"></div>
+
+<script>
+window.addEventListener('error', function(e){
+  console.error('[Swap Money FATAL]', e.message, 'at line', e.lineno, 'col', e.colno, e.error?.stack);
+});
+/* ═══════════════ CONFIG ═══════════════ */
+const SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbxDii62Bjz7KNxIFY9deeDDxnjNx1ifHu93GRxkhmpC9srZ_ZFSAtQgttQYh8o1pXmIgQ/exec';
+const BOT_USERNAME = 'Swapmoney_bot';
+const WELCOME_ETB  = 50;
+const REF_BONUS    = 50;
+const MIN_WD       = 2500;
+
+/* ── Ad reward tiers (Ads >91 pay 10 ETB continuously) ── */
+const AD_TIERS = [
+  {upTo:6,  reward:50},
+  {upTo:26, reward:30},
+  {upTo:41, reward:20},
+  {upTo:91, reward:10},
+];
+function getAdReward(adsWatchedSoFar){
+  const adNumber = adsWatchedSoFar + 1;
+  for(const tier of AD_TIERS){
+    if(adNumber <= tier.upTo) return tier.reward;
+  }
+  return 10;
+}
+function isUnlimitedAdSlot(adsWatchedSoFar){
+  return (adsWatchedSoFar + 1) > 91;
+}
+const TG_CHANNEL1  = 'https://t.me/SwapMoney_ETH';
+const TG_CHANNEL2  = 'https://t.me/swapmoneybirr';
+const TG_BOT       = 'https://t.me/Swapmoney_bot';
+const YT_SUB       = 'https://www.youtube.com/@swapmoneyeth';
+const YT_SUB2      = 'https://www.youtube.com/@ethioonlinework1';
+
+/* Game & Predict URLs (GitHub Pages) */
+const GAME_URLS = {
+  spin:    'https://aymenkemal189.github.io/Spin-wheel/',
+  scratch: 'https://aymenkemal189.github.io/Scrach-card/',
+  coin:    'https://aymenkemal189.github.io/Coin-flip/',
+  guess:   'https://aymenkemal189.github.io/Number-guss/',
+  predict: 'https://aymenkemal189.github.io/Swap-money-sample/',
+};
+const GAME_TITLES = {
+  spin:'🌀 Spin Wheel', scratch:'🎟 Scratch Card',
+  coin:'🪙 Coin Flip',  guess:'🔢 Number Guess',
+  predict:'🎯 Predict & Win 200,000 ETB',
+};
+
+/* ═══════════════ TELEGRAM INIT ═══════════════ */
+const tg = window.Telegram?.WebApp || null;
+let tgUser = null, referrerId = 'None';
+if(tg){
+  tg.ready(); tg.expand();
+  try{ if(typeof tg.disableVerticalSwipes === 'function') tg.disableVerticalSwipes(); }catch(e){}
+  try{ if(typeof tg.requestFullscreen === 'function') tg.requestFullscreen(); }catch(e){}
+  try{ if(typeof tg.setHeaderColor === 'function') tg.setHeaderColor('#07080d'); }catch(e){}
+  try{ if(typeof tg.setBackgroundColor === 'function') tg.setBackgroundColor('#07080d'); }catch(e){}
+  tgUser = tg.initDataUnsafe?.user || null;
+  const sp = tg.initDataUnsafe?.start_param || '';
+  if(sp.startsWith('ref_')) referrerId = sp.replace('ref_','');
+  if(tgUser){
+    document.getElementById('hdrAv').textContent = (tgUser.first_name||'U')[0].toUpperCase();
+    document.getElementById('hdrWelcome').textContent = `Welcome Back, ${tgUser.first_name} 👋🔥`;
+    document.getElementById('hdrUser').textContent = `@${tgUser.username||tgUser.first_name}`;
+    document.getElementById('refLinkInp').value = `https://t.me/${BOT_USERNAME}/swapmoney?startapp=ref_${tgUser.id}`;
+  }
+}
+
+/* ═══════════════ STATE ═══════════════ */
+const KEY = tgUser ? `sm_v3_${tgUser.id}` : 'sm_v3_guest';
+function loadState(){
+  const d = {
+    balance:0, swapCoins:0, adsWatched:0,
+    completedTasks:[], referrals:[], totalRefs:0,
+    isWdTaskActive:false, hasWelcomed:false,
+    selectedMethod:'Telebirr', streakDays:0,
+    lastLoginDate:'', streakClaimedFor:'',
+    crateKeys:1, adsSinceKey:0, lastFreeCrateDate:'', crateOpenCount:0,
+  };
+  try{ return Object.assign(d, JSON.parse(localStorage.getItem(KEY)||'{}')); }
+  catch(e){ return d; }
+}
+function saveState(){ localStorage.setItem(KEY, JSON.stringify(S)); }
+let S = loadState();
+
+/* ═══════════════ LEVEL ═══════════════ */
+function getLevel(bal){
+  if(bal>=50000)return{n:10,label:'Level 10'};
+  if(bal>=20000)return{n:9,label:'Level 9'};
+  if(bal>=10000)return{n:8,label:'Level 8'};
+  if(bal>=7000)return{n:7,label:'Level 7'};
+  if(bal>=5000)return{n:6,label:'Level 6'};
+  if(bal>=3000)return{n:5,label:'Level 5'};
+  if(bal>=2000)return{n:4,label:'Level 4'};
+  if(bal>=1000)return{n:3,label:'Level 3'};
+  if(bal>=500)return{n:2,label:'Level 2'};
+  return{n:1,label:'Level 1'};
+}
+
+/* ═══════════════ STREAK ═══════════════ */
+function dateKey(d){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function checkAndUpdateStreak(){
+  const todayKey = dateKey(new Date());
+
+  if(!S.lastLoginDate){
+    S.streakDays = 1;
+    S.lastLoginDate = todayKey;
+    saveState();
+    return;
+  }
+
+  if(S.lastLoginDate === todayKey){
+    if(!S.streakDays || S.streakDays < 1) S.streakDays = 1;
+    return;
+  }
+
+  const yesterdayKey = dateKey(new Date(Date.now() - 86400000));
+
+  if(S.lastLoginDate === yesterdayKey){
+    S.streakDays = (Number(S.streakDays) || 0) + 1;
+  } else {
+    S.streakDays = 1;
+  }
+
+  S.lastLoginDate = todayKey;
+  saveState();
+}
+checkAndUpdateStreak();
+
+/* ═══════════════ TOAST ═══════════════ */
+let _tt;
+function toast(msg){
+  const el=document.getElementById('toast');
+  if(!el) return;
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),2700);
+}
+
+/* ═══════════════ GREEN SUCCESS GLOW ═══════════════ */
+function pulseSuccessGlow(){
+  const hero = document.querySelector('.hero-wallet');
+  if(!hero) return;
+  hero.classList.remove('success-pulse');
+  void hero.offsetWidth;
+  hero.classList.add('success-pulse');
+  setTimeout(()=>hero.classList.remove('success-pulse'), 1400);
+}
+function glowElement(el){
+  if(!el) return;
+  el.classList.remove('glow-success');
+  void el.offsetWidth;
+  el.classList.add('glow-success');
+  setTimeout(()=>el.classList.remove('glow-success'), 1200);
+}
+
+/* ═══════════════ NUMBER ROLL-UP ANIMATION ═══════════════ */
+const _rollState = {};
+function rollUpNumber(id, targetVal, opts){
+  opts = opts || {};
+  const el = document.getElementById(id);
+  if(!el) return;
+  const decimals = opts.decimals || 0;
+  const suffix = opts.suffix || '';
+  const from = (_rollState[id] !== undefined) ? _rollState[id] : targetVal;
+  _rollState[id] = targetVal;
+
+  if(from === targetVal){
+    el.textContent = decimals ? targetVal.toFixed(decimals) + suffix : Math.round(targetVal).toLocaleString() + suffix;
+    return;
+  }
+  const duration = 650;
+  const startTime = performance.now();
+  const increased = targetVal > from;
+
+  function frame(now){
+    const t = Math.min(1, (now - startTime) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const current = from + (targetVal - from) * eased;
+    el.textContent = decimals ? current.toFixed(decimals) + suffix : Math.round(current).toLocaleString() + suffix;
+    if(t < 1){
+      requestAnimationFrame(frame);
+    } else {
+      el.textContent = decimals ? targetVal.toFixed(decimals) + suffix : Math.round(targetVal).toLocaleString() + suffix;
+      if(increased){
+        el.classList.add('text-flash-green');
+        setTimeout(()=>el.classList.remove('text-flash-green'), 500);
+        pulseSuccessGlow();
       }
-    };
-
-    // Show Adsgram Rewarded Video Ad
-    function showAdsgramAd() {
-      if (AdsgramController) {
-        AdsgramController.show().then((result) => {
-          // User watched the ad completely
-          alert("Ad completed! +12.50 ETB Added to your balance.");
-        }).catch((result) => {
-          // Ad skipped or failed to load
-          alert("Ad was skipped or failed to load. Try again.");
-        });
-      } else {
-        alert("Adsgram SDK setup mode: Please replace 'YOUR_ADSGRAM_BLOCK_ID' in code.");
-      }
     }
+  }
+  requestAnimationFrame(frame);
+}
 
-    // Live Crypto Market Fetch (Free CoinGecko API)
-    async function getCryptoData() {
-      const container = document.getElementById('cryptoList');
-      try {
-        const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,solana,tether,the-open-network&order=market_cap_desc');
-        const data = await res.json();
-        
-        container.innerHTML = '';
-        data.forEach(coin => {
-          container.innerHTML += `
-            <div class="crypto-item">
-              <div class="crypto-info">
-                <img src="${coin.image}" class="crypto-icon" alt="${coin.name}">
-                <div>
-                  <div style="font-size:13px; font-weight:700;">${coin.name}</div>
-                  <div style="font-size:10px; color:var(--text-muted);">${coin.symbol.toUpperCase()}</div>
-                </div>
-              </div>
-              <div style="text-align:right;">
-                <div style="font-size:13px; font-weight:700;">$${coin.current_price.toLocaleString()}</div>
-                <div style="font-size:10px; color:${coin.price_change_percentage_24h >= 0 ? 'var(--success-green)' : '#FF3B5C'};">
-                  ${coin.price_change_percentage_24h >= 0 ? '+' : ''}${coin.price_change_percentage_24h.toFixed(2)}%
-                </div>
-              </div>
-            </div>
-          `;
-        });
-      } catch (e) {
-        container.innerHTML = `<div style="font-size:11px; color:var(--text-muted);">Failed to load live prices.</div>`;
-      }
+/* ═══════════════ WHAT'S NEW POPUP ═══════════════ */
+const WN_VERSION = 'v3_green_glow_2026';
+function maybeShowWhatsNew(){
+  try{
+    const seen = localStorage.getItem('sm_wn_seen');
+    if(seen === WN_VERSION) return;
+    const ov = document.getElementById('wnOverlay');
+    if(ov) ov.classList.add('active');
+  }catch(e){}
+}
+function closeWhatsNew(){
+  try{ localStorage.setItem('sm_wn_seen', WN_VERSION); }catch(e){}
+  const ov = document.getElementById('wnOverlay');
+  if(ov) ov.classList.remove('active');
+}
+
+/* ═══════════════ TOP-UP / WELCOME BONUS MODAL ═══════════════ */
+const TU_COLORS = ['#FFD700','#FFA500','#39FF88','#ffffff','#B8860B'];
+function spawnConfetti(){
+  const wrap = document.getElementById('tuConfetti');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  const count = 26;
+  for(let i=0;i<count;i++){
+    const p = document.createElement('div');
+    p.className = 'tu-piece';
+    p.style.left = (Math.random()*100) + '%';
+    p.style.background = TU_COLORS[Math.floor(Math.random()*TU_COLORS.length)];
+    p.style.animationDuration = (1.4 + Math.random()*1.2) + 's';
+    p.style.animationDelay = (Math.random()*0.4) + 's';
+    p.style.width = p.style.height = (5 + Math.random()*4) + 'px';
+    wrap.appendChild(p);
+  }
+}
+function showTopUpBonus(amount){
+  const ov = document.getElementById('tuOverlay');
+  if(!ov) return;
+  setText('tuAmount', amount);
+  spawnConfetti();
+  ov.classList.add('active');
+  if(tg?.HapticFeedback){ try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){} }
+}
+function closeTopUpBonus(){
+  const ov = document.getElementById('tuOverlay');
+  if(ov) ov.classList.remove('active');
+}
+
+/* ═══════════════ 🎁 AIRDROP CRATE GAME ═══════════════ */
+const CRATE_TIERS = [
+  {id:'common',    emoji:'⚪', label:'Common',    chance:60, type:'sc',  min:5,  max:15,  color:'#c9ccd6'},
+  {id:'uncommon',  emoji:'🟢', label:'Uncommon',  chance:25, type:'sc',  min:20, max:50,  color:'#39FF88'},
+  {id:'rare',      emoji:'🟣', label:'Rare',      chance:10, type:'etb', min:50, max:150, color:'#a78bfa'},
+  {id:'legendary', emoji:'🟡', label:'Legendary', chance:5,  type:'etb', min:200,max:500, color:'#FFD700'},
+];
+const CRATE_HISTORY_NAMES = ['Ahmed','Bruk','Sara','Dawit','Makeda','Henok','Eyerus','Kaleb','Selam','Yonas'];
+let crateOpening = false;
+let currentCrateReward = null;
+
+function rollCrateTier(){
+  const r = Math.random()*100;
+  let acc = 0;
+  for(const t of CRATE_TIERS){
+    acc += t.chance;
+    if(r <= acc) return t;
+  }
+  return CRATE_TIERS[0];
+}
+
+function updateCrateCooldownNote(){
+  const el = document.getElementById('crateCooldownNote');
+  if(!el) return;
+  const today = dateKey(new Date());
+  const usedFree = S.lastFreeCrateDate === today;
+  const keys = S.crateKeys||0;
+  if(keys > 0){
+    el.textContent = `🔑 ${keys} key(s) አለዎት — ወዲያውኑ መክፈት ይችላሉ`;
+  } else if(!usedFree){
+    el.textContent = '🎁 ነጻ daily crate ዛሬ ይገኛል';
+  } else {
+    el.textContent = '⏳ ቀጣይ ነጻ crate ነገ ይገኛል፣ ወይም ማስታወቂያ በመመልከት key ያግኙ';
+  }
+}
+
+function openCrateModal(){
+  recordActivity();
+  const modal = document.getElementById('crateModal');
+  if(!modal) return;
+  resetCrateStage();
+  renderCrateHistory();
+  updateCrateCooldownNote();
+  modal.classList.add('open');
+  const fallWrap = document.getElementById('crateFallWrap');
+  if(fallWrap){
+    fallWrap.style.animation = 'none';
+    void fallWrap.offsetWidth;
+    fallWrap.style.animation = '';
+  }
+}
+function closeCrateModal(){
+  const modal = document.getElementById('crateModal');
+  if(modal) modal.classList.remove('open');
+  resetCrateStage();
+}
+function resetCrateStage(){
+  crateOpening = false;
+  currentCrateReward = null;
+  const box = document.getElementById('crateBox');
+  const reward = document.getElementById('crateRewardCard');
+  const hint = document.getElementById('crateTapHint');
+  const burst = document.getElementById('crateBurst');
+  const particles = document.getElementById('crateParticles');
+  if(box) box.classList.remove('opened');
+  if(reward) reward.classList.remove('show');
+  if(reward) reward.className = 'crate-reward';
+  if(hint) hint.style.display = '';
+  if(burst) burst.classList.remove('show');
+  if(particles) particles.innerHTML = '';
+}
+
+function tapOpenCrate(){
+  if(crateOpening) return;
+  const today = dateKey(new Date());
+  const usedFree = S.lastFreeCrateDate === today;
+  const hasKey = (S.crateKeys||0) > 0;
+
+  if(!hasKey && usedFree){
+    toast('🔒 ዛሬ ነጻ crate ተጠቅመዋል! Key ያግኙ ወይም ነገ ይመለሱ');
+    return;
+  }
+
+  crateOpening = true;
+  recordActivity();
+
+  if(hasKey){
+    S.crateKeys--;
+  } else {
+    S.lastFreeCrateDate = today;
+  }
+  saveState();
+  render();
+
+  const box = document.getElementById('crateBox');
+  const hint = document.getElementById('crateTapHint');
+  if(hint) hint.style.display = 'none';
+  if(box) box.classList.add('opened');
+  if(tg?.HapticFeedback){ try{ tg.HapticFeedback.impactOccurred('medium'); }catch(e){} }
+
+  setTimeout(()=>{
+    const tier = rollCrateTier();
+    currentCrateReward = tier;
+    revealCrateReward(tier);
+  }, 480);
+}
+
+function revealCrateReward(tier){
+  const burst = document.getElementById('crateBurst');
+  const particles = document.getElementById('crateParticles');
+  const rewardCard = document.getElementById('crateRewardCard');
+
+  if(burst){
+    burst.innerHTML = '<div class="crate-burst-ring"></div>';
+    const rayCount = 8;
+    for(let i=0;i<rayCount;i++){
+      const ray = document.createElement('div');
+      ray.className = 'crate-ray';
+      ray.style.transform = `rotate(${(360/rayCount)*i}deg)`;
+      ray.style.background = `linear-gradient(to top, transparent, ${tier.color}, transparent)`;
+      burst.appendChild(ray);
     }
+    burst.classList.remove('show');
+    void burst.offsetWidth;
+    burst.classList.add('show');
+  }
+  if(tg?.HapticFeedback){ try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){} }
 
-    function switchTab(tabId, el) {
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      
-      document.getElementById(tabId).classList.add('active');
-      if (el) el.classList.add('active');
+  if(particles){
+    particles.innerHTML = '';
+    const count = tier.id==='legendary' ? 34 : tier.id==='rare' ? 24 : tier.id==='uncommon' ? 16 : 10;
+    for(let i=0;i<count;i++){
+      const p = document.createElement('div');
+      p.className = 'crate-particle';
+      const angle = Math.random()*Math.PI*2;
+      const dist = 60 + Math.random()*90;
+      p.style.setProperty('--px', (Math.cos(angle)*dist)+'px');
+      p.style.setProperty('--py', (Math.sin(angle)*dist)+'px');
+      const size = 3 + Math.random()*5;
+      p.style.width = p.style.height = size+'px';
+      p.style.background = tier.color;
+      p.style.boxShadow = `0 0 6px ${tier.color}`;
+      p.style.animationDuration = (0.7+Math.random()*0.5)+'s';
+      p.style.animationDelay = (Math.random()*0.15)+'s';
+      particles.appendChild(p);
     }
+  }
 
-    function calculateSwap() {
-      const val = parseFloat(document.getElementById('exFromVal').value) || 0;
-      document.getElementById('exToVal').value = (val * usdRate).toFixed(2);
+  const amount = Math.floor(tier.min + Math.random()*(tier.max-tier.min));
+  const amtLabel = tier.type==='etb' ? `+${amount}` : `+${amount}`;
+  const unitLabel = tier.type==='etb' ? 'ETB Bonus' : 'Swap Coin';
+
+  setText('crateRewardTierLabel', `${tier.emoji} ${tier.label}`);
+  setText('crateRewardAmt', amtLabel);
+  setText('crateRewardLabel', unitLabel);
+
+  if(rewardCard){
+    rewardCard.className = `crate-reward tier-${tier.id}`;
+    setTimeout(()=>rewardCard.classList.add('show'), 260);
+  }
+
+  currentCrateReward = {tier, amount};
+}
+
+function claimCrateReward(){
+  if(!currentCrateReward) return;
+  const {tier, amount} = currentCrateReward;
+
+  if(tier.type === 'etb'){
+    S.balance = (S.balance||0) + amount;
+  } else {
+    S.swapCoins = (S.swapCoins||0) + amount;
+  }
+  S.crateOpenCount = (S.crateOpenCount||0) + 1;
+  pushCrateHistoryEntry(tier, amount, true);
+  markLocalMutation();
+  if(syncReady) syncToSheet(); else pendingSyncAfterInit = true;
+
+  toast(`${tier.emoji} ${tier.label} Crate! +${amount} ${tier.type==='etb'?'ETB':'SC'} ተጨምሯል 🎉`);
+  if(tg?.HapticFeedback){ try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){} }
+
+  closeCrateModal();
+  updateCrateCooldownNote();
+}
+
+function grantCrateKey(reason){
+  S.crateKeys = (S.crateKeys||0) + 1;
+  markLocalMutation();
+  toast(`🔑 አዲስ Crate Key አግኝተዋል! (${reason})`);
+}
+function trackAdForCrateKey(){
+  S.adsSinceKey = (S.adsSinceKey||0) + 1;
+  if(S.adsSinceKey >= 3){
+    S.adsSinceKey = 0;
+    grantCrateKey('3 ማስታወቂያ ተመልክተዋል');
+  } else {
+    saveState();
+  }
+}
+
+let crateHistoryLog = [];
+function pushCrateHistoryEntry(tier, amount, isMe){
+  const name = isMe ? 'እርስዎ' : CRATE_HISTORY_NAMES[~~(Math.random()*CRATE_HISTORY_NAMES.length)];
+  crateHistoryLog.unshift({name, tier, amount});
+  crateHistoryLog = crateHistoryLog.slice(0, 6);
+  renderCrateHistory();
+}
+function renderCrateHistory(){
+  const el = document.getElementById('crateHistory');
+  if(!el) return;
+  if(crateHistoryLog.length === 0){
+    const seedTiers = [CRATE_TIERS[1], CRATE_TIERS[0], CRATE_TIERS[2]];
+    seedTiers.forEach(t=>{
+      const amt = Math.floor(t.min + Math.random()*(t.max-t.min));
+      const name = CRATE_HISTORY_NAMES[~~(Math.random()*CRATE_HISTORY_NAMES.length)];
+      crateHistoryLog.push({name, tier:t, amount:amt});
+    });
+  }
+  el.innerHTML = crateHistoryLog.map(h=>{
+    return `<div class="crate-history-row">
+      <span class="crate-history-tag ch-${h.tier.id}">${h.tier.emoji}</span>
+      <span><b>${h.name}</b> ${h.tier.label} crate ከፍቷል — <b>+${h.amount} ETB</b></span>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════ LEVEL-UP CELEBRATION ═══════════════ */
+const LEVEL_PERKS = {
+  2:'ተጨማሪ 5% Ad Reward Boost',
+  3:'Crate ተጨማሪ Key Chance',
+  4:'ልዩ Badge Unlocked',
+  5:'VIP Task Priority',
+  6:'ከፍተኛ Referral Bonus',
+  7:'Exclusive Crate Skin',
+  8:'ፈጣን Withdrawal Priority',
+  9:'ልዩ VIP Support',
+  10:'👑 MAX LEVEL — ሁሉም Perks!',
+};
+let lastKnownLevel = null;
+function checkLevelUp(newLevelN){
+  if(lastKnownLevel === null){ lastKnownLevel = newLevelN; return; }
+  if(newLevelN > lastKnownLevel){
+    lastKnownLevel = newLevelN;
+    showLevelUp(newLevelN);
+  } else {
+    lastKnownLevel = newLevelN;
+  }
+}
+function showLevelUp(n){
+  const ov = document.getElementById('lvlOverlay');
+  if(!ov) return;
+  setText('lvlTitle', `Level ${n}`);
+  setText('lvlPerkText', LEVEL_PERKS[n] || 'አዲስ Perks ተከፍተዋል');
+  ov.classList.add('active');
+  if(tg?.HapticFeedback){ try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){} }
+}
+function closeLevelUp(){
+  const ov = document.getElementById('lvlOverlay');
+  if(ov) ov.classList.remove('active');
+}
+
+/* ═══════════════ ACHIEVEMENTS / BADGES ═══════════════ */
+const BADGES = [
+  {id:'first_ad',   icon:'📺', label:'1ኛ Ad',     check:s=>(s.adsWatched||0)>=1},
+  {id:'ads_25',     icon:'🎬', label:'25 Ads',     check:s=>(s.adsWatched||0)>=25},
+  {id:'ads_91',     icon:'🌟', label:'Max Ads',    check:s=>(s.adsWatched||0)>=91},
+  {id:'first_ref',  icon:'👥', label:'1ኛ Referral',check:s=>(s.totalRefs||0)>=1},
+  {id:'ref_10',     icon:'🎯', label:'10 Refs',    check:s=>(s.totalRefs||0)>=10},
+  {id:'streak_3',   icon:'🔥', label:'3-Day Streak',check:s=>(s.streakDays||0)>=3},
+  {id:'streak_7',   icon:'⚡', label:'7-Day Streak',check:s=>(s.streakDays||0)>=7},
+  {id:'crate_1',    icon:'🎁', label:'1ኛ Crate',   check:s=>(s.crateOpenCount||0)>=1},
+  {id:'earn_1000',  icon:'💰', label:'1000 ETB',   check:s=>(s.balance||0)>=1000},
+  {id:'level_5',    icon:'👑', label:'Level 5',    check:s=>getLevel(s.balance||0).n>=5},
+];
+let unlockedBadgesSeen = null;
+function computeUnlockedBadges(){
+  return BADGES.filter(b=>b.check(S));
+}
+function renderBadges(){
+  const row = document.getElementById('badgesRow');
+  if(!row) return;
+  const unlocked = computeUnlockedBadges();
+  const unlockedIds = new Set(unlocked.map(b=>b.id));
+  setText('badgesCount', `${unlocked.length}/${BADGES.length}`);
+  row.innerHTML = BADGES.map(b=>{
+    const isOn = unlockedIds.has(b.id);
+    return `<div class="badge-chip ${isOn?'unlocked':''}" title="${b.label}">
+      <div class="b-icon">${b.icon}</div>
+      <div class="b-lbl">${b.label}</div>
+    </div>`;
+  }).join('');
+
+  if(unlockedBadgesSeen === null){
+    unlockedBadgesSeen = unlockedIds;
+    return;
+  }
+  const newlyUnlocked = [...unlockedIds].filter(id=>!unlockedBadgesSeen.has(id));
+  unlockedBadgesSeen = unlockedIds;
+  newlyUnlocked.forEach(id=>{
+    const badge = BADGES.find(b=>b.id===id);
+    if(badge) queueAchievementToast(badge);
+  });
+}
+
+let achToastQueue = [];
+let achToastShowing = false;
+function queueAchievementToast(badge){
+  achToastQueue.push(badge);
+  if(!achToastShowing) processAchToastQueue();
+}
+function processAchToastQueue(){
+  if(achToastQueue.length === 0){ achToastShowing = false; return; }
+  achToastShowing = true;
+  const badge = achToastQueue.shift();
+  const wrap = document.getElementById('achToastWrap');
+  if(!wrap){ achToastShowing = false; return; }
+  const el = document.createElement('div');
+  el.className = 'ach-toast';
+  el.innerHTML = `<div class="ach-toast-icon">${badge.icon}</div>
+    <div class="ach-toast-text"><b>Achievement Unlocked!</b><span>${badge.label}</span></div>`;
+  wrap.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  if(tg?.HapticFeedback){ try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){} }
+  setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=>{ el.remove(); processAchToastQueue(); }, 350);
+  }, 2600);
+}
+
+/* ═══════════════ 🔄 PULL TO REFRESH ═══════════════ */
+(function setupPullToRefresh(){
+  const scroller = document.getElementById('appScroll');
+  const indicator = document.getElementById('ptrIndicator');
+  if(!scroller || !indicator) return;
+  let startY = 0, pulling = false, dragDist = 0;
+  const THRESHOLD = 62;
+
+  scroller.addEventListener('touchstart', (e)=>{
+    if(scroller.scrollTop <= 0){
+      startY = e.touches[0].clientY;
+      pulling = true;
+      dragDist = 0;
     }
+  }, {passive:true});
 
-    function verifyKYC() {
-      const input = document.getElementById('kycIdInput').value;
-      if (!input) return alert('Please enter your ID number.');
-      document.getElementById('kycBadge').innerText = 'KYC Verified ✓';
-      alert('KYC Document Submitted Successfully!');
+  scroller.addEventListener('touchmove', (e)=>{
+    if(!pulling) return;
+    const dy = e.touches[0].clientY - startY;
+    if(dy > 0 && scroller.scrollTop <= 0){
+      dragDist = Math.min(dy*0.5, 90);
+      indicator.style.top = (-46 + dragDist) + 'px';
+      indicator.classList.toggle('ready', dragDist >= THRESHOLD);
     }
+  }, {passive:true});
 
-    function toggleLanguage() {
-      currentLang = currentLang === 'en' ? 'am' : 'en';
-      document.getElementById('langBtn').innerText = currentLang === 'en' ? 'EN | አማ' : 'አማ | EN';
-      
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (i18n[currentLang][key]) el.innerText = i18n[currentLang][key];
+  scroller.addEventListener('touchend', ()=>{
+    if(!pulling) return;
+    pulling = false;
+    if(dragDist >= THRESHOLD){
+      indicator.classList.add('spinning');
+      indicator.style.top = '14px';
+      if(tg?.HapticFeedback){ try{ tg.HapticFeedback.impactOccurred('medium'); }catch(e){} }
+      Promise.resolve(syncReady ? syncFromSheet() : Promise.resolve()).finally(()=>{
+        setTimeout(()=>{
+          indicator.classList.remove('spinning','ready');
+          indicator.style.top = '-46px';
+          toast('✅ ዘምኗል');
+        }, 500);
+      });
+    } else {
+      indicator.classList.remove('ready');
+      indicator.style.top = '-46px';
+    }
+    dragDist = 0;
+  }, {passive:true});
+})();
+
+/* ═══════════════ ACTIVITY TRACKER & GUARD ═══════════════ */
+let activityCount = 0;
+let initialForcedAdShown = false;
+let lastLocalMutationTime = 0;
+
+function markLocalMutation(){
+  lastLocalMutationTime = Date.now();
+  saveState();
+  render();
+}
+
+function recordActivity(){
+  activityCount++;
+  if(initialForcedAdShown && activityCount >= 5){
+    activityCount = 0;
+    maybeShowForcedAd(true);
+  }
+}
+
+/* ═══════════════ NAV & PAGE SWITCHING ═══════════════ */
+function showPage(id){
+  recordActivity();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('active'));
+  
+  const pg=document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
+  
+  const nb=document.querySelector(`.ni[data-p="${id}"]`);
+  if(nb) nb.classList.add('active');
+  
+  const scroller = document.getElementById('appScroll');
+  if(scroller) scroller.scrollTop = 0;
+  
+  if(tg?.HapticFeedback){
+    try{ tg.HapticFeedback.impactOccurred('light'); }catch(e){}
+  }
+  render();
+}
+
+/* ═══════════════ RENDER ═══════════════ */
+function render(){
+  const bal  = S.balance||0;
+  const sc   = S.swapCoins||0;
+  const refs = S.totalRefs||0;
+  const lv   = getLevel(bal);
+  checkLevelUp(lv.n);
+
+  rollUpNumber('hdrSC', sc, {decimals:2});
+  setText('levelChip', `⭐ ${lv.label}`);
+  const streak = S.streakDays||0;
+  const strEl = document.getElementById('streakChip');
+  if(strEl) strEl.textContent = streak>0 ? `${streak}🔥` : '';
+
+  rollUpNumber('mainBalance', bal, {decimals:0});
+  setText('balSub', `Level ${lv.n} — ${lv.label}`);
+  rollUpNumber('scBalance', sc, {decimals:2});
+  setText('stEarn', bal.toLocaleString()+' ETB');
+  setText('stAds', S.adsWatched||0);
+  setText('stRefs', refs);
+  setText('stRefBonus', (refs*REF_BONUS).toLocaleString());
+  setText('stSC', sc.toFixed(2)+' SC');
+
+  rollUpNumber('wdBalDisplay', bal, {decimals:0});
+  renderWdButton();
+
+  const prog = (refs % 10 === 0 && refs > 0) ? 10 : (refs % 10);
+  setText('refProgText', `${prog}/10`);
+  setText('refProgTextDup', `${prog}/10`);
+  setText('refCount', refs);
+  setText('refEarned', (Math.floor(refs/10)*500 + (refs%10)*REF_BONUS).toLocaleString()+' ETB');
+  const pf = document.getElementById('refProgFill');
+  if(pf) pf.style.width = `${prog/10*100}%`;
+  const ringFill = document.getElementById('refRingFill');
+  if(ringFill){
+    const circumference = 339.3;
+    const offset = circumference - (prog/10)*circumference;
+    ringFill.style.strokeDashoffset = offset;
+  }
+
+  renderStreakDays();
+  renderHomeTasks();
+  renderEarnTasks();
+  setText('crateKeysCount', S.crateKeys||0);
+  setText('crateKeysPillCount', S.crateKeys||0);
+  const crateBadge = document.getElementById('crateBadgePulse');
+  if(crateBadge) crateBadge.classList.toggle('has-keys', (S.crateKeys||0) > 0);
+  renderBadges();
+}
+
+/* ═══════════════ STREAK DAYS RENDER ═══════════════ */
+const STREAK_LABELS = ['Day 1','Day 2','Day 3','Day 4','Day 5','Day 6','Day 7'];
+const STREAK_SC      = [10,20,40,60,80,100,0];
+function renderStreakDays(){
+  const el = document.getElementById('streakDaysEl');
+  if(!el)return;
+  const streak = S.streakDays||0;
+  const claimedToday = S.streakClaimedFor === S.lastLoginDate;
+  el.innerHTML = STREAK_LABELS.map((d,i)=>{
+    const dayNum = i+1;
+    const passed = dayNum < streak;
+    const isToday = dayNum === streak;
+    const rewardLabel = dayNum===7 ? 'Level 3' : `+${STREAK_SC[i]}SC`;
+    let cls = passed ? 'done' : (isToday ? 'today' : '');
+    return `<div class="streak-day ${cls}">
+      <div class="streak-day-icon">${passed?'✅':(isToday?'🎁':'🔒')}</div>
+      <div style="font-size:7px">${d}</div>
+      <div style="font-size:7px;color:var(--gold)">${rewardLabel}</div>
+    </div>`;
+  }).join('');
+  setText('earnStreakCount', `${streak}🔥`);
+
+  const btn = document.getElementById('streakClaimBtn');
+  if(btn){
+    if(claimedToday){
+      btn.disabled = true;
+      btn.textContent = '✅ ዛሬ ተቀብለዋል';
+    } else {
+      btn.disabled = false;
+      const idx = Math.min(streak,7)-1;
+      const label = (idx+1)===7 ? 'Level 3 ማዕረግ ያግኙ 🏆' : `+${STREAK_SC[idx]} SC ይቀበሉ`;
+      btn.textContent = label;
+    }
+  }
+}
+function claimStreakReward(){
+  recordActivity();
+  if(S.streakClaimedFor === S.lastLoginDate){toast('ዛሬ አስቀድመው ተቀብለዋል!');return;}
+  const day = Math.min(S.streakDays||1, 7);
+  if(day === 7){
+    S.swapCoins = (S.swapCoins||0) + 200;
+    toast('🏆 7 ቀን ተከታታይ Streak! Level 3 ማዕረግ ስጦታ +200 SC!');
+  } else {
+    const reward = STREAK_SC[day-1];
+    S.swapCoins = (S.swapCoins||0) + reward;
+    toast(`🔥 Day ${day} ቦነስ +${reward} SC ተጨምሯል!`);
+  }
+  S.streakClaimedFor = S.lastLoginDate;
+  markLocalMutation();
+  if(tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+  if(syncReady) syncToSheet(); else pendingSyncAfterInit = true;
+}
+
+/* ═══════════════ TASKS LIST ═══════════════ */
+const TG_ICON = 'https://static.vecteezy.com/system/resources/previews/023/986/562/non_2x/telegram-logo-telegram-logo-transparent-telegram-icon-transparent-free-free-png.png';
+const YT_ICON = 'https://static.vecteezy.com/system/resources/thumbnails/018/930/572/small_2x/youtube-logo-youtube-icon-transparent-free-png.png';
+
+const YT_VID1 = 'https://youtu.be/WgRzYGYDDOs?si=0YC53eyjswiEPEB2';
+const BUNA_BOT = 'https://t.me/Bunaairdropbot/buna?startapp=1493452810';
+
+const ALL_TASKS = [
+  {id:'tg1',    label:'Telegram Channel 1',     reward:100, dur:30, link:TG_CHANNEL1, icon:TG_ICON, bg:'rgba(0,136,204,.15)', type:'tg-type'},
+  {id:'tg2',    label:'Telegram Channel 2',     reward:100, dur:30, link:TG_CHANNEL2, icon:TG_ICON, bg:'rgba(0,136,204,.15)', type:'tg-type'},
+  {id:'ytsub1', label:'YouTube Channel 1 Sub',  reward:100, dur:60, link:YT_SUB,      icon:YT_ICON, bg:'rgba(239,68,68,.15)', type:'yt-type'},
+  {id:'ytsub2', label:'YouTube Channel 2 Sub',  reward:100, dur:60, link:YT_SUB2,     icon:YT_ICON, bg:'rgba(239,68,68,.15)', type:'yt-type'},
+  {id:'ytvid1', label:'YouTube Video 1 ይመልከቱ',  reward:50,  dur:60, link:YT_VID1,     icon:YT_ICON, bg:'rgba(239,68,68,.15)', type:'yt-type'},
+  {id:'bunabot',label:'Buna Bot ይቀላቀሉ',        reward:50,  dur:30, link:BUNA_BOT,    icon:TG_ICON, bg:'rgba(0,136,204,.15)', type:'tg-type'},
+];
+
+const activeTaskTimers = new Set();
+
+function renderHomeTasks(){
+  const el = document.getElementById('homeTasksGrid');
+  if(!el)return;
+  if(activeTaskTimers.size === 0){
+    el.innerHTML = ALL_TASKS.map(t=>taskGridItemHTML(t,'htb_')).join('');
+    return;
+  }
+  ALL_TASKS.forEach(t=>{
+    if(activeTaskTimers.has(t.id)) return;
+    const wrap = document.getElementById('htb_'+t.id)?.closest('.task-grid-item');
+    if(wrap) wrap.outerHTML = taskGridItemHTML(t,'htb_');
+  });
+}
+function taskGridItemHTML(t, prefix){
+  const done = S.completedTasks.includes(t.id);
+  return `<div class="task-grid-item">
+    <div class="tgi-icon" style="background:${t.bg}"><img src="${t.icon}" alt="${t.label}"></div>
+    <h4>${t.label}</h4>
+    <div class="tgi-reward">+${t.reward} ETB</div>
+    <button class="tgi-btn" id="${prefix}${t.id}" ${done?'disabled':''} onclick="startTask('${t.id}','${t.link}',${t.reward},${t.dur})">${done?'✅ ተቀብለዋል':'Start'}</button>
+  </div>`;
+}
+
+function earnGridItemHTML(t){
+  const done = S.completedTasks.includes(t.id);
+  return `<div class="earn-grid-item ${t.type}">
+    ${done?'<div class="egi-done-badge">✅</div>':''}
+    <div class="egi-icon" style="background:${t.bg}"><img src="${t.icon}" alt="${t.label}"></div>
+    <div class="egi-title">${t.label}</div>
+    <div class="egi-reward">+${t.reward} ETB</div>
+    <div class="egi-meta">⏱️ ${t.dur}s</div>
+    <button class="egi-btn" id="etb_${t.id}" ${done?'disabled':''} onclick="startTask('${t.id}','${t.link}',${t.reward},${t.dur})">${done?'ተቀብለዋል':'Start'}</button>
+  </div>`;
+}
+
+function renderEarnTasks(){
+  const tEl = document.getElementById('earnTaskGrid');
+  if(tEl){
+    if(activeTaskTimers.size === 0){
+      tEl.innerHTML = ALL_TASKS.map(earnGridItemHTML).join('');
+    } else {
+      ALL_TASKS.forEach(t=>{
+        if(activeTaskTimers.has(t.id)) return;
+        const wrap = document.getElementById('etb_'+t.id)?.closest('.earn-grid-item');
+        if(wrap) wrap.outerHTML = earnGridItemHTML(t);
       });
     }
+  }
 
-    // Initialize
-    getCryptoData();
-    calculateSwap();
-  </script>
+  const BADGES = ['HOT','NEW','NEW','HOT','EASY','NEW'];
+  const BGS = [
+    'linear-gradient(135deg,#1a0a05,#2a1205)','linear-gradient(135deg,#050a1a,#0a1530)',
+    'linear-gradient(135deg,#0a051a,#180a30)','linear-gradient(135deg,#051a0a,#0a3015)',
+    'linear-gradient(135deg,#1a1005,#302005)','linear-gradient(135deg,#1a0510,#30081a)',
+  ];
+  const BADGE_COLOR = {HOT:'var(--red)',NEW:'var(--blue)',EASY:'var(--green)'};
+  const ADS = Array.from({length:6},(_,i)=>({
+    num: S.adsWatched+i+1,
+    reward: getAdReward(S.adsWatched+i),
+    unlimited: isUnlimitedAdSlot(S.adsWatched+i),
+    badge: BADGES[i],
+    bg: BGS[i],
+  }));
+
+  const adHtml = ADS.map(ad=>`
+    <div class="earn-grid-item ad-type">
+      <div class="egi-icon" style="background:${ad.bg}">
+        <div style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center">
+          <svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:#000;margin-left:1px"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+      </div>
+      <div class="egi-title">${ad.unlimited ? 'Bonus Ad ∞' : 'Ad #'+ad.num}</div>
+      <div class="egi-reward">+${ad.reward} ETB</div>
+      <div class="egi-meta">⏱️17s · <span style="color:${BADGE_COLOR[ad.badge]};font-weight:800">${ad.unlimited?'∞':ad.badge}</span></div>
+      <button class="egi-btn" onclick="watchAd(this)">Watch</button>
+    </div>`).join('');
+
+  const aEl = document.getElementById('earnAdGrid');
+  if(aEl) aEl.innerHTML = adHtml;
+
+  const mEl = document.getElementById('mainAdGrid');
+  if(mEl) mEl.innerHTML = adHtml;
+}
+
+const taskTimers = {};
+function startTask(id, url, reward, dur){
+  recordActivity();
+  if(S.completedTasks.includes(id)){toast('አስቀድሞ ተቀብለዋል!');return;}
+  if(tg?.openLink) tg.openLink(url); else window.open(url,'_blank');
+  if(tg?.HapticFeedback) { try{ tg.HapticFeedback.impactOccurred('medium'); }catch(e){} }
+
+  const setBtn=(txt,dis=false)=>{
+    [`htb_${id}`,`etb_${id}`].forEach(bid=>{
+      const b=document.getElementById(bid);
+      if(b){b.textContent=txt;b.disabled=dis;}
+    });
+  };
+  toast(`⏱️ ${dur}s ቆጣሪ ጀምሯል!`);
+
+  activeTaskTimers.add(id);
+  const deadline = Date.now() + dur*1000;
+
+  function finishCountdown(){
+    activeTaskTimers.delete(id);
+    clearInterval(taskTimers[id]);
+    document.removeEventListener('visibilitychange', onVisible);
+    if(S.completedTasks.includes(id)) return;
+    setBtn(`+${reward} ✨`,false);
+    [`htb_${id}`,`etb_${id}`].forEach(bid=>{
+      const b=document.getElementById(bid);
+      if(b) b.onclick=()=>claimTask(id,reward);
+    });
+    toast(`✅ ጨርሰዋል! +${reward} ETB ይቀበሉ`);
+  }
+
+  clearInterval(taskTimers[id]);
+  taskTimers[id]=setInterval(()=>{
+    const remaining = Math.max(0, Math.ceil((deadline - Date.now())/1000));
+    if(remaining>0){
+      setBtn(`⏱️${remaining}s`,true);
+    } else {
+      finishCountdown();
+    }
+  },500);
+
+  const onVisible = ()=>{
+    if(document.visibilityState==='visible'){
+      const remaining = Math.max(0, Math.ceil((deadline - Date.now())/1000));
+      if(remaining<=0 && !S.completedTasks.includes(id)){
+        finishCountdown();
+      }
+    }
+  };
+  document.addEventListener('visibilitychange', onVisible);
+}
+
+function claimTask(id,reward){
+  recordActivity();
+  if(S.completedTasks.includes(id)){toast('አስቀድሞ!');return;}
+  S.completedTasks.push(id);
+  S.balance+=reward;
+  markLocalMutation();
+  toast(`🎉 +${reward} ETB ተጨምሯል!`);
+  if(tg?.HapticFeedback){ try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){} }
+  if(syncReady){ syncToSheet(); } else { pendingSyncAfterInit = true; }
+}
+
+/* ═══════════════ AD WATCH LOGIC ═══════════════ */
+let adRunning=false, adTimerInterval, adClickCount=0;
+let isBonusAd=false;
+
+function watchAd(btn){
+  recordActivity();
+  if(adRunning)return;
+
+  btn.disabled=true;
+  adClickCount++;
+  adRunning=true;
+  isBonusAd=false;
+  document.getElementById('adCloseBtn').style.display='none';
+  
+  const earnedReward = getAdReward(S.adsWatched);
+  document.getElementById('adDesc').innerHTML = `17 ሰከንድ ያዩ — ካጠናቀቁ <strong style="color:var(--gold)">${earnedReward} ETB</strong> ይጨምራሉ!`;
+
+  if(typeof show_11460944 === 'function'){
+    show_11460944().catch((err)=>{
+      console.warn('[Swap Money] Real ad SDK reported an issue (non-fatal):', err);
+    });
+  }
+
+  runFallbackCountdown(17000);
+}
+
+function runFallbackCountdown(durationMs){
+  durationMs = durationMs || 17000;
+  const durSec = Math.round(durationMs/1000);
+  const modal=document.getElementById('adModal');
+  const fill=document.getElementById('adBarFill');
+  const txt=document.getElementById('adTimerTxt');
+  document.getElementById('adTitle').textContent = isBonusAd
+    ? 'ተጨማሪ ማስታወቂያ'
+    : `Ad #${S.adsWatched+1} በሂደት ላይ`;
+  modal.classList.add('active');
+  fill.style.width='0%';txt.textContent=`${durSec}s ቀርቷል`;
+  const deadline = Date.now()+durationMs;
+  clearInterval(adTimerInterval);
+  adTimerInterval=setInterval(()=>{
+    const remaining = Math.max(0, Math.ceil((deadline-Date.now())/1000));
+    fill.style.width=`${(durSec-remaining)/durSec*100}%`;
+    txt.textContent=`${remaining}s ቀርቷል`;
+    if(remaining<=0){
+      clearInterval(adTimerInterval);
+      if(isBonusAd){
+        finishBonusAd();
+      } else {
+        creditAdReward();
+      }
+    }
+  },500);
+}
+
+function creditAdReward(){
+  adRunning=false;
+  const earnedReward = getAdReward(S.adsWatched);
+  S.adsWatched++;
+  S.balance += earnedReward;
+  trackAdForCrateKey();
+
+  markLocalMutation();
+  toast(`🎉 +${earnedReward} ETB ተጨምሯል!`);
+  if(syncReady){ syncToSheet(); } else { pendingSyncAfterInit = true; }
+  document.getElementById('adDesc').innerHTML = `🎉 <strong style="color:var(--gold)">+${earnedReward} ETB</strong> ተጨምሯል! ✕ ይንኩ ለመዝጋት`;
+
+  if(tg?.HapticFeedback){ try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){} }
+  document.getElementById('adCloseBtn').style.display='flex';
+  document.getElementById('adCloseBtn').style.alignItems='center';
+  document.getElementById('adCloseBtn').style.justifyContent='center';
+}
+
+function closeAdAndShowAnother(){
+  recordActivity();
+  const modal=document.getElementById('adModal');
+  if(isBonusAd){
+    modal.classList.remove('active');
+    document.getElementById('adCloseBtn').style.display='none';
+    adRunning=false;
+    isBonusAd=false;
+    return;
+  }
+  isBonusAd=true;
+  document.getElementById('adCloseBtn').style.display='none';
+  document.getElementById('adTitle').textContent='ተጨማሪ ማስታወቂያ';
+  document.getElementById('adDesc').textContent='ይህ ተጨማሪ ማስታወቂያ ነው — ክፍያ የለውም';
+
+  if(typeof show_11460944 === 'function'){
+    show_11460944().catch(()=>{});
+  }
+  runFallbackCountdown(17000);
+}
+
+function finishBonusAd(){
+  const modal=document.getElementById('adModal');
+  modal.classList.remove('active');
+  adRunning=false;
+  isBonusAd=false;
+  document.getElementById('adCloseBtn').style.display='none';
+}
+
+/* ═══════════════ BANNER ═══════════════ */
+(()=>{
+  const box=document.getElementById('bannerSlider');
+  if(!box)return;
+  const imgs=box.querySelectorAll('img');
+  const dotsEl=document.getElementById('bDots');
+  let idx=0,timer;
+imgs.forEach((_,i)=>{
+    const d = document.createElement('div');
+    d.className = 'b-dot' + (i === 0 ? ' active' : '');
+    dotsEl.appendChild(d);
+  });
+  function go(n){
+    imgs.forEach((im,i)=>im.classList.toggle('active',i===n));
+    document.querySelectorAll('.b-dot').forEach((d,i)=>d.classList.toggle('active',i===n));
+    idx=n;
+  }
+  timer=setInterval(()=>go((idx+1)%imgs.length),4200);
+  let sx=0;
+  box.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;clearInterval(timer);});
+  box.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    if(Math.abs(dx)>40)go(dx<0?(idx+1)%imgs.length:(idx-1+imgs.length)%imgs.length);
+    timer=setInterval(()=>go((idx+1)%imgs.length),4200);
+  });
+})();
+
+/* ═══════════════ LIVE FEED ═══════════════ */
+const FEED_NAMES=['Bruk B','Sara Y','Dawit T','Makeda A','Henok G','Eyerusalem H','Kaleb B','Selamawit W'];
+const FEED_BANKS=['Telebirr','CBE Bank','Awash Bank','Abyssinia','Ethio Telecom'];
+function maskFeedName(name){
+  const clean = name.replace(/\s+/g,'');
+  if(clean.length <= 3) return clean[0] + '***';
+  const first = clean.slice(0,2);
+  const last = clean.slice(-1);
+  return `${first}${'*'.repeat(Math.max(3, clean.length-3))}${last}`;
+}
+function rotateFeed(){
+  const el=document.getElementById('liveFeed');
+  if(!el)return;
+  const n=FEED_NAMES[~~(Math.random()*FEED_NAMES.length)];
+  const b=FEED_BANKS[~~(Math.random()*FEED_BANKS.length)];
+  const a=(~~(Math.random()*80)+25)*100;
+  const masked = maskFeedName(n);
+  el.innerHTML=`<div class="feed-item">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="feed-av">${n[0]}</div>
+      <div class="feed-info"><h5>${masked} ወጪ አድርጓል</h5><p><span class="feed-live-dot"></span>${b}</p></div>
+    </div>
+    <div class="feed-amount">+${a.toLocaleString()} ETB</div>
+  </div>`;
+}
+setInterval(rotateFeed,5000);rotateFeed();
+
+/* ═══════════════ API POST HELPER ═══════════════ */
+async function apiPost(payload){
+  const res = await fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  return await res.json();
+}
+
+/* ═══════════════ WITHDRAW ═══════════════ */
+/* ═══════════════ 💳 DEPOSIT SYSTEM ═══════════════ */
+const DEPOSIT_BANKS = [
+  {id:'tele',  name:'Telebirr',    acct:'0912 345 678',      holder:'Swap Money PLC', img:'https://i.postimg.cc/1zH5wqRj/20260805-174415.png'},
+  {id:'cbe',   name:'CBE Bank',    acct:'1000 2345 6789 01', holder:'Swap Money PLC', img:'https://i.postimg.cc/Hk1pN2VS/20260805-174301.png'},
+  {id:'awash', name:'Awash Bank',  acct:'0130 1122 3344',    holder:'Swap Money PLC', img:'https://i.postimg.cc/NMntk7hh/20260805-174324.png'},
+  {id:'aby',   name:'Abyssinia',   acct:'2140 5566 7788',    holder:'Swap Money PLC', img:'https://i.postimg.cc/BbCdwxk4/20260805-174346.png'},
+  {id:'dashen',name:'Dashen Bank', acct:'0055 6677 8899',    holder:'Swap Money PLC', img:'https://i.postimg.cc/1zH5wqRj/20260805-174415.png'},
+  {id:'boa',   name:'Bank of Abyssinia', acct:'1188 2299 3300', holder:'Swap Money PLC', img:'https://i.postimg.cc/BbCdwxk4/20260805-174346.png'},
+];
+const DEPOSIT_CRYPTO = [
+  {id:'usdt_trc', name:'USDT', network:'TRC-20 (Tron)', addr:'TXy8bQ9m3ZkP7vLc2Rn4Ws6Aq1Ft5Jh8Yd', icon:'💵', color:'#26A17B'},
+  {id:'usdt_bep', name:'USDT', network:'BEP-20 (BNB Chain)', addr:'0x8fA2c19eB4dD1a2B7c6F3e9A1d8C4b2E5a7F3d1C', icon:'💵', color:'#26A17B'},
+  {id:'btc',      name:'Bitcoin', network:'BTC Network', addr:'bc1q9x2m4vp7c3n6a8s1d5f0g7h2j4k6l8m0n2p4', icon:'₿', color:'#F7931A'},
+  {id:'eth',      name:'Ethereum', network:'ERC-20', addr:'0x3aB5c8dE7fA1b2C4d6E8f0A2b4C6d8E0f2A4c6E8', icon:'Ξ', color:'#627EEA'},
+];
+let currentDepDetail = null;
+
+function openDepositModal(){
+  recordActivity();
+  renderDepositLists();
+  const ov = document.getElementById('depOverlay');
+  if(ov) ov.classList.add('active');
+  document.getElementById('depListView').style.display = '';
+  document.getElementById('depDetailView').classList.remove('active');
+}
+function closeDepositModal(){
+  const ov = document.getElementById('depOverlay');
+  if(ov) ov.classList.remove('active');
+}
+function switchDepTab(tab){
+  recordActivity();
+  document.getElementById('depTabBank').classList.toggle('active', tab==='bank');
+  document.getElementById('depTabCrypto').classList.toggle('active', tab==='crypto');
+  document.getElementById('depPanelBank').classList.toggle('active', tab==='bank');
+  document.getElementById('depPanelCrypto').classList.toggle('active', tab==='crypto');
+}
+function renderDepositLists(){
+  const bankList = document.getElementById('depBankList');
+  if(bankList){
+    bankList.innerHTML = DEPOSIT_BANKS.map(b=>`
+      <div class="dep-bank-item" onclick='openDepositDetail(${JSON.stringify(b.id)})'>
+        <img src="${b.img}" alt="${b.name}">
+        <div class="dep-bank-info"><b>${b.name}</b><span>Bank Transfer</span></div>
+        <div class="dep-bank-arrow">›</div>
+      </div>`).join('');
+  }
+  const cryptoList = document.getElementById('depCryptoList');
+  if(cryptoList){
+    cryptoList.innerHTML = DEPOSIT_CRYPTO.map(c=>`
+      <div class="dep-crypto-item">
+        <div class="dep-crypto-icon" style="background:${c.color}22;color:${c.color}">${c.icon}</div>
+        <div class="dep-crypto-info">
+          <b>${c.name}</b><span>${c.network}</span>
+          <div class="dep-crypto-addr">
+            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.addr}</span>
+            <div class="dep-copy-btn" onclick='copyCryptoAddr(${JSON.stringify(c.addr)})'>
+              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+}
+function openDepositDetail(bankId){
+  recordActivity();
+  const bank = DEPOSIT_BANKS.find(b=>b.id===bankId);
+  if(!bank) return;
+  currentDepDetail = bank;
+  setText('depDetailAcct', bank.acct);
+  setText('depDetailName', `${bank.holder} · ${bank.name}`);
+  const img = document.getElementById('depDetailImg');
+  if(img) img.src = bank.img;
+  document.getElementById('depListView').style.display = 'none';
+  document.getElementById('depDetailView').classList.add('active');
+}
+function backToDepList(){
+  recordActivity();
+  document.getElementById('depDetailView').classList.remove('active');
+  document.getElementById('depListView').style.display = '';
+}
+function copyDepositDetail(){
+  if(!currentDepDetail) return;
+  const acctClean = currentDepDetail.acct.replace(/\s+/g,'');
+  navigator.clipboard?.writeText(acctClean).then(()=>{
+    toast(`✅ ${currentDepDetail.name} Account ተቀድቷል!`);
+    if(tg?.HapticFeedback){ try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){} }
+  }).catch(()=>toast('❌ መቅዳት አልተሳካም'));
+}
+function copyCryptoAddr(addr){
+  navigator.clipboard?.writeText(addr).then(()=>{
+    toast('✅ Wallet Address ተቀድቷል!');
+    if(tg?.HapticFeedback){ try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){} }
+  }).catch(()=>toast('❌ መቅዳት አልተሳካም'));
+}
+
+function notifyMeAdNetworks(){
+  recordActivity();
+  try{
+    const seen = localStorage.getItem('sm_ad_networks_notify');
+    if(seen === '1'){
+      toast('✅ ቀድሞ ተመዝግበዋል — ሲከፈት እናሳውቆታለን!');
+      return;
+    }
+    localStorage.setItem('sm_ad_networks_notify', '1');
+  }catch(e){}
+  toast('🔔 ተመዝግበዋል! አዲስ Ad Networks ሲከፈቱ በ Telegram ውስጥ እናሳውቆታለን');
+  if(tg?.HapticFeedback){ try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){} }
+}
+
+function selMethod(name, el){
+  recordActivity();
+  S.selectedMethod=name;
+  document.querySelectorAll('.method-btn').forEach(b=>b.classList.remove('sel'));
+  if(el)el.classList.add('sel');
+  const isPhone=name.includes('Telebirr')||name.includes('Telecom')||name.includes('Safaricom');
+  const lbl = document.getElementById('wdAcctLabel');
+  const inp = document.getElementById('wdAcct');
+  if(lbl) lbl.textContent=isPhone?`የስልክ ቁጥር (${name})`:`Account Number (${name})`;
+  if(inp) inp.placeholder=isPhone?'09... ወይም 07...':'Account Number';
+  markLocalMutation(); toast(`✓ ${name} ተመርጧል`);
+}
+
+function setWdAmount(val){
+  recordActivity();
+  const inp = document.getElementById('wdAmt');
+  if(!inp) return;
+  const bal = S.balance||0;
+  const amount = (val === 'max') ? bal : val;
+  inp.value = amount;
+  if(tg?.HapticFeedback){ try{ tg.HapticFeedback.impactOccurred('light'); }catch(e){} }
+}
+
+function renderWdButton(){
+  const btn=document.getElementById('wdBtn');
+  const notice=document.getElementById('wdTaskNotice');
+  const refs=S.totalRefs||0;
+  if(S.isWdTaskActive&&refs<10){
+    if(notice){
+      notice.style.display='block';
+      notice.textContent=`⏳ ገንዘብ ለማውጣት 10 ሰዎችን ይጋብዙ (${refs}/10)`;
+    }
+    if(btn){ btn.disabled=true; btn.textContent=`${refs}/10 ሰው ሲሞላ`; }
+  } else {
+    if(notice) notice.style.display='none';
+    if(btn){ btn.disabled=false; btn.textContent='Confirm Withdrawal'; }
+  }
+}
+
+async function submitWithdraw(){
+  recordActivity();
+  const acct=document.getElementById('wdAcct').value.trim();
+  const amt=parseFloat(document.getElementById('wdAmt').value);
+  if(!acct){toast('ሂሳብ/ስልክ ቁጥር ያስገቡ');return;}
+  if(isNaN(amt)||amt<MIN_WD){toast(`Min ${MIN_WD} ETB ያስፈልጋል`);return;}
+  if(amt>S.balance){toast('በቂ ቀሪ ሂሳብ የለዎትም');return;}
+  const refs=S.totalRefs||0;
+  if(refs<10){
+    S.isWdTaskActive=true; markLocalMutation();
+    toast('10 ሰዎችን ጋብዘው ያጠናቅቁ!'); return;
+  }
+  const btn=document.getElementById('wdBtn');
+  if(btn){ btn.disabled=true; btn.textContent='Processing…'; }
+  const uid=tgUser?tgUser.id:('GUEST_'+Date.now());
+
+  await syncToSheet();
+
+  try{
+    const data = await apiPost({
+      action: 'withdraw',
+      userId: String(uid),
+      method: S.selectedMethod,
+      account: acct,
+      amount: amt,
+      currentBalance: S.balance
+    });
+
+    if(data.result === 'success'){
+      if(typeof data.newBalance === 'number'){
+        S.balance = data.newBalance;
+      } else {
+        S.balance -= amt;
+      }
+      markLocalMutation();
+      document.getElementById('wdModal')?.classList.add('active');
+      if(tg?.HapticFeedback){ try{ tg.HapticFeedback.notificationOccurred('warning'); }catch(e){} }
+      if(document.getElementById('wdAcct')) document.getElementById('wdAcct').value='';
+      if(document.getElementById('wdAmt')) document.getElementById('wdAmt').value='';
+    } else {
+      toast('❌ '+(data.message||'የማውጫ ጥያቄው አልተሳካም'));
+    }
+  }catch(e){
+    toast('❌ Network error — እባክዎ ደግመው ይሞክሩ');
+  }
+  finally{
+    if(btn){ btn.disabled=false; btn.textContent='Confirm Withdrawal'; }
+  }
+}
+
+
+/* ═══════════════ GAME MODAL & IFRAME MESSAGE LISTENER ═══════════════ */
+let gameSessionCoins=0, currentGame=null;
+
+function openGame(key){
+  recordActivity();
+  currentGame=key; gameSessionCoins=0;
+  setText('gmSessionCoins','0 SC');
+  setText('gmTitle', GAME_TITLES[key] || '🎮 Game');
+  setText('gmSCDisplay', (S.swapCoins||0).toFixed(2)+' SC');
+  
+  const iframe = document.getElementById('gmIframe');
+  const targetUrl = GAME_URLS[key];
+  
+  if(iframe && targetUrl && targetUrl.trim() !== ''){
+    iframe.src = targetUrl + '?sc=' + (S.swapCoins||0) + '&uid=' + (tgUser?.id||'guest');
+    iframe.setAttribute('allow', 'autoplay; fullscreen; accelerometer; gyroscope');
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms');
+  }
+  
+  document.getElementById('gameModal')?.classList.add('open');
+  document.body.style.overflow='hidden';
+  if(tg?.HapticFeedback){ try{ tg.HapticFeedback.impactOccurred('medium'); }catch(e){} }
+}
+
+function closeGame(){
+  recordActivity();
+  if(gameSessionCoins > 0){
+    toast(`🎉 +${gameSessionCoins} SC ጌሙ ላይ አግኝተዋል!`);
+    if(tg?.HapticFeedback){ try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){} }
+    markLocalMutation();
+    if(syncReady){ syncToSheet(); } else { pendingSyncAfterInit = true; }
+  }
+  document.getElementById('gameModal')?.classList.remove('open');
+  const iframe = document.getElementById('gmIframe');
+  if(iframe) iframe.src = '';
+  document.body.style.overflow = '';
+  currentGame = null; render();
+}
+
+/* ── IFRAME GAME RECEIVER (MONETAG FIX) ── */
+window.addEventListener('message', function(e) {
+  if (!e.data) return;
+
+  // 1. ጨዋታው ላይ Coin ሲያሸንፉ ወደ SC ባላንስ ይደምራል
+  if (e.data.type === 'sc_earned' && (typeof e.data.amount === 'number' || typeof e.data.amount === 'string')) {
+    const earnedSC = Number(e.data.amount) || 0;
+    gameSessionCoins += earnedSC;
+    S.swapCoins = (S.swapCoins || 0) + earnedSC;
+    markLocalMutation();
+    setText('gmSessionCoins', gameSessionCoins.toFixed(2) + ' SC');
+    setText('gmSCDisplay', S.swapCoins.toFixed(2) + ' SC');
+    toast(`🎉 +${earnedSC} SC ጌሙ ላይ አግኝተዋል!`);
+    if (syncReady) { syncToSheet(); } else { pendingSyncAfterInit = true; }
+  }
+
+  // 2. ጨዋታው SC Balance ሲጠይቅ
+  if (e.data.type === 'sc_balance_request') {
+    document.getElementById('gmIframe')?.contentWindow?.postMessage(
+      { type: 'sc_balance', amount: S.swapCoins || 0 }, '*'
+    );
+  }
+
+  // 3. ጨዋታው ውስጥ ማስታወቂያ ሲጠየቅ ከዋናው ገጽ ማስታወቂያ ያስነሳል (MONETAG FIX)
+  if (e.data.type === 'trigger_game_ad') {
+    const gameModalOpen = document.getElementById('gameModal')?.classList.contains('open');
+    if (!gameModalOpen) return;
+
+    if (typeof show_11460944 === 'function') {
+      try {
+        show_11460944();
+      } catch (err) {
+        console.warn('[Swap Money] Monetag Game Ad error:', err);
+      }
+    }
+  }
+});
+
+/* ═══════════════ SHARE ═══════════════ */
+function copyRefLink(){
+  recordActivity();
+  const inp = document.getElementById('refLinkInp');
+  if(!inp) return;
+  const v=inp.value;
+  try{navigator.clipboard.writeText(v);}catch(e){const i=document.createElement('input');i.value=v;document.body.appendChild(i);i.select();document.execCommand('copy');i.remove();}
+  toast('📋 ሊንክ ኮፒ ሆኗል!');
+}
+function shareSocial(p){
+  recordActivity();
+  const inp = document.getElementById('refLinkInp');
+  const url=encodeURIComponent(inp ? inp.value : '');
+  const txt=encodeURIComponent('Swap Money ላይ ተቀላቀሉ — ዕለታዊ ገንዘብ ያግኙ!');
+  if(p==='telegram') window.open(`https://t.me/share/url?url=${url}&text=${txt}`,'_blank');
+  else if(p==='whatsapp') window.open(`https://api.whatsapp.com/send?text=${txt}%20${url}`,'_blank');
+  else if(p==='facebook') window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`,'_blank');
+  else if(p==='messenger') window.open(`https://www.facebook.com/dialog/send?link=${url}`,'_blank');
+  else copyRefLink();
+}
+
+/* ═══════════════ GOOGLE SHEETS SYNC (PROTECTED PULL SYNC) ═══════════════ */
+async function syncFromSheet(){
+  if(!tgUser)return;
+  
+  if(Date.now() - lastLocalMutationTime < 15000) {
+    console.warn('[Swap Money] Pull sync blocked by local mutation timestamp guard');
+    return;
+  }
+  
+  try{
+    const res=await fetch(`${SCRIPT_URL}?action=getUser&userId=${tgUser.id}`);
+    const data=await res.json();
+    if(data.result==='success'&&data.user){
+      const u=data.user;
+      if(typeof u.balance!=='undefined')     S.balance = Number(u.balance) || 0;
+      if(typeof u.totalAds!=='undefined')    S.adsWatched = Number(u.totalAds) || 0;
+      if(typeof u.swapCoins!=='undefined')   S.swapCoins = Number(u.swapCoins) || 0;
+      if(typeof u.totalReferrals!=='undefined') S.totalRefs = Number(u.totalReferrals) || 0;
+      saveState();
+      render(); flashSyncDot();
+    } else if(data.result === 'not_found' && !S.hasWelcomed){
+      S.hasWelcomed = true;
+      if(S.balance === 0) S.balance = WELCOME_ETB;
+      markLocalMutation();
+      syncToSheet();
+    }
+  }catch(e){
+    console.error('[Swap Money] syncFromSheet failed:', e);
+  }
+}
+
+async function syncToSheet(){
+  if(!tgUser)return;
+  if(!syncReady){
+    console.warn('[Swap Money] syncToSheet blocked: not ready yet');
+    return;
+  }
+  try{
+    const data = await apiPost({
+      action:'syncUser',
+      userId:String(tgUser.id),
+      username:tgUser.username||tgUser.first_name||'Guest',
+      balance:S.balance,
+      totalAds:S.adsWatched,
+      swapCoins:S.swapCoins,
+      referredBy:String(referrerId||'None')
+    });
+    if(data && data.result === 'success'){
+      if(data.user){
+        if(typeof data.user.balance !== 'undefined') S.balance = Number(data.user.balance) || 0;
+        if(typeof data.user.swapCoins !== 'undefined') S.swapCoins = Number(data.user.swapCoins) || 0;
+        if(typeof data.user.totalReferrals !== 'undefined') S.totalRefs = Number(data.user.totalReferrals) || 0;
+        if(typeof data.user.totalAds !== 'undefined') S.adsWatched = Number(data.user.totalAds) || 0;
+      } else {
+        if(typeof data.balance !== 'undefined') S.balance = Number(data.balance) || 0;
+        if(typeof data.swapCoins !== 'undefined') S.swapCoins = Number(data.swapCoins) || 0;
+        if(typeof data.totalReferrals !== 'undefined') S.totalRefs = Number(data.totalReferrals) || 0;
+      }
+      saveState();
+      render();
+      flashSyncDot();
+    }
+  }catch(e){
+    console.error('[Swap Money] syncToSheet request failed:', e);
+  }
+}
+
+/* ═══════════════ HELPERS ═══════════════ */
+function setText(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
+let _syncDotT;
+function flashSyncDot(){
+  const dot = document.getElementById('syncDot');
+  if(!dot) return;
+  dot.style.display = 'block';
+  clearTimeout(_syncDotT);
+  _syncDotT = setTimeout(()=>{ dot.style.display='none'; }, 1200);
+}
+
+/* ═══════════════ SAFE INIT SEQUENCE ═══════════════ */
+let syncReady = false;
+let pendingSyncAfterInit = false;
+
+async function safeInit(){
+  render();
+
+  if(!tgUser){
+    console.warn('[Swap Money] No Telegram user detected — running in local-only/demo mode.');
+    syncReady = true;
+    if(!S.hasWelcomed){
+      S.hasWelcomed = true;
+      if(S.balance === 0) S.balance = WELCOME_ETB;
+      markLocalMutation();
+    }
+    return;
+  }
+
+  try{
+    const res  = await fetch(`${SCRIPT_URL}?action=getUser&userId=${tgUser.id}`);
+    const data = await res.json();
+
+    if(data.result === 'success' && data.user){
+      const u = data.user;
+      S.balance    = Number(u.balance)        || 0;
+      S.adsWatched = Number(u.totalAds)       || 0;
+      S.swapCoins  = Number(u.swapCoins)      || 0;
+      S.totalRefs  = Number(u.totalReferrals) || 0;
+      S.hasWelcomed = true;
+      saveState();
+      toast('✅ ውሂብዎ ከ server ተመልሷል');
+
+    } else if(data.result === 'not_found'){
+      S.hasWelcomed = true;
+      if(S.balance === 0) S.balance = WELCOME_ETB;
+      markLocalMutation();
+      syncReady = true;
+      await syncToSheet();
+      setTimeout(()=>{
+        showTopUpBonus(WELCOME_ETB);
+      },800);
+    } else {
+      console.error('[Swap Money] Unexpected server response during init:', data);
+      setTimeout(safeInit, 4000);
+      return;
+    }
+
+  }catch(e){
+    console.error('[Swap Money] Failed to reach Google Apps Script. Check SCRIPT_URL. Error:', e);
+    render();
+    setTimeout(safeInit, 4000);
+    return;
+  }
+
+  syncReady = true;
+  render();
+  if(pendingSyncAfterInit){
+    pendingSyncAfterInit = false;
+    syncToSheet();
+  }
+}
+
+safeInit();
+setInterval(syncFromSheet, 20000);
+setTimeout(maybeShowWhatsNew, 1600);
+
+/* ═══════════════ FORCED ADS SCHEDULER ═══════════════ */
+const APP_OPEN_TIME = Date.now();
+const FORCED_AD_GRACE_MS = 2 * 60 * 1000;
+
+function maybeShowForcedAd(isActivityTrigger){
+  if(adRunning) return;
+  if(document.getElementById('gameModal')?.classList.contains('open')) return;
+  if(document.visibilityState !== 'visible') return;
+
+  if(!initialForcedAdShown){
+    const elapsed = Date.now() - APP_OPEN_TIME;
+    if(elapsed < FORCED_AD_GRACE_MS) return;
+    initialForcedAdShown = true;
+  }
+
+  adRunning = true;
+  isBonusAd = true;
+
+  if(typeof show_11460944 === 'function'){
+    show_11460944().then(()=>{
+      finishBonusAd();
+    }).catch(()=>{
+      finishBonusAd();
+    });
+  } else {
+    finishBonusAd();
+  }
+}
+
+setInterval(()=>{
+  if(!initialForcedAdShown){
+    maybeShowForcedAd(false);
+  }
+}, 10000);
+</script>
 </body>
 </html>
+
+
