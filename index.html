@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TIKVAH Airdrop & PTC Platform</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Adsgram SDK for Telegram Mini Apps -->
+  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+  <!-- Single Line Elegant Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-white: #FFFFFF;
+      --card-bg: #F8FAFC;
+      --card-inner: #EDF2F7;
+      --primary-cyan: #009ACA;
+      --success-green: #00CB00;
+      --text-dark: #0F172A;
+      --text-muted: #64748B;
+      --border-color: #E2E8F0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-white);
+      color: var(--text-dark);
+      padding-bottom: 85px;
+    }
+
+    /* Top Navigation Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-white);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo i {
+      font-size: 24px;
+      color: var(--primary-cyan);
+    }
+
+    .brand-text {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary-cyan);
+      line-height: 1.1;
+    }
+
+    .kyc-badge {
+      font-size: 10px;
+      color: var(--success-green);
+      background: rgba(0, 203, 0, 0.1);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .lang-toggle {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-dark);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .container {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Main Balance Display Card */
+    .balance-card {
+      background: linear-gradient(135deg, var(--primary-cyan) 0%, #00769A 100%);
+      color: white;
+      border-radius: 20px;
+      padding: 20px;
+      position: relative;
+      box-shadow: 0 4px 15px rgba(0, 154, 202, 0.15);
+    }
+
+    .balance-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    .main-balance {
+      font-size: 32px;
+      font-weight: 800;
+      margin: 4px 0;
+    }
+
+    .etb-subtext {
+      font-size: 15px;
+      color: #E2F6FF;
+      font-weight: 600;
+    }
+
+    .action-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .action-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 10px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: white;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+    }
+
+    /* Section Cards */
+    .widget-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .widget-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Task Item Styling */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .task-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .task-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .task-title {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .task-reward {
+      font-size: 12px;
+      color: var(--success-green);
+      font-weight: 700;
+    }
+
+    .btn-action {
+      background: var(--primary-cyan);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-green {
+      background: var(--success-green);
+    }
+
+    /* Live Crypto Market List */
+    .crypto-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .crypto-item:last-child {
+      border-bottom: none;
+    }
+
+    .crypto-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .crypto-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+    }
+
+    /* Input & Forms */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .form-control {
+      background: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    /* Bottom Navigation Bar */
+    .nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      background: var(--bg-white);
+      border-top: 1px solid var(--border-color);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-muted);
+      font-size: 10px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .nav-item i {
+      font-size: 18px;
+    }
+
+    .nav-item.active {
+      color: var(--primary-cyan);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="top-bar">
+    <div class="brand-logo">
+      <i class="fa-solid fa-paper-plane"></i>
+      <div>
+        <div class="brand-text">TIKVAH AIRDROP</div>
+        <span class="kyc-badge" id="kycBadge">KYC Verified ✓</span>
+      </div>
+    </div>
+    <button class="lang-toggle" id="langBtn" onclick="toggleLanguage()">EN | አማ</button>
+  </header>
+
+  <div class="container">
+
+    <!-- TAB 1: HOME -->
+    <div id="tab-home" class="tab-content active">
+      <!-- Balance Card -->
+      <div class="balance-card">
+        <div class="balance-title" data-i18n="total_balance">Total Wallet Balance</div>
+        <div class="main-balance" id="usdBal">$12.50</div>
+        <div class="etb-subtext" id="etbBal">≈ 1,562.50 ETB</div>
+
+        <div class="action-row">
+          <div class="action-btn" onclick="switchTab('tab-withdraw', document.querySelectorAll('.nav-item')[3])">
+            <i class="fa-solid fa-plus"></i>
+            <span data-i18n="deposit">Deposit</span>
+          </div>
+          <div class="action-btn" onclick="switchTab('tab-withdraw', document.querySelectorAll('.nav-item')[3])">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i>
+            <span data-i18n="withdraw">Withdraw</span>
+          </div>
+          <div class="action-btn" onclick="switchTab('tab-exchange', document.querySelectorAll('.nav-item')[1])">
+            <i class="fa-solid fa-rotate"></i>
+            <span data-i18n="swap">Swap</span>
+          </div>
+          <div class="action-btn" onclick="switchTab('tab-ptc', document.querySelectorAll('.nav-item')[2])">
+            <i class="fa-solid fa-bullseye"></i>
+            <span data-i18n="earn">Earn</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Adsgram Quick Task Preview -->
+      <div class="widget-box">
+        <div class="widget-header">
+          <span class="widget-title"><i class="fa-solid fa-play" style="color: var(--primary-cyan);"></i> <span data-i18n="featured_ad">Featured Adsgram Task</span></span>
+        </div>
+        <div class="task-card">
+          <div class="task-info">
+            <span class="task-title">Watch Adsgram Video Ad</span>
+            <span class="task-reward">+12.50 ETB ($0.10)</span>
+          </div>
+          <button class="btn-action btn-green" onclick="showAdsgramAd()">Watch Ad</button>
+        </div>
+      </div>
+
+      <!-- Live Crypto Market Free API -->
+      <div class="widget-box">
+        <div class="widget-header">
+          <span class="widget-title"><i class="fa-solid fa-chart-line" style="color: var(--primary-cyan);"></i> <span data-i18n="crypto_market">Live Crypto Market</span></span>
+        </div>
+        <div id="cryptoList">Loading live rates...</div>
+      </div>
+    </div>
+
+    <!-- TAB 2: EXCHANGE -->
+    <div id="tab-exchange" class="tab-content">
+      <div class="widget-box">
+        <div class="widget-header">
+          <span class="widget-title" data-i18n="swap_title">Currency Exchange</span>
+        </div>
+        <div class="form-group">
+          <label>From</label>
+          <input type="number" class="form-control" id="exFromVal" value="1" oninput="calculateSwap()">
+        </div>
+        <div class="form-group">
+          <label>To</label>
+          <input type="number" class="form-control" id="exToVal" readonly>
+        </div>
+        <div style="font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 10px;">1 USD = 125.00 ETB</div>
+        <button class="btn-action" style="width: 100%; padding: 12px;" onclick="alert('Swap Completed!')" data-i18n="confirm_swap">Confirm Swap</button>
+      </div>
+    </div>
+
+    <!-- TAB 3: PTC & AD TASKS (ADSGRAM INTEGRATED) -->
+    <div id="tab-ptc" class="tab-content">
+      <div class="widget-box">
+        <div class="widget-header">
+          <span class="widget-title" data-i18n="ptc_title">Adsgram & PTC Monetization</span>
+        </div>
+        <div class="task-list">
+          <div class="task-card">
+            <div class="task-info">
+              <span class="task-title">Watch Adsgram Rewarded Video</span>
+              <span class="task-reward">+15.00 ETB ($0.12 USD)</span>
+            </div>
+            <button class="btn-action" onclick="showAdsgramAd()">Start Ad</button>
+          </div>
+          <div class="task-card">
+            <div class="task-info">
+              <span class="task-title">Daily Check-In Reward</span>
+              <span class="task-reward">+25.00 ETB ($0.20 USD)</span>
+            </div>
+            <button class="btn-action btn-green" onclick="alert('Claimed Daily Reward!')">Claim</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: WITHDRAWAL & ETHIOPIAN KYC -->
+    <div id="tab-withdraw" class="tab-content">
+      <!-- KYC Section -->
+      <div class="widget-box" style="border: 1px solid var(--primary-cyan);">
+        <div class="widget-header">
+          <span class="widget-title" style="color: var(--primary-cyan);"><i class="fa-solid fa-id-card"></i> Ethiopian KYC Verification</span>
+        </div>
+        <div class="form-group">
+          <label>Document Type</label>
+          <select class="form-control" id="kycDoc">
+            <option value="fayda">Ethiopian National ID (ፋይዳ ID)</option>
+            <option value="passport">Ethiopian Passport</option>
+            <option value="license">Driver's License (መንጃ ፈቃድ)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>ID Number</label>
+          <input type="text" class="form-control" placeholder="Enter ID Number" id="kycIdInput">
+        </div>
+        <button class="btn-action" style="width: 100%; margin-top: 6px;" onclick="verifyKYC()">Submit KYC</button>
+      </div>
+
+      <!-- Withdrawal Methods -->
+      <div class="widget-box">
+        <div class="widget-header">
+          <span class="widget-title" data-i18n="withdraw_options">Withdrawal Options</span>
+        </div>
+        <div class="form-group">
+          <label>Gateway Method</label>
+          <select class="form-control">
+            <option>Telebirr (ኢትዮ ቴሌኮም)</option>
+            <option>CBE Birr / Ethiopian Commercial Banks</option>
+            <option>Ethio Telecom Airtime Transfer</option>
+            <option>TON Wallet (Crypto)</option>
+            <option>USDT (TRC-20/BEP-20)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Account Number / Wallet</label>
+          <input type="text" class="form-control" placeholder="09... or Crypto Wallet Address">
+        </div>
+        <button class="btn-action btn-green" style="width: 100%; padding: 12px;" onclick="alert('Withdrawal Submitted!')" data-i18n="withdraw_btn">Request Withdrawal</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="nav-bar">
+    <div class="nav-item active" onclick="switchTab('tab-home', this)">
+      <i class="fa-solid fa-house"></i>
+      <span data-i18n="nav_home">Home</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('tab-exchange', this)">
+      <i class="fa-solid fa-right-left"></i>
+      <span data-i18n="nav_swap">Swap</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('tab-ptc', this)">
+      <i class="fa-solid fa-circle-dollar-to-slot"></i>
+      <span data-i18n="nav_earn">Earn</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('tab-withdraw', this)">
+      <i class="fa-solid fa-wallet"></i>
+      <span data-i18n="nav_wallet">Wallet</span>
+    </div>
+  </nav>
+
+  <script>
+    // Initialize Telegram WebApp
+    const tg = window.Telegram?.WebApp;
+    if (tg) { tg.expand(); tg.setHeaderColor('#FFFFFF'); }
+
+    // Initialize Adsgram SDK with your Block ID
+    // ⚠️ Replace 'YOUR_ADSGRAM_BLOCK_ID' with your actual Adsgram Block Controller ID
+    const AdsgramController = window.Adsgram?.init({ blockId: "YOUR_ADSGRAM_BLOCK_ID" });
+
+    let usdRate = 125.00;
+    let currentLang = 'en';
+
+    const i18n = {
+      en: {
+        total_balance: "Total Wallet Balance",
+        deposit: "Deposit", withdraw: "Withdraw", swap: "Swap", earn: "Earn",
+        featured_ad: "Featured Adsgram Task", crypto_market: "Live Crypto Market",
+        swap_title: "Currency Exchange", confirm_swap: "Confirm Swap",
+        ptc_title: "Adsgram & PTC Monetization", withdraw_options: "Withdrawal Options",
+        withdraw_btn: "Request Withdrawal", nav_home: "Home", nav_swap: "Swap", nav_earn: "Earn", nav_wallet: "Wallet"
+      },
+      am: {
+        total_balance: "ጠቅላላ የኪስ ቦርሳ የሂሳብ መጠን",
+        deposit: "አስገባ", withdraw: "ወደ ውጭ አውጣ", swap: "ቀይር", earn: "ስራ",
+        featured_ad: "የAdsgram ልዩ ማስታወቂያ", crypto_market: "የቀጥታ ክሪፕቶ ገበያ",
+        swap_title: "የምንዛሬ መቀየሪያ", confirm_swap: "ምንዛሬውን ፈጽም",
+        ptc_title: "ማስታወቂያ አይተው የሚያገኙበት", withdraw_options: "የገንዘብ ማውጫ አማራጮች",
+        withdraw_btn: "ገንዘብ ለማውጣት ጠይቅ", nav_home: "መነሻ", nav_swap: "ቀይር", nav_earn: "ስራ", nav_wallet: "ቦርሳ"
+      }
+    };
+
+    // Show Adsgram Rewarded Video Ad
+    function showAdsgramAd() {
+      if (AdsgramController) {
+        AdsgramController.show().then((result) => {
+          // User watched the ad completely
+          alert("Ad completed! +12.50 ETB Added to your balance.");
+        }).catch((result) => {
+          // Ad skipped or failed to load
+          alert("Ad was skipped or failed to load. Try again.");
+        });
+      } else {
+        alert("Adsgram SDK setup mode: Please replace 'YOUR_ADSGRAM_BLOCK_ID' in code.");
+      }
+    }
+
+    // Live Crypto Market Fetch (Free CoinGecko API)
+    async function getCryptoData() {
+      const container = document.getElementById('cryptoList');
+      try {
+        const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,solana,tether,the-open-network&order=market_cap_desc');
+        const data = await res.json();
+        
+        container.innerHTML = '';
+        data.forEach(coin => {
+          container.innerHTML += `
+            <div class="crypto-item">
+              <div class="crypto-info">
+                <img src="${coin.image}" class="crypto-icon" alt="${coin.name}">
+                <div>
+                  <div style="font-size:13px; font-weight:700;">${coin.name}</div>
+                  <div style="font-size:10px; color:var(--text-muted);">${coin.symbol.toUpperCase()}</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:13px; font-weight:700;">$${coin.current_price.toLocaleString()}</div>
+                <div style="font-size:10px; color:${coin.price_change_percentage_24h >= 0 ? 'var(--success-green)' : '#FF3B5C'};">
+                  ${coin.price_change_percentage_24h >= 0 ? '+' : ''}${coin.price_change_percentage_24h.toFixed(2)}%
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      } catch (e) {
+        container.innerHTML = `<div style="font-size:11px; color:var(--text-muted);">Failed to load live prices.</div>`;
+      }
+    }
+
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      if (el) el.classList.add('active');
+    }
+
+    function calculateSwap() {
+      const val = parseFloat(document.getElementById('exFromVal').value) || 0;
+      document.getElementById('exToVal').value = (val * usdRate).toFixed(2);
+    }
+
+    function verifyKYC() {
+      const input = document.getElementById('kycIdInput').value;
+      if (!input) return alert('Please enter your ID number.');
+      document.getElementById('kycBadge').innerText = 'KYC Verified ✓';
+      alert('KYC Document Submitted Successfully!');
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'am' : 'en';
+      document.getElementById('langBtn').innerText = currentLang === 'en' ? 'EN | አማ' : 'አማ | EN';
+      
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[currentLang][key]) el.innerText = i18n[currentLang][key];
+      });
+    }
+
+    // Initialize
+    getCryptoData();
+    calculateSwap();
+  </script>
+</body>
+</html>
