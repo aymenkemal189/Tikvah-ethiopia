@@ -3,1590 +3,1912 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>Tikvah Ethiopia v3 — Commercial SuperApp & KYC Engine</title>
+<title>Tikvah Ethiopia v5 — Enterprise SuperApp</title>
+
 <!-- Telegram WebApp SDK -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<!-- Monetag Ads SDK -->
+<script src="//libtl.com/sdk.js" data-zone="11747021" data-sdk="show_11747021"></script>
+
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          tkvBlue: '#009ACA',
+          tkvBlueDark: '#007499',
+          tkvGreen: '#00CB00',
+          tkvGreenDark: '#009E00',
+          tkvGold: '#F5A623',
+          tkvDark: '#071A22',
+          tkvSlate: '#0E2A36',
+          tkvLight: '#F5F9FB',
+          cbePurple: '#702082',
+          cbePurpleDark: '#4A154B',
+          teleGreen: '#8CC63F',
+          teleGreenDark: '#5E8F22',
+          safariRed: '#E1141E'
+        }
+      }
+    }
+  }
+</script>
+
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 
 <style>
-/* ═════════════════════════════════════════════════════════════════════════
-   TIKVAH ETHIOPIA v3 — BRAND & SYSTEM DESIGN TOKENS
-   Official Palette: Pure White #FFF, Tikvah Blue #009ACA, Green #00CB00, Slate #071A22
-═════════════════════════════════════════════════════════════════════════ */
-:root {
-  --tkv-blue:       #009ACA;
-  --tkv-blue-dark:  #007499;
-  --tkv-blue-glow:  rgba(0, 154, 202, 0.22);
-  --tkv-green:      #00CB00;
-  --tkv-green-dark: #009E00;
-  --tkv-green-glow: rgba(0, 203, 0, 0.22);
-  --tkv-gold:       #F5A623;
-  --tkv-gold-glow:  rgba(245, 166, 35, 0.25);
-  --tkv-red:        #EF4444;
+  * { -webkit-tap-highlight-color: transparent; user-select: none; box-sizing: border-box; }
+  body {
+    font-family: 'Plus Jakarta Sans', 'Noto Sans Ethiopic', sans-serif;
+    max-width: 440px;
+    margin: 0 auto;
+    background: #F5F9FB;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 60px rgba(0, 154, 202, 0.28);
+  }
+  .screen-view {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 14px 115px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .screen-view.active { display: block; }
+  .screen-view::-webkit-scrollbar { display: none; }
+  .marquee-box { overflow: hidden; white-space: nowrap; }
+  .marquee-content { display: inline-block; animation: marqueeAnim 24s linear infinite; }
+  @keyframes marqueeAnim { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+  .brand-logo-img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+  .telebirr-gradient { background: linear-gradient(135deg, #8CC63F 0%, #6BA828 100%); }
 
-  /* Official Ethiopian Enterprise Brand Colors */
-  --cbe-purple:     #702082;
-  --tele-green:     #8CC63F;
-  --ethiopian-red:  #D71920;
-  --dashen-blue:    #005A9C;
-  --awash-orange:   #F37021;
-  --fayda-gold:     #D4AF37;
-  --chapa-green:    #00D084;
+  /* Skeleton Shimmer Loading Animation */
+  .skeleton {
+    background: linear-gradient(90deg, #EAF4F8 25%, #D6EAF2 50%, #EAF4F8 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
-  --bg-dark:        #071A22;
-  --bg-slate:       #0E2A36;
-  --bg-mid:         #153A4B;
-  --bg-light:       #F5F9FB;
-  --card-bg:        #FFFFFF;
-  --card-border:    #D6EAF2;
-
-  --text-main:      #0E2A36;
-  --text-muted:     #6B8FA0;
-  --text-white:     #FFFFFF;
-
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-pill: 9999px;
-
-  --shadow-sm: 0 2px 10px rgba(0, 154, 202, 0.08);
-  --shadow-md: 0 8px 24px rgba(0, 154, 202, 0.12);
-  --shadow-lg: 0 16px 40px rgba(7, 26, 34, 0.18);
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-
-html, body {
-  height: 100%;
-  background: #040D11;
-  color: var(--text-main);
-  font-family: 'Plus Jakarta Sans', 'Noto Sans Ethiopic', sans-serif;
-  overflow: hidden;
-}
-
-body {
-  max-width: 440px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-light);
-  position: relative;
-  box-shadow: 0 0 60px rgba(0, 154, 202, 0.28);
-}
-
-/* ═════════════════════════════════════════════════════════════════════════
-   TOP SPONSOR MARQUEE & ENTERPRISE HEADER
-═════════════════════════════════════════════════════════════════════════ */
-.top-sponsor-strip {
-  background: var(--bg-dark);
-  padding: 6px 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  overflow-x: auto;
-  white-space: nowrap;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  flex-shrink: 0;
-  z-index: 60;
-}
-.top-sponsor-strip::-webkit-scrollbar { display: none; }
-.sponsor-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 9px;
-  border-radius: var(--radius-pill);
-  font-size: 0.64rem;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-  flex-shrink: 0;
-}
-.sp-tele   { background: rgba(140, 198, 63, 0.14); color: var(--tele-green); border: 1px solid rgba(140, 198, 63, 0.35); }
-.sp-cbe    { background: rgba(112, 32, 130, 0.25); color: #E879F9; border: 1px solid rgba(112, 32, 130, 0.5); }
-.sp-fayda  { background: rgba(212, 175, 55, 0.15); color: var(--fayda-gold); border: 1px solid rgba(212, 175, 55, 0.35); }
-.sp-ethiop { background: rgba(215, 25, 32, 0.15); color: #FFA3A6; border: 1px solid rgba(215, 25, 32, 0.4); }
-.sp-dashen { background: rgba(0, 90, 156, 0.2); color: #72BEFF; border: 1px solid rgba(0, 90, 156, 0.4); }
-
-.top-user-bar {
-  background: #FFFFFF;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--card-border);
-  flex-shrink: 0;
-  z-index: 50;
-}
-.user-brand-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.user-avatar-badge {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--tkv-blue), var(--tkv-green));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px var(--tkv-blue-glow);
-}
-.user-name-txt { font-size: 0.88rem; font-weight: 800; color: var(--bg-dark); line-height: 1.1; }
-.user-kyc-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.65rem;
-  font-weight: 800;
-  color: var(--tkv-green-dark);
-  background: rgba(0, 203, 0, 0.1);
-  padding: 2px 7px;
-  border-radius: var(--radius-pill);
-  margin-top: 2px;
-  cursor: pointer;
-}
-.kyc-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--tkv-green); box-shadow: 0 0 5px var(--tkv-green); }
-.kyc-dot.pending { background: var(--tkv-gold); box-shadow: 0 0 5px var(--tkv-gold); }
-
-.header-action-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.hdr-ctrl-btn {
-  background: var(--bg-light);
-  border: 1.5px solid var(--card-border);
-  padding: 5px 10px;
-  border-radius: var(--radius-sm);
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: var(--tkv-blue);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.hdr-ctrl-btn:active { transform: scale(0.95); }
-
-/* ═════════════════════════════════════════════════════════════════════════
-   SCREENS VIEWPORT ROUTER
-═════════════════════════════════════════════════════════════════════════ */
-.screens-viewport {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  background: var(--bg-light);
-}
-.screen-panel {
-  position: absolute;
-  inset: 0;
-  overflow-y: auto;
-  padding: 14px 14px 100px;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(8px);
-  transition: opacity 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
-  -webkit-overflow-scrolling: touch;
-}
-.screen-panel::-webkit-scrollbar { display: none; }
-.screen-panel.active {
-  opacity: 1;
-  pointer-events: all;
-  transform: translateY(0);
-}
-
-/* ═════════════════════════════════════════════════════════════════════════
-   HERO PORTFOLIO & METRIC CARDS
-═════════════════════════════════════════════════════════════════════════ */
-.hero-macro-card {
-  background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-slate) 100%);
-  border-radius: var(--radius-lg);
-  padding: 20px 18px;
-  color: #FFFFFF;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 154, 202, 0.2);
-  border: 1px solid rgba(0, 154, 202, 0.3);
-  margin-bottom: 12px;
-}
-.hero-macro-card::before {
-  content: '';
-  position: absolute;
-  top: -60px; right: -60px;
-  width: 160px; height: 160px;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--tkv-green-glow) 0%, transparent 70%);
-  pointer-events: none;
-}
-.hm-top-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.6);
-}
-.hm-balance-val {
-  font-family: 'DM Mono', monospace;
-  font-size: 2.6rem;
-  font-weight: 700;
-  color: #FFFFFF;
-  margin: 6px 0 12px;
-  letter-spacing: -1px;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-.hm-balance-val span.currency-mark { color: var(--tkv-green); font-size: 1.6rem; }
-.hm-stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-}
-.hm-stat-box {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.09);
-  border-radius: var(--radius-sm);
-  padding: 7px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.hms-label { font-size: 0.62rem; color: rgba(255,255,255,0.5); font-weight: 600; }
-.hms-num { font-family: 'DM Mono', monospace; font-size: 0.8rem; font-weight: 700; color: #FFFFFF; }
-.hms-num.green { color: var(--tkv-green); }
-.hms-num.gold  { color: var(--tkv-gold); }
-
-/* Section Title Bar */
-.section-headline-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 16px 0 10px;
-}
-.sh-title {
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.sh-sublink {
-  font-size: 0.72rem;
-  color: var(--tkv-blue);
-  font-weight: 700;
-  cursor: pointer;
-}
-
-/* ═════════════════════════════════════════════════════════════════════════
-   ETHIOPIAN CONGLOMERATE SIMULATOR (8 INDUSTRIES)
-═════════════════════════════════════════════════════════════════════════ */
-.enterprise-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-.ent-card {
-  background: #FFFFFF;
-  border: 1.5px solid var(--card-border);
-  border-radius: var(--radius-md);
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
-}
-.ent-card:hover { border-color: var(--tkv-blue); transform: translateY(-2px); }
-.ent-card-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-.ent-icon-wrapper {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #F0F9FD;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.ent-lvl-badge {
-  font-size: 0.65rem;
-  font-weight: 800;
-  background: rgba(0, 154, 202, 0.1);
-  color: var(--tkv-blue);
-  padding: 2px 7px;
-  border-radius: var(--radius-pill);
-}
-.ent-name-txt { font-size: 0.85rem; font-weight: 800; color: var(--bg-dark); line-height: 1.2; margin-bottom: 4px; }
-.ent-rate-txt { font-family: 'DM Mono', monospace; font-size: 0.72rem; font-weight: 700; color: var(--tkv-green-dark); margin-bottom: 10px; }
-.ent-upgrade-btn {
-  background: var(--bg-light);
-  border: 1.5px solid var(--card-border);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: var(--bg-dark);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.ent-upgrade-btn:active { background: var(--tkv-blue); color: #FFF; border-color: var(--tkv-blue); }
-
-/* ═════════════════════════════════════════════════════════════════════════
-   4-HOUR PREDICTION ARENA & LIVE CANVAS CHARTS
-═════════════════════════════════════════════════════════════════════════ */
-.prediction-arena-card {
-  background: linear-gradient(145deg, #0D2633, #071A22);
-  border: 1px solid rgba(0, 154, 202, 0.4);
-  border-radius: var(--radius-lg);
-  padding: 18px;
-  color: #FFFFFF;
-  margin-bottom: 14px;
-}
-.pred-top-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  font-weight: 800;
-}
-.pred-pool-badge {
-  background: rgba(245, 166, 35, 0.15);
-  border: 1px solid rgba(245, 166, 35, 0.35);
-  color: var(--tkv-gold);
-  padding: 3px 8px;
-  border-radius: var(--radius-pill);
-}
-.pred-timer {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.78rem;
-  color: var(--tkv-green);
-}
-.pred-target-asset {
-  font-family: 'DM Mono', monospace;
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin: 8px 0 12px;
-}
-.pred-actions-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-.pred-btn {
-  padding: 12px;
-  border-radius: var(--radius-md);
-  border: none;
-  font-weight: 800;
-  font-size: 0.85rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: all 0.15s;
-}
-.pred-btn.bull { background: linear-gradient(135deg, var(--tkv-green), #68E868); color: #05260C; }
-.pred-btn.bear { background: linear-gradient(135deg, var(--tkv-red), #F87171); color: #FFFFFF; }
-.pred-btn:active { transform: scale(0.96); }
-
-.crypto-chart-container {
-  background: #FFFFFF;
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-lg);
-  padding: 16px;
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 14px;
-}
-.chart-timeframe-tabs {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-.ctf-btn {
-  flex: 1;
-  background: var(--bg-light);
-  border: 1px solid var(--card-border);
-  color: var(--text-muted);
-  font-size: 0.7rem;
-  font-weight: 800;
-  padding: 6px 0;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  text-align: center;
-}
-.ctf-btn.active {
-  background: var(--tkv-blue);
-  border-color: var(--tkv-blue);
-  color: #FFFFFF;
-}
-.canvas-wrapper-box {
-  width: 100%;
-  height: 140px;
-  position: relative;
-}
-canvas#liveCoinGeckoChart { width: 100%; height: 100%; }
-
-/* ═════════════════════════════════════════════════════════════════════════
-   TASK & KYC MARKETPLACE ITEMS
-═════════════════════════════════════════════════════════════════════════ */
-.task-row-card {
-  background: #FFFFFF;
-  border: 1.5px solid var(--card-border);
-  border-radius: var(--radius-md);
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 8px;
-  transition: border-color 0.15s;
-}
-.task-row-card:hover { border-color: var(--tkv-blue); }
-.task-row-card.done { opacity: 0.6; pointer-events: none; }
-.trc-icon-box {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.trc-body { flex: 1; }
-.trc-title { font-size: 0.85rem; font-weight: 800; color: var(--bg-dark); }
-.trc-desc  { font-size: 0.72rem; color: var(--text-muted); }
-.sponsor-tag-badge {
-  font-size: 0.6rem;
-  font-weight: 800;
-  background: var(--tkv-gold);
-  color: #000;
-  padding: 1px 5px;
-  border-radius: 4px;
-  margin-left: 4px;
-}
-.trc-action-btn {
-  background: rgba(0, 203, 0, 0.1);
-  border: 1.5px solid var(--tkv-green);
-  color: var(--tkv-green-dark);
-  font-family: 'DM Mono', monospace;
-  font-size: 0.78rem;
-  font-weight: 800;
-  padding: 7px 12px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  white-space: nowrap;
-}
-.trc-action-btn:active { transform: scale(0.95); }
-
-/* ═════════════════════════════════════════════════════════════════════════
-   FAYDA e-KYC MANUAL DOCUMENT UPLOADER
-═════════════════════════════════════════════════════════════════════════ */
-.kyc-upload-zone {
-  border: 2px dashed var(--card-border);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  text-align: center;
-  background: #F8FCFD;
-  cursor: pointer;
-  margin-bottom: 12px;
-  position: relative;
-  transition: all 0.2s ease;
-}
-.kyc-upload-zone:hover { border-color: var(--tkv-blue); background: #EFF9FC; }
-.kyc-preview-img {
-  width: 100%;
-  max-height: 120px;
-  object-fit: cover;
-  border-radius: 10px;
-  display: none;
-  margin-top: 8px;
-}
-.kyc-input-field {
-  width: 100%;
-  padding: 11px 14px;
-  border: 1.5px solid var(--card-border);
-  border-radius: 10px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.85rem;
-  margin-bottom: 10px;
-  outline: none;
-}
-.kyc-input-field:focus { border-color: var(--tkv-blue); }
-
-/* ═════════════════════════════════════════════════════════════════════════
-   BOTTOM DOCK NAVIGATION BAR (7 HIGH-DENSITY SVG TABS)
-═════════════════════════════════════════════════════════════════════════ */
-.main-dock-nav {
-  position: absolute;
-  bottom: 0;
-  left: 0; right: 0;
-  background: #FFFFFF;
-  border-top: 1px solid var(--card-border);
-  display: flex;
-  padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
-  z-index: 100;
-}
-.dock-tab {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  color: var(--text-muted);
-  cursor: pointer;
-  padding: 4px 0;
-  transition: all 0.15s;
-}
-.dock-tab svg { width: 21px; height: 21px; transition: transform 0.15s; }
-.dock-tab-label { font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; }
-.dock-tab.active { color: var(--tkv-blue); }
-.dock-tab.active svg { transform: scale(1.14); stroke: var(--tkv-blue); }
-
-/* ═════════════════════════════════════════════════════════════════════════
-   MODALS: REWARDED AD PLAYER, CIPHER, KYC, CASHOUT, TOAST
-═════════════════════════════════════════════════════════════════════════ */
-.modal-overlay-bg {
-  position: fixed;
-  inset: 0;
-  background: rgba(7, 26, 34, 0.88);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 2000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-}
-.modal-overlay-bg.open { opacity: 1; pointer-events: all; }
-
-.modal-dialog-box {
-  background: #FFFFFF;
-  border-radius: var(--radius-lg);
-  width: 100%;
-  max-width: 390px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 22px;
-  text-align: center;
-  box-shadow: var(--shadow-lg);
-  transform: translateY(20px);
-  transition: transform 0.25s ease;
-}
-.modal-dialog-box::-webkit-scrollbar { display: none; }
-.modal-overlay-bg.open .modal-dialog-box { transform: translateY(0); }
-
-.ad-countdown-circle {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: 4px solid var(--tkv-green);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'DM Mono', monospace;
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--tkv-green-dark);
-  margin: 16px auto;
-}
-
-.toast-alert {
-  position: fixed;
-  top: 55px;
-  left: 50%;
-  transform: translateX(-50%) translateY(-20px);
-  background: var(--bg-dark);
-  border: 1px solid var(--tkv-blue);
-  color: #FFFFFF;
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 10px 22px;
-  border-radius: var(--radius-pill);
-  z-index: 3000;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-md);
-}
-.toast-alert.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+  /* Podium Styling */
+  .podium-1 { height: 86px; background: linear-gradient(180deg, #F5A623 0%, #D48806 100%); }
+  .podium-2 { height: 68px; background: linear-gradient(180deg, #009ACA 0%, #007499 100%); }
+  .podium-3 { height: 52px; background: linear-gradient(180deg, #00CB00 0%, #009E00 100%); }
 </style>
 </head>
-<body>
+<body class="bg-tkvLight text-tkvSlate">
 
-  <!-- ══════════════════════════════════════════════════════════════════════
-       1. TOP SPONSOR MARQUEE (ETHIO TELECOM, CBE, FAYDA, ETHIOPIAN, DASHEN)
-  ══════════════════════════════════════════════════════════════════════ -->
-  <div class="top-sponsor-strip">
-    <div class="sponsor-chip sp-tele">
-      <!-- Ethio Telecom SVG -->
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
-      Telebirr 5G
+  <!-- ══════════════════════════════════════════════════════════════════
+       1. TOP BRAND SPONSOR STRIP & LIVE PAYOUT MARQUEE
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="bg-tkvDark text-white px-3 py-1.5 flex items-center justify-between text-[10px] font-bold z-50 border-b border-white/10 shrink-0">
+    <div class="flex items-center gap-1.5 shrink-0">
+      <div class="flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded-full border border-white/20">
+        <img src="https://i.postimg.cc/fbJp3J8Q/20260907-115957.jpg" class="w-3.5 h-3.5 rounded-full object-cover"/>
+        <span class="text-teleGreen font-bold">Telebirr 5G</span>
+      </div>
+      <div class="flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded-full border border-white/20">
+        <img src="https://i.postimg.cc/02ktMzQx/20260907-120252.jpg" class="w-3.5 h-3.5 rounded-full object-cover"/>
+        <span class="text-purple-300 font-bold">CBE</span>
+      </div>
     </div>
-    <div class="sponsor-chip sp-cbe">
-      <!-- CBE SVG -->
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 21h18M3 10h18M5 10v11M19 10v11M9 10v11M15 10v11M12 3l9 7H3z"/></svg>
-      CBE Platinum
-    </div>
-    <div class="sponsor-chip sp-fayda">
-      <!-- Fayda ID SVG -->
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      Fayda e-ID
-    </div>
-    <div class="sponsor-chip sp-ethiop">
-      <!-- Ethiopian Airlines SVG -->
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
-      Ethiopian Cargo
-    </div>
-    <div class="sponsor-chip sp-dashen">
-      <!-- Dashen Bank SVG -->
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-      Dashen Amole
+    <div class="marquee-box w-40 text-tkvGold font-mono text-[9px]">
+      <span class="marquee-content">🎉 30% Discount on Deposits • Telebirr/CBE: 09*******07 • M-PESA: 07*******06 • 1 USD = 160 ETB • Live Support 24/7</span>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════════════════════════
-       2. TOP USER BAR (PROFILE, FAYDA KYC BADGE, CONTROLS)
-  ══════════════════════════════════════════════════════════════════════ -->
-  <div class="top-user-bar">
-    <div class="user-brand-group">
-      <div class="user-avatar-badge">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2"><path d="M12 2L9 8h6l-3-6zM3 10l3 11h12l3-11-5 4-4-6-4 6-5-4z"/></svg>
+  <!-- ══════════════════════════════════════════════════════════════════
+       2. TOP USER BAR (PROFILE, FAYDA BADGE, TON & SUPPORT)
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="bg-white px-3.5 py-2 flex items-center justify-between border-b border-blue-100 shadow-sm shrink-0 z-40">
+    <div class="flex items-center gap-2 cursor-pointer" onclick="openProfileModal()">
+      <div class="w-9 h-9 rounded-full bg-white flex items-center justify-center shadow-md overflow-hidden border border-tkvBlue/40 p-0.5">
+        <img src="https://i.postimg.cc/LXSpj6HB/IMG-20260907-171846-651.jpg" alt="Tikvah Logo" class="w-full h-full object-cover rounded-full"/>
       </div>
       <div>
-        <div class="user-name-txt" id="displayUsername">Tikvah Executive</div>
-        <div class="user-kyc-pill" onclick="switchDock('tab-kyc')">
-          <span class="kyc-dot" id="headerKycDot"></span>
-          <span id="kycStatusBadge">Tier 1: Basic (Verify Fayda)</span>
+        <div class="font-extrabold text-xs text-tkvDark leading-tight flex items-center gap-1">
+          <span id="uiName">Tikvah Member</span>
+          <span class="bg-tkvGold/20 text-yellow-800 text-[8px] px-1.5 py-0.2 rounded font-bold" id="uiUserRegion">Addis Ababa</span>
+        </div>
+        <div class="text-[10px] text-gray-500 font-mono flex items-center gap-1.5 mt-0.5">
+          <span>ID: <b id="uiUserId">847291</b></span>
+          <span class="text-tkvGreen font-bold cursor-pointer flex items-center gap-1" onclick="event.stopPropagation(); openKycFullView()">
+            <img src="https://i.postimg.cc/VkDP0y1g/20260907-115806.jpg" class="w-3 h-3 rounded-full"/>
+            <span id="uiHeaderKycText">Fayda e-KYC</span>
+          </span>
         </div>
       </div>
     </div>
-    <div class="header-action-group">
-      <button class="hdr-ctrl-btn" onclick="cycleLanguage()" id="btnLang">አማርኛ</button>
-      <button class="hdr-ctrl-btn" onclick="toggleAudioFx()" id="btnAudio">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+    <div class="flex items-center gap-1.5">
+      <!-- Support Button -->
+      <button class="bg-blue-50 text-tkvBlue p-1.5 rounded-xl text-xs font-bold" onclick="openSupportModal()" title="Live Support">
+        💬
+      </button>
+      <button class="bg-gradient-to-r from-tkvBlue to-tkvBlueDark text-white px-2.5 py-1.5 rounded-xl font-bold text-[10px] shadow-sm flex items-center gap-1" onclick="openTonModal()">
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 9 12 22 22 9 12 2"/></svg>
+        <span id="uiTonBtn">TON</span>
+      </button>
+      <button class="bg-gray-100 text-tkvBlue p-1.5 rounded-xl text-[10px] font-bold" onclick="cycleLanguage()" id="uiLangBtn">አማ</button>
+      <button class="bg-gray-100 text-tkvSlate p-1.5 rounded-xl text-[10px] font-bold" onclick="toggleAudioFx()">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
       </button>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════════════════════════
-       3. SCREENS VIEWPORT ROUTER (7 POWERFUL TABS)
-  ══════════════════════════════════════════════════════════════════════ -->
-  <div class="screens-viewport">
-
-    <!-- ──────────────────────────────────────────────────────────────────
-         TAB 1: EXECUTIVE DASHBOARD (HOME)
-    ────────────────────────────────────────────────────────────────── -->
-    <div id="tab-home" class="screen-panel active">
-      <div class="hero-macro-card">
-        <div class="hm-top-meta">
-          <span id="txtPortfolioTitle">National TKVH Net Worth</span>
-          <span style="color:var(--tkv-green)">● API Connected</span>
-        </div>
-        <div class="hm-balance-val">
-          <span class="currency-mark">✦</span>
-          <span id="txtUserBalance">847,350</span>
-        </div>
-        <div class="hm-stats-grid">
-          <div class="hm-stat-box">
-            <span class="hms-label" id="txtPassiveLabel">Hourly Yield</span>
-            <span class="hms-num green" id="txtPassiveRateDisplay">+2,450/hr</span>
-          </div>
-          <div class="hm-stat-box">
-            <span class="hms-label">Streak Mult</span>
-            <span class="hms-num gold">Day 7 (×2.0)</span>
-          </div>
-          <div class="hm-stat-box">
-            <span class="hms-label">National Rank</span>
-            <span class="hms-num">#18 Ethiopia</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Daily Cipher YouTube Hook Card -->
-      <div class="task-row-card" style="border-color:var(--tkv-gold);background:#FFFAF2" onclick="openCipherModal()">
-        <div class="trc-icon-box" style="background:rgba(245,166,35,0.15)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        </div>
-        <div class="trc-body">
-          <div class="trc-title">Daily YouTube Cipher <span class="sponsor-tag-badge">+500 TKVH</span></div>
-          <div class="trc-desc">Watch broadcast on YouTube (658K Subs) & decode</div>
-        </div>
-        <button class="trc-action-btn" style="border-color:var(--tkv-gold);color:#B45309">Solve</button>
-      </div>
-
-      <!-- Quick Action Gateway -->
-      <div class="enterprise-grid" style="margin-bottom:12px">
-        <div class="ent-card" style="background:#F2FCF2;border-color:var(--tkv-green);padding:10px" onclick="openCashoutModal()">
-          <div style="font-weight:800;font-size:0.8rem;color:var(--tkv-green-dark)">Telebirr & CBE Payout</div>
-          <div style="font-size:0.65rem;color:var(--text-muted)">Withdraw to Birr (ETB)</div>
-        </div>
-        <div class="ent-card" style="background:#FEF8EC;border-color:var(--tkv-gold);padding:10px" onclick="switchDock('tab-kyc')">
-          <div style="font-weight:800;font-size:0.8rem;color:#B45309">Fayda National ID</div>
-          <div style="font-size:0.65rem;color:var(--text-muted)">Submit Documents</div>
-        </div>
-      </div>
-
-      <!-- Live Spot Rates -->
-      <div class="section-headline-bar">
-        <span class="sh-title">Live Spot Rates (Crypto Data API)</span>
-        <span class="sh-sublink" onclick="switchDock('tab-market')">Full Desk →</span>
-      </div>
-
-      <div class="task-row-card" onclick="switchDock('tab-market')">
-        <div class="trc-icon-box" style="background:#EBF7FC">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#009ACA" stroke-width="2"><polygon points="12 2 2 9 12 22 22 9 12 2"/></svg>
-        </div>
-        <div class="trc-body">
-          <div class="trc-title">The Open Network (TON)</div>
-          <div class="trc-desc">Telegram Native Blockchain</div>
-        </div>
-        <div style="text-align:right;font-family:'DM Mono',monospace">
-          <div style="font-weight:800;font-size:0.9rem" id="spotPriceTON">$5.84</div>
-          <div style="font-size:0.7rem;color:var(--tkv-green)">+4.2%</div>
-        </div>
-      </div>
+  <!-- Real TKVH Balances Bar (NO ETB ON HOME PAGE AS REQUESTED) -->
+  <div class="bg-gradient-to-r from-tkvSlate to-tkvDark text-white px-3.5 py-2 flex items-center justify-between text-xs font-mono shrink-0 shadow-inner">
+    <div class="flex items-center gap-1">
+      <span class="text-tkvGreen font-bold">✦</span>
+      <span id="balTKVH" class="font-bold">0</span> <span class="text-[9px] text-gray-400">TKVH</span>
     </div>
-
-    <!-- ──────────────────────────────────────────────────────────────────
-         TAB 2: BUSINESS EMPIRE (8-INDUSTRY STRATEGIC SIMULATOR)
-    ────────────────────────────────────────────────────────────────── -->
-    <div id="tab-business" class="screen-panel">
-      <div class="section-headline-bar">
-        <span class="sh-title">Ethiopian Macro Conglomerate</span>
-        <span style="font-size:0.72rem;color:var(--tkv-blue);font-weight:700">Passive Yield Matrix</span>
-      </div>
-
-      <div class="enterprise-grid">
-        <!-- 1. GERD Clean Power -->
-        <div class="ent-card" onclick="upgradeIndustry(0)">
-          <div class="ent-card-top">
-            <div class="ent-icon-wrapper">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#009ACA" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            </div>
-            <span class="ent-lvl-badge" id="entLvl-0">Lvl 4</span>
-          </div>
-          <div class="ent-name-txt">GERD Clean Power</div>
-          <div class="ent-rate-txt" id="entRate-0">+650 TKVH/hr</div>
-          <button class="ent-upgrade-btn">
-            <span>Upgrade</span>
-            <span id="entCost-0">12,000</span>
-          </button>
-        </div>
-
-        <!-- 2. Ethiopian Airlines Global Cargo -->
-        <div class="ent-card" onclick="upgradeIndustry(1)">
-          <div class="ent-card-top">
-            <div class="ent-icon-wrapper">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D71920" stroke-width="2"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
-            </div>
-            <span class="ent-lvl-badge" id="entLvl-1">Lvl 3</span>
-          </div>
-          <div class="ent-name-txt">Ethiopian Cargo Logistics</div>
-          <div class="ent-rate-txt" id="entRate-1">+520 TKVH/hr</div>
-          <button class="ent-upgrade-btn">
-            <span>Upgrade</span>
-            <span id="entCost-1">9,800</span>
-          </button>
-        </div>
-
-        <!-- 3. Yirgacheffe Coffee Desk -->
-        <div class="ent-card" onclick="upgradeIndustry(2)">
-          <div class="ent-card-top">
-            <div class="ent-icon-wrapper">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
-            </div>
-            <span class="ent-lvl-badge" id="entLvl-2">Lvl 3</span>
-          </div>
-          <div class="ent-name-txt">Yirgacheffe Coffee Export</div>
-          <div class="ent-rate-txt" id="entRate-2">+410 TKVH/hr</div>
-          <button class="ent-upgrade-btn">
-            <span>Upgrade</span>
-            <span id="entCost-2">8,200</span>
-          </button>
-        </div>
-
-        <!-- 4. Ethio Telecom 5G Infrastructure -->
-        <div class="ent-card" onclick="upgradeIndustry(3)">
-          <div class="ent-card-top">
-            <div class="ent-icon-wrapper">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8CC63F" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
-            </div>
-            <span class="ent-lvl-badge" id="entLvl-3">Lvl 2</span>
-          </div>
-          <div class="ent-name-txt">Ethio Telecom 5G Grid</div>
-          <div class="ent-rate-txt" id="entRate-3">+270 TKVH/hr</div>
-          <button class="ent-upgrade-btn">
-            <span>Upgrade</span>
-            <span id="entCost-3">5,400</span>
-          </button>
-        </div>
-
-        <!-- 5. Oromia & Benshangul Gold Mine -->
-        <div class="ent-card" onclick="upgradeIndustry(4)">
-          <div class="ent-card-top">
-            <div class="ent-icon-wrapper">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2"><polygon points="12 2 2 9 12 22 22 9 12 2"/></svg>
-            </div>
-            <span class="ent-lvl-badge" id="entLvl-4">Lvl 2</span>
-          </div>
-          <div class="ent-name-txt">Gold Mining & Refinery</div>
-          <div class="ent-rate-txt" id="entRate-4">+380 TKVH/hr</div>
-          <button class="ent-upgrade-btn">
-            <span>Upgrade</span>
-            <span id="entCost-4">7,600</span>
-          </button>
-        </div>
-
-        <!-- 6. Teff Agro Processing -->
-        <div class="ent-card" onclick="upgradeIndustry(5)">
-          <div class="ent-card-top">
-            <div class="ent-icon-wrapper">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00CB00" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
-            </div>
-            <span class="ent-lvl-badge" id="entLvl-5">Lvl 1</span>
-          </div>
-          <div class="ent-name-txt">Teff Agro-Industries</div>
-          <div class="ent-rate-txt" id="entRate-5">+220 TKVH/hr</div>
-          <button class="ent-upgrade-btn">
-            <span>Upgrade</span>
-            <span id="entCost-5">4,100</span>
-          </button>
-        </div>
-      </div>
+    <div class="flex items-center gap-1">
+      <span class="text-tkvGold font-bold">$</span>
+      <span id="balUSD" class="text-tkvGold font-bold">0.00</span> <span class="text-[9px] text-gray-400">USD</span>
     </div>
-
-    <!-- ──────────────────────────────────────────────────────────────────
-         TAB 3: TASKS, CORPORATE SPONSORS & REWARDED ADS
-    ────────────────────────────────────────────────────────────────── -->
-    <div id="tab-tasks" class="screen-panel">
-      <!-- Monetag Rewarded Video Card -->
-      <div class="task-row-card" style="background:#0D2633;border-color:var(--tkv-green);color:#FFF">
-        <div class="trc-icon-box" style="background:rgba(0,203,0,0.15)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00CB00" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        </div>
-        <div class="trc-body">
-          <div class="trc-title" style="color:#FFF">Monetag Rewarded Video</div>
-          <div class="trc-desc" style="color:var(--text-muted)">Watch 15s Video for +100 TKVH (<span id="txtAdLimit">10</span> left)</div>
-        </div>
-        <button class="trc-action-btn" style="background:var(--tkv-green);color:#05260C" onclick="openRewardedAd()">Watch</button>
-      </div>
-
-      <div class="section-headline-bar">
-        <span class="sh-title">Corporate Share Campaigns</span>
-      </div>
-
-      <!-- Ethio Telecom Telebirr -->
-      <div class="task-row-card">
-        <div class="trc-icon-box" style="background:rgba(140,198,63,0.15)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8CC63F" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
-        </div>
-        <div class="trc-body">
-          <div class="trc-title">Ethio Telecom Telebirr <span class="sponsor-tag-badge">SPONSORED</span></div>
-          <div class="trc-desc">Open Telebirr 5G Portal & Test SuperApp</div>
-        </div>
-        <button class="trc-action-btn" onclick="claimMission(this, 5000)">+5,000</button>
-      </div>
-
-      <!-- Commercial Bank of Ethiopia (CBE) -->
-      <div class="task-row-card">
-        <div class="trc-icon-box" style="background:rgba(112,32,130,0.15)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#702082" stroke-width="2"><path d="M3 21h18M3 10h18M5 10v11M19 10v11M9 10v11M15 10v11M12 3l9 7H3z"/></svg>
-        </div>
-        <div class="trc-body">
-          <div class="trc-title">Commercial Bank of Ethiopia <span class="sponsor-tag-badge">SPONSORED</span></div>
-          <div class="trc-desc">Bind Verified CBE Birr Account Number</div>
-        </div>
-        <button class="trc-action-btn" onclick="claimMission(this, 4000)">+4,000</button>
-      </div>
-
-      <!-- Ethiopian Airlines ShebaMiles -->
-      <div class="task-row-card">
-        <div class="trc-icon-box" style="background:rgba(215,25,32,0.15)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D71920" stroke-width="2"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
-        </div>
-        <div class="trc-body">
-          <div class="trc-title">Ethiopian Airlines Cargo <span class="sponsor-tag-badge">PARTNER</span></div>
-          <div class="trc-desc">Join ShebaMiles Telegram Campaign</div>
-        </div>
-        <button class="trc-action-btn" onclick="claimMission(this, 3500)">+3,500</button>
-      </div>
-
-      <!-- Dashen Bank Amole -->
-      <div class="task-row-card">
-        <div class="trc-icon-box" style="background:rgba(0,90,156,0.15)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#005A9C" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-        </div>
-        <div class="trc-body">
-          <div class="trc-title">Dashen Bank Amole <span class="sponsor-tag-badge">PARTNER</span></div>
-          <div class="trc-desc">Explore Dashen Digital Financial Desk</div>
-        </div>
-        <button class="trc-action-btn" onclick="claimMission(this, 3000)">+3,000</button>
-      </div>
-
-      <!-- YouTube Subscribe -->
-      <div class="task-row-card">
-        <div class="trc-icon-box" style="background:rgba(239,68,68,0.12)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
-        </div>
-        <div class="trc-body">
-          <div class="trc-title">Subscribe to Tikvah YouTube</div>
-          <div class="trc-desc">Tikvah Ethiopia Official (658K Subs)</div>
-        </div>
-        <button class="trc-action-btn" onclick="claimMission(this, 2500)">+2,500</button>
-      </div>
-
-      <!-- Telegram Channel -->
-      <div class="task-row-card">
-        <div class="trc-icon-box" style="background:rgba(0,154,202,0.12)">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#009ACA" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </div>
-        <div class="trc-body">
-          <div class="trc-title">Join Telegram Community</div>
-          <div class="trc-desc">@tikvahethiopia (1.59M Members)</div>
-        </div>
-        <button class="trc-action-btn" onclick="claimMission(this, 2000)">+2,000</button>
-      </div>
+    <div class="flex items-center gap-1">
+      <span>🎟️</span>
+      <span id="topSpinTickets" class="font-bold text-white">3</span> <span class="text-[9px] text-gray-400">Spins</span>
     </div>
-
-    <!-- ──────────────────────────────────────────────────────────────────
-         TAB 4: MARKET & 4-HOUR PREDICTION ARENA (WITH USER LIVE API KEY)
-    ────────────────────────────────────────────────────────────────── -->
-    <div id="tab-market" class="screen-panel">
-      <!-- 4-Hour Prediction Arena -->
-      <div class="prediction-arena-card">
-        <div class="pred-top-meta">
-          <span class="pred-pool-badge">Live Pool: 680,000 TKVH</span>
-          <span class="pred-timer" id="predCountdown">Round Closes: 02h 44m</span>
-        </div>
-        <div class="pred-target-asset" id="predAssetTicker">BTC/USD: $65,420</div>
-        <div class="pred-actions-grid">
-          <button class="pred-btn bull" onclick="submitPrediction('BULL')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            BULL (Rise)
-          </button>
-          <button class="pred-btn bear" onclick="submitPrediction('BEAR')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
-            BEAR (Fall)
-          </button>
-        </div>
-      </div>
-
-      <!-- Real-Time CoinGecko / API Canvas Chart -->
-      <div class="crypto-chart-container">
-        <div class="chart-timeframe-tabs">
-          <div class="ctf-btn active" onclick="switchChartTimeframe(this, '1H')">1H</div>
-          <div class="ctf-btn" onclick="switchChartTimeframe(this, '24H')">24H</div>
-          <div class="ctf-btn" onclick="switchChartTimeframe(this, '7D')">7D</div>
-          <div class="ctf-btn" onclick="switchChartTimeframe(this, '30D')">30D</div>
-        </div>
-        <div class="canvas-wrapper-box">
-          <canvas id="liveCoinGeckoChart"></canvas>
-        </div>
-      </div>
-
-      <!-- Real Vector Crypto Assets (Bitcoin, Ethereum, Solana, BNB, USDT, STON.fi) -->
-      <div class="task-row-card">
-        <div class="trc-icon-box" style="background:#FEF8EC">
-          <!-- Bitcoin SVG -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 8h4a2 2 0 0 1 0 4H9m0 0h5a2 2 0 0 1 0 4H9m0-8v8m2-10v2m2-2v2m-2 8v2m2-2v2"/></svg>
-        </div>
-        <div class="trc-body"><div class="trc-title">Bitcoin</div><div class="trc-desc">BTC · Digital Gold</div></div>
-        <div style="font-family:'DM Mono',monospace;font-weight:800" id="livePriceBTC">$65,420</div>
-      </div>
-
-      <div class="task-row-card">
-        <div class="trc-icon-box" style="background:#F3EEFD">
-          <!-- Ethereum SVG -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M12 2L4 12l8 5 8-5-8-5z"/><path d="M4 12l8 10 8-10-8 5-8-5z"/></svg>
-        </div>
-        <div class="trc-body"><div class="trc-title">Ethereum</div><div class="trc-desc">ETH · Smart Contracts</div></div>
-        <div style="font-family:'DM Mono',monospace;font-weight:800" id="livePriceETH">$3,510</div>
-      </div>
-
-      <div class="task-row-card">
-        <div class="trc-icon-box" style="background:#EBF7FC">
-          <!-- Solana SVG -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#009ACA" stroke-width="2"><polygon points="12 2 2 9 12 22 22 9 12 2"/></svg>
-        </div>
-        <div class="trc-body"><div class="trc-title">Solana</div><div class="trc-desc">SOL · High Throughput</div></div>
-        <div style="font-family:'DM Mono',monospace;font-weight:800" id="livePriceSOL">$152.40</div>
-      </div>
+    <div class="flex items-center gap-1">
+      <span class="text-tkvGreen font-bold">📈</span>
+      <span id="headerPassiveRate" class="text-[10px] text-tkvGreen font-bold">+150/h</span>
     </div>
-
-    <!-- ──────────────────────────────────────────────────────────────────
-         TAB 5: MULTI-WALLET & FIAT BRIDGING HUB
-    ────────────────────────────────────────────────────────────────── -->
-    <div id="tab-wallet" class="screen-panel">
-      <div class="hero-macro-card" style="background:linear-gradient(135deg, #007499 0%, #009ACA 50%, #00CB00 100%)">
-        <div class="hm-top-meta">Multi-Chain & Telebirr Bridge</div>
-        <div class="hm-balance-val">$488.60 USD</div>
-        <div style="background:rgba(0,0,0,0.25);padding:6px 12px;border-radius:var(--radius-pill);font-family:'DM Mono',monospace;font-size:0.72rem;display:inline-flex;align-items:center;gap:6px;cursor:pointer" onclick="copyAddress('EQC7f9...a4Kp9')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          EQC7f9...a4Kp9 · TON Space
-        </div>
-      </div>
-
-      <div class="section-headline-bar">
-        <span class="sh-title">Direct Local Cash-Out Bridge</span>
-      </div>
-
-      <div class="enterprise-grid">
-        <div class="ent-card" style="background:#F2FCF2;border-color:var(--tkv-green)" onclick="openCashoutModal()">
-          <div style="font-weight:800;font-size:0.85rem;color:var(--tele-green)">Telebirr Cash-Out</div>
-          <div style="font-size:0.68rem;color:var(--text-muted)">10,000 TKVH = 100 ETB</div>
-        </div>
-        <div class="ent-card" style="background:#FDF2FC;border-color:var(--cbe-purple)" onclick="openCashoutModal()">
-          <div style="font-weight:800;font-size:0.85rem;color:var(--cbe-purple)">CBE Birr Payout</div>
-          <div style="font-size:0.68rem;color:var(--text-muted)">Direct Bank Account Link</div>
-        </div>
-      </div>
-
-      <div class="section-headline-bar">
-        <span class="sh-title">On-Chain Asset Holdings</span>
-      </div>
-
-      <div class="task-row-card">
-        <div class="trc-icon-box" style="background:#EBF7FC">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#009ACA" stroke-width="2"><polygon points="12 2 2 9 12 22 22 9 12 2"/></svg>
-        </div>
-        <div class="trc-body"><div class="trc-title">TKVH Jetton</div><div class="trc-desc">TON Blockchain (TEP-74)</div></div>
-        <div style="font-family:'DM Mono',monospace;font-weight:800">84.73 TKVH</div>
-      </div>
-    </div>
-
-    <!-- ──────────────────────────────────────────────────────────────────
-         TAB 6: FAYDA NATIONAL e-ID DOCUMENT KYC ENGINE (MANUAL TEAM REVIEW)
-    ────────────────────────────────────────────────────────────────── -->
-    <div id="tab-kyc" class="screen-panel">
-      <div class="hero-macro-card" style="background:linear-gradient(135deg, #1C1502 0%, #362908 100%);border-color:var(--fayda-gold)">
-        <div class="hm-top-meta">
-          <span style="color:var(--fayda-gold)">National e-KYC Registry</span>
-          <span id="kycVerificationBadgeText" style="color:var(--tkv-gold)">● Pending Verification</span>
-        </div>
-        <div style="font-size:1.3rem;font-weight:800;color:#FFF;margin:8px 0 4px">Fayda National Identification</div>
-        <div style="font-size:0.75rem;color:rgba(255,255,255,0.75)">
-          Submit your official 12-digit Fayda number and ID card front & back photos for manual team verification to unlock 100% token airdrops and CBE/Telebirr cash-out.
-        </div>
-      </div>
-
-      <div class="section-headline-bar">
-        <span class="sh-title">Fayda Verification Form</span>
-      </div>
-
-      <div class="task-row-card" style="flex-direction:column;align-items:stretch">
-        <label style="font-size:0.72rem;font-weight:800;color:var(--text-muted);margin-bottom:4px">FAYDA IDENTIFICATION NUMBER (FIN)</label>
-        <input type="text" class="kyc-input-field" id="faydaNumberInput" placeholder="FAN-XXXX-XXXX-XXXX (12 Digits)" maxlength="19"/>
-
-        <label style="font-size:0.72rem;font-weight:800;color:var(--text-muted);margin-bottom:4px">FULL LEGAL NAME (AMHARIC / ENGLISH)</label>
-        <input type="text" class="kyc-input-field" id="faydaNameInput" placeholder="e.g. አበበ በቀለ / Abebe Bekele"/>
-
-        <label style="font-size:0.72rem;font-weight:800;color:var(--text-muted);margin-bottom:4px">REGION / PROVINCE</label>
-        <select class="kyc-input-field" id="faydaRegionSelect" style="background:#FFF">
-          <option value="Addis Ababa">Addis Ababa (አዲስ አበባ)</option>
-          <option value="Oromia">Oromia (ኦሮሚያ)</option>
-          <option value="Amhara">Amhara (አማራ)</option>
-          <option value="Tigray">Tigray (ትግራይ)</option>
-          <option value="Sidama">Sidama (ሲዳማ)</option>
-          <option value="Somali">Somali (ሶማሌ)</option>
-          <option value="Dire Dawa">Dire Dawa (ድሬዳዋ)</option>
-          <option value="Afar">Afar (አፋር)</option>
-          <option value="South West">South West Ethiopia (ደቡብ ምዕራብ)</option>
-          <option value="Diaspora">Diaspora Community</option>
-        </select>
-
-        <!-- Document Front Upload -->
-        <label style="font-size:0.72rem;font-weight:800;color:var(--text-muted);margin-bottom:4px">FAYDA ID CARD (FRONT SIDE)</label>
-        <div class="kyc-upload-zone" onclick="triggerFileUpload('faydaFrontFile')">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#009ACA" stroke-width="2" style="margin:0 auto 4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <div style="font-size:0.75rem;font-weight:700;color:var(--bg-dark)">Upload ID Front Photo</div>
-          <input type="file" id="faydaFrontFile" accept="image/*" style="display:none" onchange="previewKycDoc(this, 'previewFront')"/>
-          <img id="previewFront" class="kyc-preview-img"/>
-        </div>
-
-        <!-- Document Back Upload -->
-        <label style="font-size:0.72rem;font-weight:800;color:var(--text-muted);margin-bottom:4px">FAYDA ID CARD (BACK SIDE)</label>
-        <div class="kyc-upload-zone" onclick="triggerFileUpload('faydaBackFile')">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#009ACA" stroke-width="2" style="margin:0 auto 4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <div style="font-size:0.75rem;font-weight:700;color:var(--bg-dark)">Upload ID Back Photo</div>
-          <input type="file" id="faydaBackFile" accept="image/*" style="display:none" onchange="previewKycDoc(this, 'previewBack')"/>
-          <img id="previewBack" class="kyc-preview-img"/>
-        </div>
-
-        <button class="pred-btn bull" style="width:100%;margin-top:8px" onclick="submitFaydaKyc()">
-          Submit for Team Verification 🇪🇹
-        </button>
-      </div>
-
-      <!-- Demo Review Simulator Button for Testing -->
-      <div style="text-align:center;margin-top:12px">
-        <button class="hdr-ctrl-btn" style="margin:0 auto" onclick="simulateAdminApproval()">
-          ⚙️ [Demo Test] Simulate Team Verification Approval
-        </button>
-      </div>
-    </div>
-
-    <!-- ──────────────────────────────────────────────────────────────────
-         TAB 7: REGIONAL SQUADS & LEADERBOARD
-    ────────────────────────────────────────────────────────────────── -->
-    <div id="tab-squads" class="screen-panel">
-      <div class="section-headline-bar">
-        <span class="sh-title">National Regional Leagues</span>
-      </div>
-
-      <div class="task-row-card" style="border-color:var(--tkv-gold);background:#FFFAF2">
-        <div style="font-family:'DM Mono',monospace;font-weight:800;font-size:0.9rem;color:var(--tkv-gold)">#1</div>
-        <div class="trc-body">
-          <div class="trc-title">Addis Ababa Central Squad</div>
-          <div class="trc-desc">4,280 Members · 48.2M TKVH Pooled</div>
-        </div>
-        <div style="font-family:'DM Mono',monospace;font-weight:800;color:var(--tkv-green)">+12.4%</div>
-      </div>
-
-      <div class="task-row-card">
-        <div style="font-family:'DM Mono',monospace;font-weight:800;font-size:0.9rem;color:var(--text-muted)">#2</div>
-        <div class="trc-body">
-          <div class="trc-title">Hawassa Industrial Squad</div>
-          <div class="trc-desc">2,150 Members · 24.8M TKVH Pooled</div>
-        </div>
-        <div style="font-family:'DM Mono',monospace;font-weight:800;color:var(--tkv-green)">+8.1%</div>
-      </div>
-
-      <div class="task-row-card">
-        <div style="font-family:'DM Mono',monospace;font-weight:800;font-size:0.9rem;color:var(--text-muted)">#3</div>
-        <div class="trc-body">
-          <div class="trc-title">Mekelle Tech Squad</div>
-          <div class="trc-desc">1,940 Members · 21.2M TKVH Pooled</div>
-        </div>
-        <div style="font-family:'DM Mono',monospace;font-weight:800;color:var(--tkv-green)">+6.5%</div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- ══════════════════════════════════════════════════════════════════════
-       4. BOTTOM DOCK NAVIGATION (7 HIGH-DENSITY SVG TABS)
-  ══════════════════════════════════════════════════════════════════════ -->
-  <nav class="main-dock-nav">
-    <div class="dock-tab active" data-tab="tab-home" onclick="switchDock('tab-home', this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      <span class="dock-tab-label">Home</span>
+  <!-- ══════════════════════════════════════════════════════════════════
+       3. NAVIGATION SCREENS
+  ══════════════════════════════════════════════════════════════════ -->
+
+  <!-- ────────────────────────────────────────────────────────────────
+       TAB 1: 🎰 LUCKY SPIN & HOME DASHBOARD (NO ETB VIEW)
+  ──────────────────────────────────────────────────────────────── -->
+  <div id="view-spin" class="screen-view active">
+    <!-- 30% Deposit Discount Fast Promo Banner -->
+    <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-tkvGold text-white p-3 rounded-2xl shadow-md mb-3 flex items-center justify-between cursor-pointer active:scale-95 transition-all" onclick="switchTelecomSubTab('deposit')">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center font-bold text-base">🏷️</div>
+        <div>
+          <div class="font-extrabold text-xs">Deposit with 30% Instant Discount!</div>
+          <div class="text-[9px] text-white/90">Telebirr/CBE: 09*******07 • M-PESA: 07*******06</div>
+        </div>
+      </div>
+      <span class="bg-white text-orange-700 font-extrabold text-[10px] px-2.5 py-1 rounded-xl shadow-sm">Deposit →</span>
     </div>
-    <div class="dock-tab" data-tab="tab-business" onclick="switchDock('tab-business', this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-      <span class="dock-tab-label">Empire</span>
+
+    <!-- 2x Referral Booster Active Banner -->
+    <div id="boosterActiveBanner" class="hidden bg-gradient-to-r from-amber-500 to-orange-600 text-white p-2.5 rounded-2xl shadow-md mb-3 flex items-center justify-between animate-pulse">
+      <div class="flex items-center gap-2">
+        <span class="text-base">🔥</span>
+        <div>
+          <div class="font-extrabold text-[11px] leading-tight">2x Invite Booster Active!</div>
+          <div class="text-[9px] text-white/90">Every invited friend gives <b>2 Spin Tickets</b>!</div>
+        </div>
+      </div>
+      <span class="font-mono text-xs font-bold bg-white/20 px-2 py-0.5 rounded-lg" id="boosterTimerText">60:00</span>
     </div>
-    <div class="dock-tab" data-tab="tab-tasks" onclick="switchDock('tab-tasks', this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      <span class="dock-tab-label">Tasks</span>
+
+    <!-- Cash Out Progress Bar ($5.00 Threshold = 50,000 TKVH) -->
+    <div class="bg-white border border-blue-100 rounded-2xl p-3 shadow-sm mb-3">
+      <div class="flex items-center justify-between text-xs font-extrabold mb-1">
+        <span class="text-tkvSlate flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-tkvGreen animate-pulse"></span>
+          Cash Out Goal ($5.00 / 50k TKVH Goal)
+        </span>
+        <span class="text-tkvBlue font-mono text-[11px]" id="cashProgressText">$0.00 / $5.00</span>
+      </div>
+      <div class="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden p-0.5 border border-gray-200">
+        <div class="h-full bg-gradient-to-r from-tkvBlue via-tkvGreen to-tkvGold rounded-full transition-all duration-500" id="cashProgressBar" style="width: 0%;"></div>
+      </div>
+      <div class="flex items-center justify-between text-[10px] text-gray-500 font-semibold mt-1">
+        <span>25–30 Invites + 100 Ads to Withdraw</span>
+        <span class="text-tkvGreen font-bold cursor-pointer" onclick="switchTab('view-wallet')">Convert TKVH →</span>
+      </div>
     </div>
-    <div class="dock-tab" data-tab="tab-market" onclick="switchDock('tab-market', this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-      <span class="dock-tab-label">Market</span>
+
+    <!-- Provably Fair Spin Wheel Arena (EV = $0.07) -->
+    <div class="bg-gradient-to-b from-white to-blue-50/40 border border-blue-100 rounded-3xl p-3.5 shadow-sm flex flex-col items-center relative mb-3">
+      <div class="text-[10px] font-extrabold text-tkvBlue tracking-widest uppercase mb-1.5 flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-tkvBlue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24"/></svg>
+        <span>Tikvah Mathematical Wheel (EV = $0.07)</span>
+      </div>
+
+      <div class="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[16px] border-t-red-500 absolute top-8 z-20 drop-shadow-md"></div>
+
+      <div class="relative w-[250px] h-[250px] my-1 flex items-center justify-center">
+        <canvas id="wheelCanvas" width="250" height="250" class="rounded-full shadow-lg"></canvas>
+        <button id="spinCenterBtn" class="absolute w-14 h-14 rounded-full bg-gradient-to-br from-tkvBlue to-tkvGreen text-white font-extrabold text-xs shadow-xl border-4 border-white flex flex-col items-center justify-center active:scale-95 transition-transform" onclick="triggerSpin()">
+          <span>SPIN</span>
+          <span class="text-[7px] opacity-90">1 Ticket</span>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between w-full mt-2 px-1 text-xs font-bold">
+        <div class="bg-white border border-blue-100 px-3 py-1 rounded-xl shadow-sm text-tkvBlue flex items-center gap-1 font-mono text-[11px]">
+          <span>🎟️</span> <span id="uiSpinTickets">3</span> Tickets
+        </div>
+        <div class="flex gap-1.5">
+          <button class="bg-teleGreen text-white px-2.5 py-1 rounded-xl shadow-md font-bold text-[10px] flex items-center gap-1 active:scale-95" onclick="switchTelecomSubTab('buy-spins')">
+            <span>Buy Spins</span>
+          </button>
+          <button class="bg-tkvGold text-white px-2.5 py-1 rounded-xl shadow-md font-bold text-[10px] flex items-center gap-1 active:scale-95" onclick="shareReferral()">
+            <span>+ Free</span>
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="dock-tab" data-tab="tab-wallet" onclick="switchDock('tab-wallet', this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M16 12h4"/></svg>
-      <span class="dock-tab-label">Wallet</span>
+
+    <!-- Quick Action Gateway Grid -->
+    <div class="grid grid-cols-4 gap-2 mb-3">
+      <div class="bg-white border border-blue-100 p-2 rounded-2xl shadow-sm flex flex-col items-center text-center cursor-pointer active:scale-95 transition-all" onclick="openCipherModal()">
+        <span class="text-base mb-0.5">🔐</span>
+        <span class="text-[10px] font-extrabold text-tkvDark">Cipher</span>
+        <span class="text-[8px] text-tkvGreen font-bold">+500 TKVH</span>
+      </div>
+
+      <div class="bg-white border border-blue-100 p-2 rounded-2xl shadow-sm flex flex-col items-center text-center cursor-pointer active:scale-95 transition-all" onclick="switchTab('view-earn')">
+        <span class="text-base mb-0.5">🎥</span>
+        <span class="text-[10px] font-extrabold text-tkvDark">100+ Ads</span>
+        <span class="text-[8px] text-tkvGreen font-bold">Monetag Live</span>
+      </div>
+
+      <div class="bg-white border border-blue-100 p-2 rounded-2xl shadow-sm flex flex-col items-center text-center cursor-pointer active:scale-95 transition-all" onclick="openKycFullView()">
+        <div class="w-6 h-6 rounded-lg overflow-hidden p-0.5 mb-0.5">
+          <img src="https://i.postimg.cc/VkDP0y1g/20260907-115806.jpg" class="brand-logo-img"/>
+        </div>
+        <span class="text-[10px] font-extrabold text-tkvDark">Fayda 24h</span>
+        <span class="text-[8px] text-tkvGold font-bold">e-KYC</span>
+      </div>
+
+      <div class="bg-white border border-blue-100 p-2 rounded-2xl shadow-sm flex flex-col items-center text-center cursor-pointer active:scale-95 transition-all" onclick="switchTab('view-telecom')">
+        <span class="text-base mb-0.5">📶</span>
+        <span class="text-[10px] font-extrabold text-tkvDark">Telecom</span>
+        <span class="text-[8px] text-teleGreen font-bold">By Deposit</span>
+      </div>
     </div>
-    <div class="dock-tab" data-tab="tab-kyc" onclick="switchDock('tab-kyc', this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      <span class="dock-tab-label">Fayda</span>
+  </div>
+
+  <!-- ────────────────────────────────────────────────────────────────
+       TAB 2: 💼 EMPIRE (15 ETHIOPIAN ENTERPRISES — ALL LEVEL 1 BASE)
+  ──────────────────────────────────────────────────────────────── -->
+  <div id="view-empire" class="screen-view">
+    <div class="bg-gradient-to-br from-tkvSlate to-tkvDark text-white p-4 rounded-3xl shadow-md mb-3">
+      <div class="text-xs font-bold text-gray-400 tracking-wider uppercase">TKVH Conglomerate Mining Yield</div>
+      <div class="text-2xl font-mono font-bold text-tkvGreen mt-1" id="empPassiveRateDisplay">+150 TKVH/hr</div>
+      <div class="text-[10px] text-gray-300 mt-1">All industries start at Level 1. Compound hourly returns using earned TKVH.</div>
     </div>
-    <div class="dock-tab" data-tab="tab-squads" onclick="switchDock('tab-squads', this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      <span class="dock-tab-label">Squads</span>
+
+    <div class="text-xs font-extrabold text-gray-500 uppercase tracking-wider mb-2">15 National Enterprise Sectors</div>
+    <div class="grid grid-cols-2 gap-2" id="empire15Container"></div>
+  </div>
+
+  <!-- ────────────────────────────────────────────────────────────────
+       TAB 3: 📶 TELECOM (BOUGHT ONLY WITH DEPOSITED BIRR + NO CBE APP)
+  ──────────────────────────────────────────────────────────────── -->
+  <div id="view-telecom" class="screen-view">
+    <!-- Deposited Birr Balance Header -->
+    <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-tkvBlueDark text-white p-3.5 rounded-3xl shadow-md mb-3 flex items-center justify-between">
+      <div>
+        <div class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-200">Deposited Birr Balance (ለፓኬጅ መግዣ)</div>
+        <div class="text-xl font-mono font-extrabold mt-0.5" id="telecomDepositBal">0.00 ETB</div>
+        <div class="text-[9px] text-white/80">Telecom bundles & Spin tickets are bought strictly with deposited Birr.</div>
+      </div>
+      <button class="bg-white text-emerald-800 font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-sm active:scale-95" onclick="switchTelecomSubTab('deposit')">
+        + Deposit
+      </button>
     </div>
+
+    <!-- Sub-Tab Category Selector (NO CBE APP) -->
+    <div class="flex gap-1.5 p-1 bg-gray-200/80 rounded-2xl mb-3 shrink-0">
+      <button class="flex-1 py-1.5 rounded-xl text-[10px] font-extrabold text-white bg-teleGreen telecom-subtab-btn" onclick="switchTelecomView('telebirr', this)">Ethio Telecom</button>
+      <button class="flex-1 py-1.5 rounded-xl text-[10px] font-extrabold text-gray-700 telecom-subtab-btn" onclick="switchTelecomView('safaricom', this)">Safaricom</button>
+      <button class="flex-1 py-1.5 rounded-xl text-[10px] font-extrabold text-gray-700 telecom-subtab-btn" onclick="switchTelecomView('buy-spins', this)">Buy Spins</button>
+      <button class="flex-1 py-1.5 rounded-xl text-[10px] font-extrabold text-amber-900 bg-amber-200 telecom-subtab-btn" onclick="switchTelecomView('deposit', this)">30% Deposit</button>
+    </div>
+
+    <!-- SUB-VIEW A: ETHIO TELECOM PACKAGES -->
+    <div id="subview-telebirr">
+      <div class="telebirr-gradient text-white p-3 rounded-2xl shadow-sm mb-3 flex items-center justify-between">
+        <div>
+          <div class="text-xs font-extrabold">Ethio Telecom Bundles (30% Discount)</div>
+          <div class="text-[10px] text-white/90">Instant activation with your Deposited Birr.</div>
+        </div>
+        <span class="bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-bold font-mono">30% OFF</span>
+      </div>
+      <div class="flex flex-col gap-2" id="telebirrPackagesContainer"></div>
+    </div>
+
+    <!-- SUB-VIEW B: SAFARICOM PACKAGES -->
+    <div id="subview-safaricom" class="hidden">
+      <div class="bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white p-3 rounded-2xl shadow-sm mb-3 flex items-center justify-between">
+        <div>
+          <div class="text-xs font-extrabold">Safaricom High-Speed Plans</div>
+          <div class="text-[10px] text-white/90">Unlimited data activated instantly.</div>
+        </div>
+        <span class="bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-bold font-mono">30% OFF</span>
+      </div>
+      <div class="flex flex-col gap-2" id="safaricomPackagesContainer"></div>
+    </div>
+
+    <!-- SUB-VIEW C: BUY SPINS WITH DEPOSITED BIRR (FAIR ECONOMICS) -->
+    <div id="subview-buy-spins" class="hidden">
+      <div class="bg-gradient-to-br from-tkvBlueDark to-tkvSlate text-white p-4 rounded-3xl shadow-lg mb-3">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-tkvGold">Mathematical Spin Pricing</div>
+        <div class="text-sm font-extrabold mt-1">Buy Extra Spin Tickets with Deposited Birr</div>
+        <div class="text-[10px] text-gray-300 mt-1">1 Spin EV = $0.07 (11.20 ETB). Buy tickets below with Deposited Birr to spin for $5.00 Jackpot!</div>
+      </div>
+
+      <div class="flex flex-col gap-2.5">
+        <div class="bg-white border border-blue-100 p-3 rounded-2xl shadow-sm flex items-center justify-between">
+          <div>
+            <div class="font-extrabold text-xs text-tkvDark">1 Spin Ticket</div>
+            <div class="text-[10px] text-gray-400 font-mono">Standard Price • EV: $0.07</div>
+          </div>
+          <button class="bg-teleGreen text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl shadow-md active:scale-95" onclick="buySpinWithDeposit(1, 15)">
+            Buy (15 ETB)
+          </button>
+        </div>
+
+        <div class="bg-white border-2 border-tkvBlue p-3 rounded-2xl shadow-sm flex items-center justify-between">
+          <div>
+            <div class="font-extrabold text-xs text-tkvDark flex items-center gap-1.5">
+              <span>5 Spin Tickets</span>
+              <span class="bg-tkvBlue/10 text-tkvBlue text-[9px] px-1.5 py-0.2 rounded font-bold">Best Value</span>
+            </div>
+            <div class="text-[10px] text-gray-400 font-mono">Save 5 ETB • High Jackpot Chance</div>
+          </div>
+          <button class="bg-tkvBlue text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl shadow-md active:scale-95" onclick="buySpinWithDeposit(5, 70)">
+            Buy (70 ETB)
+          </button>
+        </div>
+
+        <div class="bg-white border border-amber-300 p-3 rounded-2xl shadow-sm flex items-center justify-between">
+          <div>
+            <div class="font-extrabold text-xs text-tkvDark flex items-center gap-1.5">
+              <span>10 Spin Tickets</span>
+              <span class="bg-amber-100 text-amber-800 text-[9px] px-1.5 py-0.2 rounded font-bold">15 ETB Off</span>
+            </div>
+            <div class="text-[10px] text-gray-400 font-mono">Mega Pack • Maximum Returns</div>
+          </div>
+          <button class="bg-tkvGold text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl shadow-md active:scale-95" onclick="buySpinWithDeposit(10, 135)">
+            Buy (135 ETB)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB-VIEW D: 30% DISCOUNT DEPOSIT (FULLY MASKED NUMBERS) -->
+    <div id="subview-deposit" class="hidden">
+      <div class="bg-gradient-to-br from-amber-500 to-orange-600 text-white p-4 rounded-3xl shadow-lg mb-3">
+        <div class="text-xs font-bold uppercase tracking-wider opacity-90">30% Discount Deposit Protocol</div>
+        <div class="text-base font-mono font-bold my-1">Official Merchant Accounts</div>
+        <div class="text-[10px] text-white/90">Phone numbers are masked for security. Click <b>Copy</b> to get the direct merchant number.</div>
+      </div>
+
+      <div class="flex flex-col gap-2.5 mb-3">
+        <!-- Telebirr Deposit (Masked: 09*******07) -->
+        <div class="bg-white border-2 border-teleGreen p-3 rounded-2xl shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-[9px] font-bold text-gray-400">TELEBIRR OFFICIAL</div>
+            <div class="font-mono text-sm font-extrabold text-teleGreenDark">09*******07</div>
+          </div>
+          <button class="bg-teleGreen text-white text-[10px] font-extrabold px-3 py-1.5 rounded-lg active:scale-95 shadow-sm" onclick="copyDepositNum('0996910607', 'Telebirr')">
+            Copy Number
+          </button>
+        </div>
+
+        <!-- CBE Birr Deposit (Masked: 09*******07) -->
+        <div class="bg-white border-2 border-cbePurple p-3 rounded-2xl shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-[9px] font-bold text-gray-400">CBE BIRR OFFICIAL</div>
+            <div class="font-mono text-sm font-extrabold text-cbePurple">09*******07</div>
+          </div>
+          <button class="bg-cbePurple text-white text-[10px] font-extrabold px-3 py-1.5 rounded-lg active:scale-95 shadow-sm" onclick="copyDepositNum('0996910607', 'CBE Birr')">
+            Copy Number
+          </button>
+        </div>
+
+        <!-- Safaricom M-PESA Deposit (Masked: 07*******06) -->
+        <div class="bg-white border-2 border-safariRed p-3 rounded-2xl shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-[9px] font-bold text-gray-400">SAFARICOM M-PESA</div>
+            <div class="font-mono text-sm font-extrabold text-safariRed">07*******06</div>
+          </div>
+          <button class="bg-safariRed text-white text-[10px] font-extrabold px-3 py-1.5 rounded-lg active:scale-95 shadow-sm" onclick="copyDepositNum('0704969106', 'M-PESA')">
+            Copy Number
+          </button>
+        </div>
+      </div>
+
+      <!-- Screenshot Upload Proof -->
+      <div class="bg-white border border-amber-200 p-3.5 rounded-2xl shadow-sm">
+        <div class="text-xs font-extrabold text-tkvDark mb-1">Submit Deposit Screenshot Proof</div>
+        <div class="text-[10px] text-gray-500 mb-2">Upload payment SMS screenshot for 5-minute confirmation to your Deposited Birr balance.</div>
+        <input type="number" id="depositAmountInput" placeholder="Amount in ETB (e.g. 200)" class="w-full bg-gray-50 border border-gray-200 text-xs font-mono p-2 rounded-xl mb-2 outline-none"/>
+        <input type="text" id="depositTxIdInput" placeholder="Transaction ID (e.g. CI829...)" class="w-full bg-gray-50 border border-gray-200 text-xs font-mono p-2 rounded-xl mb-2 outline-none"/>
+        <input type="file" id="depositFileInput" accept="image/*" class="w-full bg-gray-50 border border-gray-200 text-[10px] p-2 rounded-xl mb-3" onchange="previewDepositProof(this)"/>
+        <img id="depositProofPreview" class="w-full max-h-32 object-cover rounded-xl mb-3 hidden"/>
+        <button class="w-full py-2.5 bg-tkvGold text-white font-extrabold text-xs rounded-xl shadow-md active:scale-95 transition-transform" onclick="submitDepositProof()">
+          Submit Deposit Proof (30% Discount)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ────────────────────────────────────────────────────────────────
+       TAB 4: 💰 EARN — MONETAG 100+ ADS & 12 TASKS
+  ──────────────────────────────────────────────────────────────── -->
+  <div id="view-earn" class="screen-view">
+    <div class="bg-gradient-to-r from-tkvDark to-tkvSlate border-2 border-tkvGreen text-white p-3.5 rounded-3xl shadow-md mb-3">
+      <div class="flex items-center justify-between mb-1">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-tkvGreen/20 text-tkvGreen flex items-center justify-center font-bold">🎥</div>
+          <div>
+            <div class="font-extrabold text-xs text-white">Monetag Rewarded Ad Stream</div>
+            <div class="text-[10px] text-gray-300">Official Monetag Zone 11747021 + Fallback</div>
+          </div>
+        </div>
+        <span class="bg-tkvGreen/20 text-tkvGreen text-[10px] font-mono font-bold px-2 py-0.5 rounded-full" id="adStreamCounter">Watched: 0 / 100</span>
+      </div>
+      <div class="text-[9px] text-gray-400">Earn +150 TKVH per locked ad modal completed.</div>
+    </div>
+
+    <!-- 100 Ads Scrollable Grid -->
+    <div class="text-xs font-extrabold text-gray-500 uppercase tracking-wider mb-2">100 Daily Ad Stations</div>
+    <div class="grid grid-cols-4 gap-2 mb-4" id="ads100GridContainer"></div>
+
+    <!-- Official Tasks 2-Column Responsive Grid -->
+    <div class="flex items-center justify-between text-xs font-extrabold text-gray-500 uppercase tracking-wider mb-2">
+      <span>Official Ethiopian Channels</span>
+      <span class="text-tkvBlue">+35,000 TKVH</span>
+    </div>
+    <div class="grid grid-cols-2 gap-2" id="ethiopianTasksGrid"></div>
+  </div>
+
+  <!-- ────────────────────────────────────────────────────────────────
+       TAB 5: 👥 REFERRAL COMMUNITY & MULTI-TIER COMMISSIONS
+  ──────────────────────────────────────────────────────────────── -->
+  <div id="view-referrals" class="screen-view">
+    <div class="bg-gradient-to-br from-tkvSlate to-tkvDark text-white p-4 rounded-3xl shadow-md mb-3">
+      <div class="text-xs font-extrabold text-gray-400 uppercase">Referral Economics (PDF Model)</div>
+      <div class="text-xl font-mono font-bold text-tkvGreen my-1">1 Invite = 1 Spin Ticket</div>
+      <div class="text-[10px] text-gray-300">EV per Spin: <b>$0.07 USD</b> • 25 Invites Avg: <b>$1.74 USD</b> • Cashout Goal: <b>71 Invites</b></div>
+    </div>
+
+    <!-- Multi-Tier Breakdown -->
+    <div class="grid grid-cols-3 gap-2 mb-3 text-center font-mono">
+      <div class="bg-white border border-blue-100 p-2.5 rounded-2xl shadow-sm">
+        <div class="text-[9px] text-gray-500 font-bold">Level 1 (Direct)</div>
+        <div class="text-xs font-bold text-tkvGreen">10% Commission</div>
+      </div>
+      <div class="bg-white border border-blue-100 p-2.5 rounded-2xl shadow-sm">
+        <div class="text-[9px] text-gray-500 font-bold">Level 2 (Indirect)</div>
+        <div class="text-xs font-bold text-tkvBlue">5% Commission</div>
+      </div>
+      <div class="bg-white border border-blue-100 p-2.5 rounded-2xl shadow-sm">
+        <div class="text-[9px] text-gray-500 font-bold">Level 3 (Network)</div>
+        <div class="text-xs font-bold text-tkvGold">2% Commission</div>
+      </div>
+    </div>
+
+    <div class="bg-white border border-blue-100 rounded-2xl p-3 shadow-sm mb-3">
+      <div class="text-[10px] font-extrabold text-gray-500 uppercase mb-1">Your Direct Bot Mini-App Link</div>
+      <div class="flex items-center gap-2">
+        <input type="text" readonly value="https://t.me/tikvahetcryptobot/tikvaheth?startapp=ref_847291" id="refLinkInput" class="w-full bg-gray-50 border border-gray-200 text-xs font-mono p-2 rounded-xl text-gray-700 outline-none"/>
+        <button class="bg-tkvBlue text-white font-bold text-xs px-3 py-2 rounded-xl shrink-0 active:scale-95" onclick="copyRefLink()">Copy</button>
+      </div>
+    </div>
+
+    <div class="text-xs font-extrabold text-gray-500 uppercase tracking-wider mb-2">Referral Roster</div>
+    <div class="flex flex-col gap-2" id="referralCommunityList"></div>
+  </div>
+
+  <!-- ────────────────────────────────────────────────────────────────
+       TAB 6: 🏆 CITY LEADERBOARD (PROFESSIONAL OLYMPIC PODIUM)
+  ──────────────────────────────────────────────────────────────── -->
+  <div id="view-leaderboard" class="screen-view">
+    <div class="bg-gradient-to-br from-tkvSlate to-tkvDark text-white p-4 rounded-3xl shadow-md mb-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-xs font-bold text-gray-400 uppercase">የኢትዮጵያ ክልሎች እና ከተሞች ሊግ</div>
+          <div class="text-lg font-extrabold text-tkvGold mt-0.5">National City & Regional League</div>
+        </div>
+      </div>
+      <div class="text-[10px] text-gray-300 mt-1">Live synchronized regional competition standings.</div>
+    </div>
+
+    <!-- OLYMPIC TOP 3 PODIUM DISPLAY -->
+    <div class="bg-white border border-blue-100 rounded-3xl p-3.5 shadow-sm mb-3">
+      <div class="text-center text-[10px] font-extrabold uppercase text-gray-400 tracking-wider mb-3">Top 3 National Champions</div>
+      
+      <div class="flex items-end justify-center gap-2 pt-6">
+        <!-- 2nd Place (Left) -->
+        <div class="flex flex-col items-center flex-1">
+          <span class="text-lg">🥈</span>
+          <div class="text-[10px] font-extrabold text-tkvDark text-center leading-tight mb-1">ኦሮሚያ</div>
+          <div class="text-[8px] font-mono font-bold text-tkvBlue mb-1">38.4M</div>
+          <div class="w-full podium-2 rounded-t-2xl flex items-center justify-center text-white font-mono font-extrabold text-sm shadow-md">2</div>
+        </div>
+
+        <!-- 1st Place (Center - Highest) -->
+        <div class="flex flex-col items-center flex-1 relative -top-3">
+          <span class="text-2xl animate-bounce">👑</span>
+          <div class="text-[11px] font-extrabold text-amber-600 text-center leading-tight mb-1">አዲስ አበባ</div>
+          <div class="text-[9px] font-mono font-bold text-amber-600 mb-1">54.2M</div>
+          <div class="w-full podium-1 rounded-t-2xl flex items-center justify-center text-white font-mono font-extrabold text-base shadow-lg">1</div>
+        </div>
+
+        <!-- 3rd Place (Right) -->
+        <div class="flex flex-col items-center flex-1">
+          <span class="text-lg">🥉</span>
+          <div class="text-[10px] font-extrabold text-tkvDark text-center leading-tight mb-1">አማራ</div>
+          <div class="text-[8px] font-mono font-bold text-tkvGreen mb-1">29.1M</div>
+          <div class="w-full podium-3 rounded-t-2xl flex items-center justify-center text-white font-mono font-extrabold text-sm shadow-md">3</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-2">
+      <div class="text-xs font-extrabold text-gray-500 uppercase tracking-wider">Remaining Contenders (4th - 12th)</div>
+      <button class="text-[10px] text-tkvBlue font-bold" onclick="refreshLeaderboardWithSkeleton()">↻ Refresh</button>
+    </div>
+
+    <!-- 4th to 12th List Container -->
+    <div class="flex flex-col gap-2" id="regionalListContainer"></div>
+  </div>
+
+  <!-- ────────────────────────────────────────────────────────────────
+       TAB 7: 👤 WALLET & TOKEN CASHOUT HUB
+  ──────────────────────────────────────────────────────────────── -->
+  <div id="view-wallet" class="screen-view">
+    <div class="bg-gradient-to-br from-tkvBlueDark via-tkvBlue to-tkvGreen text-white p-4 rounded-3xl shadow-lg mb-3">
+      <div class="text-[10px] font-bold uppercase tracking-wider opacity-80">Multi-Chain Net Worth</div>
+      <div class="text-2xl font-mono font-bold my-1" id="uiWalletUsdTotal">$0.00 USD</div>
+      <div class="bg-black/20 text-white text-[10px] font-mono px-2.5 py-1 rounded-full inline-flex items-center gap-1 cursor-pointer" onclick="copyAddress('EQC7f9...a4Kp9')">
+        <span>EQC7f9...a4Kp9</span> · <span>TON Space</span>
+      </div>
+    </div>
+
+    <!-- TKVH ➔ USD CASH CONVERTER -->
+    <div class="bg-white border border-blue-100 rounded-3xl p-3.5 shadow-sm mb-3">
+      <div class="flex items-center justify-between text-xs font-extrabold text-tkvDark mb-2">
+        <span>Token Cashout Engine (TKVH ➔ $ USD)</span>
+        <span class="text-[9px] font-mono text-tkvGreen bg-green-50 px-2 py-0.5 rounded-full font-bold">10,000 TKVH = $1.00</span>
+      </div>
+
+      <div class="bg-gray-50 border border-gray-200 rounded-2xl p-2.5 mb-2">
+        <div class="flex items-center justify-between text-[10px] text-gray-400 font-bold mb-1">
+          <span>CONVERT TKVH</span>
+          <span class="cursor-pointer text-tkvBlue underline font-bold" onclick="setMaxTkvhConvert()">Use All</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <input type="number" id="convertTkvhInput" value="10000" step="1000" class="w-32 bg-transparent text-base font-mono font-extrabold text-tkvDark outline-none" oninput="previewTkvhConversion()"/>
+          <span class="text-xs font-bold text-tkvGreen font-mono">TKVH</span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between text-xs font-bold px-1 mb-2.5 font-mono">
+        <span class="text-gray-500">You Receive:</span>
+        <span class="text-tkvGold font-extrabold" id="convertTkvhUsdOutput">$1.00 USD (160.00 ETB)</span>
+      </div>
+
+      <button class="w-full py-2.5 bg-tkvBlue text-white font-extrabold text-xs rounded-xl shadow-md active:scale-95 transition-transform" onclick="executeTkvhToUsdSwap()">
+        Convert TKVH to Cash Balance ($ USD)
+      </button>
+    </div>
+
+    <!-- Fayda e-KYC Verification Action Card -->
+    <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 p-3 rounded-2xl shadow-sm mb-3 cursor-pointer active:scale-95 transition-all" onclick="openKycFullView()">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl overflow-hidden p-0.5 border border-amber-200 shrink-0">
+          <img src="https://i.postimg.cc/VkDP0y1g/20260907-115806.jpg" class="brand-logo-img"/>
+        </div>
+        <div class="flex-1">
+          <div class="font-extrabold text-xs text-amber-900 flex items-center justify-between">
+            <span>Fayda National e-ID Verification</span>
+            <span class="text-[9px] font-mono font-bold text-amber-700" id="kycCardStatusText">Unverified</span>
+          </div>
+          <div class="text-[10px] text-amber-700">Multi-Step Verification & Withdrawal Setup</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       4. BOTTOM DOCK NAVIGATION
+  ══════════════════════════════════════════════════════════════════ -->
+  <nav class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-blue-100 flex justify-around py-2 px-1 z-50 shadow-lg">
+    <button class="flex flex-col items-center gap-0.5 text-tkvBlue text-[8px] font-extrabold dock-btn active" onclick="switchTab('view-spin', this)">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24"/></svg>
+      <span>Spin</span>
+    </button>
+    <button class="flex flex-col items-center gap-0.5 text-gray-400 text-[8px] font-extrabold dock-btn" onclick="switchTab('view-empire', this)">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      <span>Empire</span>
+    </button>
+    <button class="flex flex-col items-center gap-0.5 text-gray-400 text-[8px] font-extrabold dock-btn" onclick="switchTab('view-telecom', this)">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+      <span>Telecom</span>
+    </button>
+    <button class="flex flex-col items-center gap-0.5 text-gray-400 text-[8px] font-extrabold dock-btn" onclick="switchTab('view-earn', this)">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      <span>Earn (Ads)</span>
+    </button>
+    <button class="flex flex-col items-center gap-0.5 text-gray-400 text-[8px] font-extrabold dock-btn" onclick="switchTab('view-referrals', this)">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>Team</span>
+    </button>
+    <button class="flex flex-col items-center gap-0.5 text-gray-400 text-[8px] font-extrabold dock-btn" onclick="switchTab('view-leaderboard', this)">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H7M14 14.66V17c0 .55.45 1 1 1h2M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+      <span>Leagues</span>
+    </button>
+    <button class="flex flex-col items-center gap-0.5 text-gray-400 text-[8px] font-extrabold dock-btn" onclick="switchTab('view-wallet', this)">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M16 12h4"/></svg>
+      <span>Wallet</span>
+    </button>
   </nav>
 
-  <!-- ══════════════════════════════════════════════════════════════════════
-       5. MODALS & PROCEDURAL DIALOGS (CASHOUT, ADS, CIPHER, TOAST)
-  ══════════════════════════════════════════════════════════════════════ -->
-  <!-- Direct Telebirr / CBE Cash-Out Modal -->
-  <div class="modal-overlay-bg" id="modalCashout">
-    <div class="modal-dialog-box">
-      <h3 style="font-size:1.15rem;font-weight:800;color:var(--bg-dark)">Direct Fiat Cash-Out</h3>
-      <p style="font-size:0.75rem;color:var(--text-muted);margin:4px 0 14px">Convert TKVH directly to Ethiopian Birr (ETB) via Telebirr or CBE Birr.</p>
-      
-      <div style="text-align:left;margin-bottom:10px">
-        <label style="font-size:0.7rem;font-weight:800;color:var(--text-muted)">SELECT CASHOUT GATEWAY</label>
-        <select class="kyc-input-field" style="background:#FFF">
-          <option>Telebirr SuperApp (Ethio Telecom)</option>
-          <option>CBE Birr (Commercial Bank of Ethiopia)</option>
-          <option>Dashen Bank Amole</option>
-        </select>
-
-        <label style="font-size:0.7rem;font-weight:800;color:var(--text-muted)">ENTER REGISTERED PHONE / ACCOUNT NUMBER</label>
-        <input type="text" class="kyc-input-field" placeholder="+251 9... / +251 7... / 1000..."/>
-
-        <label style="font-size:0.7rem;font-weight:800;color:var(--text-muted)">POINTS TO CONVERT</label>
-        <input type="number" class="kyc-input-field" placeholder="Min: 10,000 TKVH (100 ETB)"/>
+  <!-- ══════════════════════════════════════════════════════════════════
+       5. PROFESSIONAL FULL-PAGE FAYDA e-KYC VERIFICATION ENGINE
+  ══════════════════════════════════════════════════════════════════ -->
+  <div id="fullViewKyc" class="fixed inset-0 bg-tkvLight z-[180] hidden flex-col overflow-y-auto p-4">
+    <!-- Header with Close -->
+    <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-3">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl overflow-hidden border border-amber-300 p-0.5">
+          <img src="https://i.postimg.cc/VkDP0y1g/20260907-115806.jpg" class="brand-logo-img"/>
+        </div>
+        <div>
+          <h2 class="font-extrabold text-sm text-tkvDark">Fayda National e-ID Verification</h2>
+          <div class="text-[9px] text-gray-500">Tier 2 Payout Verification Protocol</div>
+        </div>
       </div>
+      <button class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-xs" onclick="closeKycFullView()">✕</button>
+    </div>
 
-      <div style="display:flex;gap:8px">
-        <button class="pred-btn bull" style="flex:1" onclick="executeCashout()">Confirm Payout</button>
-        <button class="ent-upgrade-btn" style="flex:1;justify-content:center" onclick="closeCashoutModal()">Cancel</button>
+    <!-- Stepper Progress Bar -->
+    <div class="flex items-center justify-between mb-4 px-2">
+      <div class="flex flex-col items-center flex-1">
+        <div class="w-7 h-7 rounded-full bg-tkvBlue text-white font-bold text-xs flex items-center justify-center shadow" id="kycStepBadge1">1</div>
+        <span class="text-[8px] font-bold mt-1 text-tkvBlue">Identity</span>
+      </div>
+      <div class="h-0.5 bg-gray-200 flex-1 -mt-3" id="kycStepLine1"></div>
+      <div class="flex flex-col items-center flex-1">
+        <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-600 font-bold text-xs flex items-center justify-center" id="kycStepBadge2">2</div>
+        <span class="text-[8px] font-bold mt-1 text-gray-500">Biometrics</span>
+      </div>
+      <div class="h-0.5 bg-gray-200 flex-1 -mt-3" id="kycStepLine2"></div>
+      <div class="flex flex-col items-center flex-1">
+        <div class="w-7 h-7 rounded-full bg-gray-200 text-gray-600 font-bold text-xs flex items-center justify-center" id="kycStepBadge3">3</div>
+        <span class="text-[8px] font-bold mt-1 text-gray-500">Payment</span>
       </div>
     </div>
-  </div>
 
-  <!-- Rewarded Ad Modal -->
-  <div class="modal-overlay-bg" id="modalAdPlayer">
-    <div class="modal-dialog-box">
-      <h3 style="font-size:1.15rem;font-weight:800;color:var(--bg-dark)">Monetag Rewarded Video</h3>
-      <p style="font-size:0.75rem;color:var(--text-muted);margin:4px 0 10px">Streaming sponsored partner ad. Crediting points in:</p>
-      <div class="ad-countdown-circle" id="txtAdTimer">15</div>
-      <div style="background:#F5F9FB;border-radius:10px;padding:10px;font-size:0.72rem;color:var(--text-muted)">
-        🟢 Sponsored by Ethio Telecom & CBE Birr
+    <!-- STEP 1: PERSONAL DETAILS -->
+    <div id="kycStep1Container" class="flex-1 flex flex-col gap-3">
+      <div class="bg-white border border-blue-100 rounded-2xl p-3.5 shadow-sm">
+        <div class="text-xs font-extrabold text-tkvDark mb-1">Step 1: Legal Identity Verification</div>
+        <div class="text-[10px] text-gray-500 mb-3">Please provide the exact details that match your Ethiopian Fayda e-ID.</div>
+
+        <div class="flex flex-col gap-2.5 text-xs font-bold text-gray-700">
+          <div>
+            <label class="text-[9px] text-gray-400">FULL LEGAL NAME (AMHARIC OR ENGLISH)</label>
+            <input type="text" id="faydaFullName" placeholder="Abebe Bekele / አበበ በቀለ" class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl outline-none text-xs"/>
+          </div>
+          <div>
+            <label class="text-[9px] text-gray-400">FAYDA IDENTIFICATION NUMBER (FIN - 12 DIGITS)</label>
+            <input type="text" id="faydaFinNumber" placeholder="FAN-4829-1039-5820" class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl outline-none font-mono text-xs"/>
+          </div>
+          <div>
+            <label class="text-[9px] text-gray-400">REGISTERED PHONE NUMBER</label>
+            <input type="text" id="faydaPhone" placeholder="09 / 07********" class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl outline-none font-mono text-xs"/>
+          </div>
+          <div>
+            <label class="text-[9px] text-gray-400">RESIDENTIAL REGION & WOREDA</label>
+            <input type="text" id="faydaWoreda" placeholder="Addis Ababa, Bole Sub-City, Woreda 03" class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl outline-none text-xs"/>
+          </div>
+        </div>
+      </div>
+
+      <button class="w-full py-2.5 bg-tkvBlue text-white font-extrabold rounded-xl text-xs shadow-md active:scale-95 transition-transform" onclick="goToKycStep(2)">
+        Proceed to Step 2: Documents →
+      </button>
+    </div>
+
+    <!-- STEP 2: DOCUMENT & SELFIE -->
+    <div id="kycStep2Container" class="flex-1 flex flex-col gap-3 hidden">
+      <div class="bg-white border border-blue-100 rounded-2xl p-3.5 shadow-sm">
+        <div class="text-xs font-extrabold text-tkvDark mb-1">Step 2: ID Photos & Live Selfie</div>
+        <div class="text-[10px] text-gray-500 mb-3">Upload clear, legible photos of your Fayda ID card and face.</div>
+
+        <div class="flex flex-col gap-3 text-xs font-bold text-gray-700">
+          <div>
+            <label class="text-[9px] text-gray-400">FAYDA CARD FRONT PHOTO</label>
+            <input type="file" accept="image/*" class="w-full bg-gray-50 border border-gray-200 p-1.5 rounded-xl text-[10px] mt-0.5"/>
+          </div>
+          <div>
+            <label class="text-[9px] text-gray-400">FAYDA CARD BACK PHOTO</label>
+            <input type="file" accept="image/*" class="w-full bg-gray-50 border border-gray-200 p-1.5 rounded-xl text-[10px] mt-0.5"/>
+          </div>
+
+          <div class="border-2 border-dashed border-tkvBlue/40 p-3 rounded-2xl bg-blue-50/40 text-center">
+            <label class="text-[10px] font-extrabold text-tkvBlue block mb-1">📸 FACE LIVENESS VERIFICATION</label>
+            <div class="w-16 h-16 rounded-full border-2 border-tkvBlue mx-auto overflow-hidden flex items-center justify-center bg-white shadow-inner text-2xl mb-1.5">🤳</div>
+            <input type="file" accept="image/*" capture="user" class="w-full bg-white border border-blue-200 p-1 rounded-xl text-[9px]"/>
+            <div class="text-[9px] text-gray-400 mt-1">Look straight into the camera in a well-lit area.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <button class="flex-1 py-2.5 bg-gray-100 text-gray-600 font-extrabold rounded-xl text-xs" onclick="goToKycStep(1)">← Back</button>
+        <button class="flex-2 py-2.5 bg-tkvBlue text-white font-extrabold rounded-xl text-xs shadow-md active:scale-95" onclick="goToKycStep(3)">Proceed to Step 3: Payout →</button>
       </div>
     </div>
-  </div>
 
-  <!-- Daily Cipher Modal -->
-  <div class="modal-overlay-bg" id="modalCipher">
-    <div class="modal-dialog-box">
-      <h3 style="font-size:1.15rem;font-weight:800;color:var(--bg-dark)">🔐 Daily YouTube Cipher</h3>
-      <p style="font-size:0.8rem;color:var(--text-main);margin:10px 0 14px;line-height:1.4">
-        በጥንታዊቷ ኢትዮጵያ የዛግዌ ስርወ መንግስት ዋና ከተማ የነበረችውና ከአለት የተፈለፈሉ ውቅር አብያተ ክርስቲያናት የሚገኙባት ከተማ ማን ትባላለች?
+    <!-- STEP 3: PAYMENT METHOD -->
+    <div id="kycStep3Container" class="flex-1 flex flex-col gap-3 hidden">
+      <div class="bg-white border border-blue-100 rounded-2xl p-3.5 shadow-sm">
+        <div class="text-xs font-extrabold text-tkvDark mb-1">Step 3: Setup Cashout Payment Method</div>
+        <div class="text-[10px] text-gray-500 mb-3">Choose how you wish to receive payouts when reaching $5.00 threshold.</div>
+
+        <!-- Currency Selector -->
+        <div class="flex gap-1.5 p-1 bg-gray-100 rounded-xl mb-3">
+          <button class="flex-1 py-1.5 rounded-lg text-xs font-bold text-white bg-tkvBlue" id="payoutTabUsdBtn" onclick="togglePayoutMethod('usd')">Dollar ($ USD)</button>
+          <button class="flex-1 py-1.5 rounded-lg text-xs font-bold text-gray-600" id="payoutTabEtbBtn" onclick="togglePayoutMethod('etb')">Birr (ETB)</button>
+        </div>
+
+        <!-- USD Payout Fields -->
+        <div id="payoutUsdFields" class="flex flex-col gap-2.5 text-xs font-bold text-gray-700">
+          <div>
+            <label class="text-[9px] text-gray-400">NETWORK PROTOCOL</label>
+            <select class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs outline-none font-mono">
+              <option>USDT (TRC-20 - Tron Network)</option>
+              <option>TON Space (@wallet / Tonkeeper)</option>
+              <option>USDT (BEP-20 - BNB Chain)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[9px] text-gray-400">CRYPTO WALLET ADDRESS</label>
+            <input type="text" placeholder="e.g. TXYZ... or EQC7..." class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs font-mono outline-none"/>
+          </div>
+        </div>
+
+        <!-- ETB Payout Fields -->
+        <div id="payoutEtbFields" class="flex flex-col gap-2.5 text-xs font-bold text-gray-700 hidden">
+          <div>
+            <label class="text-[9px] text-gray-400">BANK OR MOBILE WALLET</label>
+            <select class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs outline-none">
+              <option>Telebirr (Ethio Telecom)</option>
+              <option>Commercial Bank of Ethiopia (CBE)</option>
+              <option>Safaricom M-PESA</option>
+              <option>Dashen Bank</option>
+              <option>Awash Bank</option>
+              <option>Bank of Abyssinia</option>
+              <option>Cooperative Bank of Oromia</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[9px] text-gray-400">ACCOUNT NUMBER / WALLET PHONE NUMBER</label>
+            <input type="text" placeholder="1000... or 09..." class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs font-mono outline-none"/>
+          </div>
+          <div>
+            <label class="text-[9px] text-gray-400">ACCOUNT HOLDER FULL NAME</label>
+            <input type="text" placeholder="Abebe Bekele" class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs outline-none"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <button class="flex-1 py-2.5 bg-gray-100 text-gray-600 font-extrabold rounded-xl text-xs" onclick="goToKycStep(2)">← Back</button>
+        <button class="flex-2 py-2.5 bg-tkvGreen text-white font-extrabold rounded-xl text-xs shadow-md active:scale-95 transition-transform" onclick="submitFinalKycForReview()">
+          Submit for 24-Hr Review 🇪🇹
+        </button>
+      </div>
+    </div>
+
+    <!-- UNDER REVIEW NOTICE (SHOWN ONCE SUBMITTED) -->
+    <div id="kycUnderReviewNotice" class="hidden bg-white border-2 border-amber-300 rounded-3xl p-5 shadow-lg text-center my-auto">
+      <div class="w-16 h-16 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center text-3xl mx-auto mb-3 animate-pulse">⏳</div>
+      <h3 class="font-extrabold text-sm text-tkvDark">Under 24-Hour Administrator Review</h3>
+      <div class="bg-amber-100 text-amber-900 text-[10px] font-mono font-bold px-3 py-1 rounded-full inline-block my-2">Status: PENDING ADMIN APPROVAL</div>
+      <p class="text-[11px] text-gray-600 leading-relaxed mb-4">
+        Your Fayda identity credentials and payout details have been submitted. Our compliance team manually inspects each document. You will be notified once Approved or Rejected.
       </p>
-      <input type="text" id="inputCipher" placeholder="መልሱን ይጻፉ (Lalibela / ላሊበላ)..." style="width:100%;padding:11px 14px;border:1.5px solid var(--card-border);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:12px;outline:none;"/>
-      <div style="display:flex;gap:8px">
-        <button class="pred-btn bull" style="flex:1" onclick="validateCipher()">Submit</button>
-        <button class="ent-upgrade-btn" style="flex:1;justify-content:center" onclick="closeCipherModal()">Close</button>
+      <div class="bg-gray-50 border border-gray-200 p-2.5 rounded-2xl text-[10px] font-mono text-gray-500 mb-4">
+        Time Remaining: <b class="text-tkvDark font-extrabold" id="kycReviewTimer">23:59:42</b>
+      </div>
+      <button class="w-full py-2.5 bg-tkvBlue text-white font-extrabold text-xs rounded-xl shadow-md active:scale-95" onclick="closeKycFullView()">Return to App</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       6. OTHER PROFESSIONAL MODALS
+  ══════════════════════════════════════════════════════════════════ -->
+
+  <!-- Customer Support Chat Modal -->
+  <div id="modalSupport" class="fixed inset-0 bg-tkvDark/80 backdrop-blur-sm z-[190] hidden items-center justify-center p-3">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-4 shadow-2xl flex flex-col h-[480px]">
+      <div class="flex items-center justify-between border-b border-gray-100 pb-2 mb-2">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-tkvBlue text-white flex items-center justify-center font-bold text-xs">💬</div>
+          <div>
+            <div class="font-extrabold text-xs text-tkvDark">Tikvah Live Support</div>
+            <div class="text-[9px] text-tkvGreen font-bold flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-tkvGreen animate-pulse"></span> Agent Selamawit Online
+            </div>
+          </div>
+        </div>
+        <button class="text-gray-400 font-bold text-xs p-1" onclick="closeModal('modalSupport')">✕</button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto flex flex-col gap-2 p-1 text-xs" id="supportMessages">
+        <div class="bg-gray-100 p-2.5 rounded-2xl rounded-tl-none max-w-[85%] text-gray-700">
+          ሰላም! እንኳን ወደ Tikvah Ethiopia ደንበኞች ድጋፍ በደህና መጡ። በምን ልርዳዎት?
+        </div>
+      </div>
+
+      <!-- Quick FAQs -->
+      <div class="flex gap-1 overflow-x-auto py-1 mb-2">
+        <button class="text-[9px] bg-blue-50 text-tkvBlue px-2 py-1 rounded-lg shrink-0 font-bold" onclick="sendQuickSupport('የቴሌኮም ፓኬጅ አሞላል እንዴት ነው?')">📶 ፓኬጅ አሞላል</button>
+        <button class="text-[9px] bg-blue-50 text-tkvBlue px-2 py-1 rounded-lg shrink-0 font-bold" onclick="sendQuickSupport('$5.00 እንዴት ማውጣት እችላለሁ?')">💵 የገንዘብ ማውጣት</button>
+        <button class="text-[9px] bg-blue-50 text-tkvBlue px-2 py-1 rounded-lg shrink-0 font-bold" onclick="sendQuickSupport('የፋይዳ e-KYC ማረጋገጫ ምን ያህል ጊዜ ይፈጃል?')">📄 Fayda KYC</button>
+      </div>
+
+      <div class="flex gap-1.5 pt-2 border-t border-gray-100">
+        <input type="text" id="supportInput" placeholder="መልእክትዎን ይፃፉ..." class="flex-1 bg-gray-50 border border-gray-200 text-xs p-2 rounded-xl outline-none" onkeydown="if(event.key==='Enter') sendSupportMessage()"/>
+        <button class="bg-tkvBlue text-white px-3 py-2 rounded-xl text-xs font-bold active:scale-95" onclick="sendSupportMessage()">Send</button>
       </div>
     </div>
   </div>
 
-  <div class="toast-alert" id="appToast">Notification</div>
+  <!-- User Profile & Settings Modal -->
+  <div id="modalProfile" class="fixed inset-0 bg-tkvDark/80 backdrop-blur-sm z-[190] hidden items-center justify-center p-3">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-4 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-gray-100 pb-2 mb-3">
+        <h3 class="font-extrabold text-xs text-tkvDark">User Account & Financial Profile</h3>
+        <button class="text-gray-400 font-bold text-xs" onclick="closeModal('modalProfile')">✕</button>
+      </div>
 
-<!-- ══════════════════════════════════════════════════════════════════════
-     6. CORE JAVASCRIPT ENGINE, LIVE API INTEGRATION & SOUND FX
-══════════════════════════════════════════════════════════════════════ -->
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-12 h-12 rounded-full overflow-hidden border border-tkvBlue p-0.5">
+          <img src="https://i.postimg.cc/LXSpj6HB/IMG-20260907-171846-651.jpg" class="w-full h-full object-cover rounded-full"/>
+        </div>
+        <div>
+          <div class="font-extrabold text-sm text-tkvDark" id="profileName">Tikvah Member</div>
+          <div class="text-[10px] text-gray-400 font-mono">UID: <span id="profileUid">847291</span> • <span class="text-tkvGreen font-bold" id="profileRegionText">Addis Ababa</span></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 mb-3 text-center">
+        <div class="bg-gray-50 p-2 rounded-xl border border-gray-100">
+          <div class="text-[9px] text-gray-400 font-bold">DEPOSITED BIRR</div>
+          <div class="font-mono text-sm font-extrabold text-teleGreenDark" id="profileDepositedBirr">0.00 ETB</div>
+        </div>
+        <div class="bg-gray-50 p-2 rounded-xl border border-gray-100">
+          <div class="text-[9px] text-gray-400 font-bold">EARNED TOKENS</div>
+          <div class="font-mono text-sm font-extrabold text-tkvGreen" id="profileTkvhTokens">0 TKVH</div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1.5 mb-3 text-xs font-bold text-gray-700">
+        <button class="p-2 bg-gray-50 rounded-xl flex items-center justify-between hover:bg-gray-100" onclick="closeModal('modalProfile'); openKycFullView();">
+          <span>📄 Fayda Identity Status</span>
+          <span class="text-[10px] text-amber-600 font-mono" id="profileKycStatus">Unverified</span>
+        </button>
+        <button class="p-2 bg-gray-50 rounded-xl flex items-center justify-between hover:bg-gray-100" onclick="openSupportModal()">
+          <span>💬 Customer Support</span>
+          <span class="text-[10px] text-tkvBlue">Chat Live</span>
+        </button>
+        <button class="p-2 bg-gray-50 rounded-xl flex items-center justify-between hover:bg-gray-100" onclick="openModal('modalTerms')">
+          <span>📜 Terms & Provably Fair Rules</span>
+          <span class="text-[10px] text-gray-400">View</span>
+        </button>
+      </div>
+
+      <button class="w-full py-2 bg-gray-100 text-gray-600 font-bold text-xs rounded-xl" onclick="closeModal('modalProfile')">Close</button>
+    </div>
+  </div>
+
+  <!-- Terms and Policy Modal -->
+  <div id="modalTerms" class="fixed inset-0 bg-tkvDark/80 backdrop-blur-sm z-[200] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-4 shadow-2xl max-h-[85vh] overflow-y-auto">
+      <h3 class="font-extrabold text-sm text-tkvDark mb-2">Terms of Service & Rules</h3>
+      <div class="text-[11px] text-gray-600 space-y-2 leading-relaxed">
+        <p><b>1. Token Economics:</b> 10,000 TKVH tokens equal $1.00 USD. 1 USD is pegged at 160.00 Ethiopian Birr.</p>
+        <p><b>2. Telecom Packages:</b> Packages are redeemed exclusively using Deposited Birr. Token balances can be cashed out once the $5.00 minimum threshold is reached.</p>
+        <p><b>3. Spin Wheel:</b> Built on a provably fair mathematical model with expected value (EV) of $0.07 per spin ticket.</p>
+        <p><b>4. Fayda e-KYC:</b> All $5.00 cash withdrawals undergo manual 24-hour administrator review to ensure compliance with Ethiopian financial standards.</p>
+      </div>
+      <button class="w-full mt-4 py-2 bg-tkvBlue text-white font-bold text-xs rounded-xl" onclick="closeModal('modalTerms')">I Understand</button>
+    </div>
+  </div>
+
+  <!-- Onboarding City Selection Modal (ALL 12 REGIONS) -->
+  <div id="modalCitySelect" class="fixed inset-0 bg-tkvDark/90 backdrop-blur-md z-[200] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl text-center">
+      <div class="w-12 h-12 rounded-full bg-blue-50 text-tkvBlue flex items-center justify-center text-xl mx-auto mb-2">🇪🇹</div>
+      <h3 class="font-extrabold text-sm text-tkvDark">የሚኖሩበትን ክልል ወይም ከተማ ይምረጡ</h3>
+      <p class="text-[11px] text-gray-500 mb-3">ነጥብዎ ለክልልዎ ሊግ በቀጥታ ይደመራል።</p>
+      
+      <div class="grid grid-cols-2 gap-1.5 text-left text-xs font-bold mb-2">
+        <button class="p-2 border rounded-xl hover:border-tkvBlue bg-gray-50" onclick="chooseRegion('አዲስ አበባ (Addis Ababa)')">አዲስ አበባ</button>
+        <button class="p-2 border rounded-xl hover:border-tkvBlue bg-gray-50" onclick="chooseRegion('ኦሮሚያ (Oromia)')">ኦሮሚያ</button>
+        <button class="p-2 border rounded-xl hover:border-tkvBlue bg-gray-50" onclick="chooseRegion('አማራ (Amhara)')">አማራ</button>
+        <button class="p-2 border rounded-xl hover:border-tkvBlue bg-gray-50" onclick="chooseRegion('ትግራይ (Tigray)')">ትግራይ</button>
+        <button class="p-2 border rounded-xl hover:border-tkvBlue bg-gray-50" onclick="chooseRegion('ሀዋሳ (Hawassa)')">ሀዋሳ</button>
+        <button class="p-2 border rounded-xl hover:border-tkvBlue bg-gray-50" onclick="chooseRegion('ባህር ዳር (Bahir Dar)')">ባህር ዳር</button>
+        <button class="p-2 border rounded-xl hover:border-tkvBlue bg-gray-50" onclick="chooseRegion('ድሬዳዋ (Dire Dawa)')">ድሬዳዋ</button>
+        <button class="p-2 border rounded-xl hover:border-tkvBlue bg-gray-50" onclick="chooseRegion('ሲዳማ (Sidama)')">ሲዳማ</button>
+        <button class="p-2 border rounded-xl hover:border-tkvBlue bg-gray-50" onclick="chooseRegion('ሶማሌ (Somali)')">ሶማሌ</button>
+        <button class="p-2 border rounded-xl hover:border-tkvBlue bg-gray-50" onclick="chooseRegion('አፋር (Afar)')">አፋር</button>
+        <button class="p-2 border rounded-xl hover:border-tkvBlue bg-gray-50" onclick="chooseRegion('ደቡብ ምዕራብ (South West)')">ደቡብ ምዕራብ</button>
+        <button class="p-2 border rounded-xl hover:border-tkvBlue bg-gray-50" onclick="chooseRegion('ዳያስፖራ (Diaspora)')">ዳያስፖራ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 15-Second Locked Ad Modal (Fallback & Monetag Dual-Engine) -->
+  <div id="modal15sAd" class="fixed inset-0 bg-tkvDark/95 backdrop-blur-md z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-xs p-5 shadow-2xl text-center relative">
+      <div id="adLockCloseBtn" class="hidden absolute top-3 right-3 text-xs font-bold text-gray-400 bg-gray-100 p-1.5 rounded-full cursor-pointer" onclick="close15sAd()">✕</div>
+      <h3 class="font-extrabold text-sm text-tkvDark">Monetag Rewarded Video Ad</h3>
+      <p class="text-[10px] text-gray-500 mb-2">Watching sponsored video ad. Reward unlocks in:</p>
+      <div class="w-16 h-16 rounded-full border-4 border-tkvGreen text-tkvGreen text-2xl font-mono font-bold flex items-center justify-center mx-auto my-3" id="adTimerCount">15</div>
+      <div class="text-[10px] text-gray-400 bg-gray-50 p-2 rounded-xl">🟢 Official Monetag Zone: 11747021</div>
+    </div>
+  </div>
+
+  <!-- TON Connect Modal -->
+  <div id="modalTon" class="fixed inset-0 bg-tkvDark/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-xs p-5 shadow-2xl text-center">
+      <h3 class="font-extrabold text-sm text-tkvDark">Connect TON Wallet</h3>
+      <div class="flex flex-col gap-2 my-3">
+        <button class="w-full p-2.5 rounded-xl border border-gray-200 hover:border-tkvBlue text-xs font-bold" onclick="selectTonWallet('@wallet in Telegram')">Telegram @wallet</button>
+        <button class="w-full p-2.5 rounded-xl border border-gray-200 hover:border-tkvBlue text-xs font-bold" onclick="selectTonWallet('Tonkeeper')">Tonkeeper</button>
+      </div>
+      <button class="w-full py-2 bg-gray-100 text-gray-600 rounded-xl font-bold text-xs" onclick="closeModal('modalTon')">Close</button>
+    </div>
+  </div>
+
+  <!-- Cipher Modal -->
+  <div id="modalCipher" class="fixed inset-0 bg-tkvDark/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-xs p-5 shadow-2xl text-center">
+      <h3 class="font-extrabold text-sm text-tkvDark">Daily Amharic Cipher</h3>
+      <p class="text-[11px] text-gray-600 my-2">በጥንታዊቷ ኢትዮጵያ ከአለት የተፈለፈሉ ውቅር አብያተ ክርስቲያናት የሚገኙባት ከተማ ማን ትባላለች?</p>
+      <input type="text" id="cipherInput" placeholder="Lalibela / ላሊበላ" class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs mb-3 outline-none"/>
+      <button class="w-full py-2.5 bg-tkvBlue text-white font-bold rounded-xl text-xs mb-2 active:scale-95" onclick="verifyCipher()">Submit (+500 TKVH)</button>
+      <button class="w-full py-2 bg-gray-100 text-gray-600 rounded-xl font-bold text-xs" onclick="closeModal('modalCipher')">Close</button>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-14 left-1/2 -translate-x-1/2 bg-tkvDark text-white px-4 py-2 rounded-full text-xs font-bold shadow-xl opacity-0 pointer-events-none transition-all duration-300 z-[220]">Notification</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     7. JAVASCRIPT MASTER ENGINE (V5 ENTERPRISE FRONTEND)
+══════════════════════════════════════════════════════════════════ -->
 <script>
-// 1. User Crypto Live Data API Key & Config
-const LIVE_CRYPTO_API_KEY = "cto3m1z2ida8f7tcxvc2";
-
-// 2. Telegram WebApp Handshake
-const tg = window.Telegram?.WebApp;
-if (tg) {
-  tg.expand();
-  tg.ready();
-  if (tg.initDataUnsafe?.user?.first_name) {
-    document.getElementById('displayUsername').innerText = tg.initDataUnsafe.user.first_name;
-  }
-}
-
-// 3. State & Tokenomics Engine
-let userBalance = 847350;
-let hourlyPassive = 2450;
+// ────────────────────────────────────────────────────────────────
+// A. PRODUCTION STATE ARCHITECTURE
+// ────────────────────────────────────────────────────────────────
+let userTKVH = 0;              // Earned via Ads, Cipher, Mining, Referrals
+let userUSD = 0.00;            // Won from Spin / Converted from TKVH
+let userDepositETB = 0.00;     // Strictly Deposited Birr for Telecom Bundles & Spins
+let exchangeRate = 160.00;
+let spinTickets = 3;
+let passiveRate = 150;         // Starting base Level 1 rate
+let tkvhFractional = 0;        // Accurate fractional accumulator
+let adsWatched = 0;
+let isSpinning = false;
 let soundActive = true;
+let userRegion = "";
 let langIndex = 0;
+let boosterTimeRemaining = 0;
+let boosterTimerInterval = null;
 const languages = ['am', 'en', 'om'];
 
-const industries = [
-  { name: 'GERD Clean Power', level: 4, rate: 650, cost: 12000 },
-  { name: 'Ethiopian Airlines Cargo', level: 3, rate: 520, cost: 9800 },
-  { name: 'Yirgacheffe Coffee Desk', level: 3, rate: 410, cost: 8200 },
-  { name: 'Ethio Telecom 5G Grid', level: 2, rate: 270, cost: 5400 },
-  { name: 'Gold Mining & Refinery', level: 2, rate: 380, cost: 7600 },
-  { name: 'Teff Agro-Industries', level: 1, rate: 220, cost: 4100 }
+// User Profile Telegram Data
+let tgUser = { id: 847291, first_name: "Tikvah Member", username: "tikvah_user" };
+
+// ────────────────────────────────────────────────────────────────
+// B. BRAND LOGOS & ASSETS
+// ────────────────────────────────────────────────────────────────
+const BrandLogos = {
+  tikvahOfficial: "https://i.postimg.cc/LXSpj6HB/IMG-20260907-171846-651.jpg",
+  fayda: "https://i.postimg.cc/VkDP0y1g/20260907-115806.jpg",
+  ethioTelecom: "https://i.postimg.cc/fbJp3J8Q/20260907-115957.jpg",
+  ethiopianAirlines: "https://i.postimg.cc/6qLmsRpV/20260907-120048.jpg",
+  safaricom: "https://i.postimg.cc/Qdnnrjjd/20260907-120139.jpg",
+  cbe: "https://i.postimg.cc/02ktMzQx/20260907-120252.jpg",
+  dashen: "https://i.postimg.cc/C5msH4Kv/20260907-120417.jpg",
+  capitalMarket: "https://i.postimg.cc/tTb3KcZD/20260907-120453.jpg",
+  abyssinia: "https://i.postimg.cc/4N0zfyHz/20260907-120718.jpg",
+  devBank: "https://i.postimg.cc/HnxyH1pF/20260907-120919.jpg"
+};
+
+// ────────────────────────────────────────────────────────────────
+// C. 15 ETHIOPIAN INDUSTRIES (LEVEL 1 BASE)
+// ────────────────────────────────────────────────────────────────
+const empire15 = [
+  { id: 'e1', name: 'GERD Clean Hydro Power', level: 1, rate: 50, cost: 500, img: null, svg: '⚡' },
+  { id: 'e2', name: 'Ethiopian Airlines Cargo Logistics', level: 1, rate: 45, cost: 450, img: BrandLogos.ethiopianAirlines },
+  { id: 'e3', name: 'Ethio Telecom 5G Infrastructure', level: 1, rate: 40, cost: 400, img: BrandLogos.ethioTelecom },
+  { id: 'e4', name: 'CBE Digital Treasury System', level: 1, rate: 35, cost: 350, img: BrandLogos.cbe },
+  { id: 'e5', name: 'Safaricom Ethiopia Cloud Network', level: 1, rate: 30, cost: 300, img: BrandLogos.safaricom },
+  { id: 'e6', name: 'Dashen Bank Amole Fintech', level: 1, rate: 25, cost: 250, img: BrandLogos.dashen },
+  { id: 'e7', name: 'Bank of Abyssinia Apollo Core', level: 1, rate: 20, cost: 200, img: BrandLogos.abyssinia },
+  { id: 'e8', name: 'Development Bank of Ethiopia', level: 1, rate: 18, cost: 180, img: BrandLogos.devBank },
+  { id: 'e9', name: 'Ethiopian Capital Market (ECMA)', level: 1, rate: 16, cost: 160, img: BrandLogos.capitalMarket },
+  { id: 'e10', name: 'Yirgacheffe & Sidama Coffee Export', level: 1, rate: 15, cost: 150, img: null, svg: '☕' },
+  { id: 'e11', name: 'Oromia & Benshangul Gold Mine', level: 1, rate: 14, cost: 140, img: null, svg: '⛏️' },
+  { id: 'e12', name: 'Teff Agro-Industries Flour Mills', level: 1, rate: 12, cost: 120, img: null, svg: '🌾' },
+  { id: 'e13', name: 'CoopBank Micro-Finance Grid', level: 1, rate: 10, cost: 100, img: null, svg: '🤝' },
+  { id: 'e14', name: 'Ethio-Djibouti Railway Logistics', level: 1, rate: 8, cost: 80, img: null, svg: '🚆' },
+  { id: 'e15', name: 'Ethiopian Petroleum Supply (EPSE)', level: 1, rate: 6, cost: 60, img: null, svg: '⛽' }
 ];
 
-// 4. Zero-Asset Web Audio Synthesizer
+// ────────────────────────────────────────────────────────────────
+// D. TELECOM PACKAGES (BOUGHT STRICTLY WITH DEPOSITED BIRR)
+// ────────────────────────────────────────────────────────────────
+const telebirrPackagesAll = [
+  { name: 'Telegram Daily (1.25 GB)', birr: 14, regular: 20 },
+  { name: '2 Hours Unlimited Data', birr: 24.5, regular: 35 },
+  { name: 'Daily Unlimited Internet', birr: 74.9, regular: 107 },
+  { name: 'Monthly 2GB Internet', birr: 105, regular: 150 },
+  { name: 'Internet Weekly Package 4GB', birr: 140, regular: 200 },
+  { name: 'Internet Monthly for 4GB', birr: 196, regular: 280 },
+  { name: 'Internet Weekly for 7.5 GB', birr: 210, regular: 300 },
+  { name: 'Monthly Facebook, YouTube, TikTok (10 GB)', birr: 210, regular: 300 },
+  { name: 'Internet Weekly Package 15GB', birr: 350, regular: 500 },
+  { name: 'Internet Monthly for 10GB', birr: 385, regular: 550 },
+  { name: 'Weekly Unlimited Internet Plan', birr: 430, regular: 615 },
+  { name: 'Internet Monthly for 20GB', birr: 665, regular: 950 },
+  { name: 'Unlimited Voice for a Month', birr: 770, regular: 1100 },
+  { name: 'Internet Monthly for 50GB', birr: 1050, regular: 1500 },
+  { name: 'Internet Monthly for 100GB', birr: 1330, regular: 1900 },
+  { name: 'Unlimited Data for a Month', birr: 1400, regular: 2000 },
+  { name: 'Monthly 5G Package for 150GB', birr: 1624, regular: 2320 },
+  { name: 'Unlimited Voice Plus Internet for a Month', birr: 1855, regular: 2650 },
+  { name: 'Monthly 5G Package for 250GB', birr: 1932, regular: 2760 },
+  { name: 'Monthly 5G Unlimited Internet (FUP: 400GB)', birr: 2240, regular: 3200 },
+  { name: '5G Unlimited Plan (FUP: 500GB)', birr: 2450, regular: 3500 }
+];
+
+const safaricomPackagesAll = [
+  { name: 'Safaricom BESH 6GB (24 Hours)', birr: 56, regular: 80 },
+  { name: 'Weekly Unlimited Internet', birr: 595, regular: 850 },
+  { name: 'Monthly Unlimited Internet', birr: 1925, regular: 2750 }
+];
+
+// ────────────────────────────────────────────────────────────────
+// E. 12 OFFICIAL ETHIOPIAN TASKS
+// ────────────────────────────────────────────────────────────────
+const ethiopianTasks = [
+  { id: 't1', name: 'Ethio Telecom', url: 'https://t.me/ethio_telecom', reward: 3000, img: BrandLogos.ethioTelecom },
+  { id: 't2', name: 'Ethiopian Airlines', url: 'https://t.me/ethiopian_airlines', reward: 3000, img: BrandLogos.ethiopianAirlines },
+  { id: 't3', name: 'Safaricom Ethiopia', url: 'https://t.me/Safaricom_Ethiopia_PLC', reward: 2500, img: BrandLogos.safaricom },
+  { id: 't4', name: 'Commercial Bank of Ethiopia', url: 'https://t.me/combankethofficial', reward: 3500, img: BrandLogos.cbe },
+  { id: 't5', name: 'Dashen Bank', url: 'https://t.me/DashenBankEthiopia', reward: 2500, img: BrandLogos.dashen },
+  { id: 't6', name: 'Bank of Abyssinia', url: 'https://t.me/abyssiniabank', reward: 2500, img: BrandLogos.abyssinia },
+  { id: 't7', name: 'Development Bank of Ethiopia', url: 'https://t.me/dbe_ethiopia', reward: 2500, img: BrandLogos.devBank },
+  { id: 't8', name: 'Ethiopian Capital Market', url: 'https://t.me/ecma_ethiopia', reward: 3000, img: BrandLogos.capitalMarket },
+  { id: 't9', name: 'Awash Bank', url: 'https://t.me/awash_bank_official', reward: 2500, img: null, svg: '🟠' },
+  { id: 't10', name: 'Cooperative Bank of Oromia', url: 'https://t.me/coopbankoromia', reward: 2000, img: null, svg: '🟡' },
+  { id: 't11', name: 'Chapa Financial Technologies', url: 'https://t.me/chapa_et', reward: 3000, img: null, svg: '💳' },
+  { id: 't12', name: 'Feres Transport', url: 'https://t.me/feresethiopia', reward: 2000, img: null, svg: '🚕' }
+];
+
+// ────────────────────────────────────────────────────────────────
+// F. 12 REGIONAL LEAGUES DATA
+// ────────────────────────────────────────────────────────────────
+const regionalLeagues = [
+  { rank: 4, name: 'ትግራይ (Tigray / Mekelle)', pool: '21,500,000 TKVH', color: '#007499' },
+  { rank: 5, name: 'ሲዳማ (Sidama / Hawassa)', pool: '18,200,000 TKVH', color: '#071A22' },
+  { rank: 6, name: 'ድሬዳዋ (Dire Dawa City)', pool: '14,800,000 TKVH', color: '#071A22' },
+  { rank: 7, name: 'ዳያስፖራ (Diaspora Community)', pool: '42,900,000 TKVH', color: '#702082' },
+  { rank: 8, name: 'ሀዋሳ ከተማ (Hawassa City)', pool: '12,400,000 TKVH', color: '#009ACA' },
+  { rank: 9, name: 'ባህር ዳር (Bahir Dar)', pool: '11,800,000 TKVH', color: '#00CB00' },
+  { rank: 10, name: 'ሶማሌ (Somali / Jigjiga)', pool: '9,500,000 TKVH', color: '#F5A623' },
+  { rank: 11, name: 'አፋር (Afar / Semera)', pool: '7,200,000 TKVH', color: '#0E2A36' },
+  { rank: 12, name: 'ደቡብ ምዕራብ (South West)', pool: '5,900,000 TKVH', color: '#5E8F22' }
+];
+
+// ────────────────────────────────────────────────────────────────
+// G. WHEEL 8 SECTORS (EV = $0.07)
+// ────────────────────────────────────────────────────────────────
+const wheelSectors = [
+  { text: "500 TKVH", color: "#009ACA", type: "tkvh", val: 500 },
+  { text: "1,000 TKVH", color: "#0E2A36", type: "tkvh", val: 1000 },
+  { text: "$0.10 USD", color: "#00CB00", type: "usd", val: 0.10 },
+  { text: "1 Extra Spin", color: "#007499", type: "spins", val: 1 },
+  { text: "2x Booster (1Hr)", color: "#F5A623", type: "booster", val: 3600 },
+  { text: "Mystery Box", color: "#702082", type: "mystery", val: 1500 },
+  { text: "$0.50 USD", color: "#009E00", type: "usd", val: 0.50 },
+  { text: "💥 $5.00 Jackpot", color: "#EF4444", type: "usd", val: 5.00 }
+];
+
+// ────────────────────────────────────────────────────────────────
+// H. AUDIO SYNTHESIZER
+// ────────────────────────────────────────────────────────────────
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
-
-function playAudioSynth(frequency, waveType, durationSec) {
+function playSynthSound(freq, type, duration) {
   if (!soundActive) return;
   try {
     if (!audioCtx) audioCtx = new AudioContext();
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    osc.type = waveType;
-    osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
     gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durationSec);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     osc.start();
-    osc.stop(audioCtx.currentTime + durationSec);
+    osc.stop(audioCtx.currentTime + duration);
   } catch (e) {}
 }
 
 function toggleAudioFx() {
   soundActive = !soundActive;
-  showToast(soundActive ? '🔊 Audio FX On' : '🔇 Audio Muted');
+  showToast(soundActive ? 'Audio FX On' : 'Audio Muted');
 }
 
-// 5. Navigation Router
-function switchDock(tabId, el) {
-  document.querySelectorAll('.screen-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active');
-
-  document.querySelectorAll('.dock-tab').forEach(t => t.classList.remove('active'));
-  if (el) el.classList.add('active');
-  else {
-    const matched = document.querySelector(`.dock-tab[data-tab="${tabId}"]`);
-    if (matched) matched.classList.add('active');
+// ────────────────────────────────────────────────────────────────
+// I. MONETAG INITIALIZATION & IN-APP INTERSTITIAL
+// ────────────────────────────────────────────────────────────────
+function initMonetagAds() {
+  try {
+    if (typeof show_11747021 === 'function') {
+      show_11747021({
+        type: 'inApp',
+        inAppSettings: {
+          frequency: 2,
+          capping: 0.1,
+          interval: 30,
+          timeout: 5,
+          everyPage: false
+        }
+      });
+      console.log('✅ Monetag In-App Interstitial Configured');
+    }
+  } catch (e) {
+    console.log('Monetag notice:', e);
   }
-
-  if (tabId === 'tab-market') {
-    renderCanvasChart();
-    fetchLiveMarketRates();
-  }
-
-  playAudioSynth(500, 'sine', 0.08);
-  if (tg?.HapticFeedback) tg.HapticFeedback.selectionChanged();
 }
 
-// 6. Business Empire Upgrades
+// ────────────────────────────────────────────────────────────────
+// J. ACCURATE MINING ENGINE
+// ────────────────────────────────────────────────────────────────
+setInterval(() => {
+  tkvhFractional += (passiveRate / 3600);
+  if (tkvhFractional >= 1) {
+    const toAdd = Math.floor(tkvhFractional);
+    userTKVH += toAdd;
+    tkvhFractional -= toAdd;
+    updateUI();
+  }
+}, 1000);
+
+// ────────────────────────────────────────────────────────────────
+// K. RENDER 15 ENTERPRISES & LEVEL UP
+// ────────────────────────────────────────────────────────────────
+function renderEmpire15() {
+  document.getElementById('empire15Container').innerHTML = empire15.map((e, idx) => `
+    <div class="bg-white border border-blue-100 rounded-2xl p-3 shadow-sm flex flex-col justify-between hover:border-tkvBlue transition-all">
+      <div class="flex items-start justify-between mb-1.5">
+        <div class="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center p-0.5 overflow-hidden">
+          ${e.img ? `<img src="${e.img}" class="brand-logo-img"/>` : `<span class="text-xs font-bold">${e.svg}</span>`}
+        </div>
+        <span class="text-[9px] font-extrabold bg-blue-50 text-tkvBlue px-1.5 py-0.5 rounded-full">Lvl ${e.level}</span>
+      </div>
+      <div class="font-extrabold text-[11px] text-tkvDark leading-tight mb-0.5">${e.name}</div>
+      <div class="font-mono text-[10px] text-tkvGreen font-bold mb-2">+${e.rate.toLocaleString()} TKVH/hr</div>
+      <button class="bg-gray-50 border border-gray-200 text-tkvDark font-mono font-bold text-[10px] py-1.5 px-2 rounded-xl flex items-center justify-between active:bg-tkvBlue active:text-white transition-all" onclick="upgradeIndustry(${idx})">
+        <span>Upgrade</span>
+        <span>${e.cost.toLocaleString()}</span>
+      </button>
+    </div>
+  `).join('');
+}
+renderEmpire15();
+
 function upgradeIndustry(idx) {
-  const item = industries[idx];
-  if (userBalance < item.cost) {
-    showToast('❌ በቂ TKVH የሎትም (Insufficient Balance)');
-    playAudioSynth(220, 'sawtooth', 0.2);
+  const item = empire15[idx];
+  if (userTKVH < item.cost) {
+    showToast('Insufficient TKVH tokens!');
     return;
   }
-
-  userBalance -= item.cost;
+  userTKVH -= item.cost;
   item.level++;
   item.rate += Math.floor(item.rate * 0.4);
   item.cost = Math.floor(item.cost * 1.55);
-  hourlyPassive += Math.floor(item.rate * 0.4);
+  passiveRate += Math.floor(item.rate * 0.4);
 
-  document.getElementById('txtUserBalance').innerText = userBalance.toLocaleString();
-  document.getElementById(`entLvl-${idx}`).innerText = `Lvl ${item.level}`;
-  document.getElementById(`entRate-${idx}`).innerText = `+${item.rate} TKVH/hr`;
-  document.getElementById(`entCost-${idx}`).innerText = item.cost.toLocaleString();
-  document.getElementById('txtPassiveRateDisplay').innerText = `+${hourlyPassive.toLocaleString()}/hr`;
-
-  showToast(`🎉 ${item.name} Upgraded!`);
-  playAudioSynth(880, 'sine', 0.25);
-  if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+  updateUI();
+  renderEmpire15();
+  saveLocalState();
+  showToast(`${item.name} Upgraded to Lvl ${item.level}!`);
+  playSynthSound(880, 'sine', 0.25);
 }
 
-// Passive Accumulator Loop (1/sec)
-setInterval(() => {
-  userBalance += Math.floor(hourlyPassive / 3600);
-  document.getElementById('txtUserBalance').innerText = userBalance.toLocaleString();
-}, 1000);
+// ────────────────────────────────────────────────────────────────
+// L. 100 ADS GRID & MONETAG REWARDED STREAM
+// ────────────────────────────────────────────────────────────────
+function render100Ads() {
+  const container = document.getElementById('ads100GridContainer');
+  let html = '';
+  for (let i = 1; i <= 100; i++) {
+    html += `
+      <button class="bg-white border border-blue-100 hover:border-tkvGreen p-2 rounded-2xl shadow-sm text-center active:scale-95 transition-all" onclick="triggerMonetagAdStation(${i}, this)">
+        <div class="text-[10px] font-extrabold text-tkvDark">Ad #${i}</div>
+        <div class="text-[8px] text-tkvGreen font-bold font-mono">+150 TKVH</div>
+      </button>
+    `;
+  }
+  container.innerHTML = html;
+}
+render100Ads();
 
-// 7. Live Crypto API Engine & Canvas Chart (Using User Key)
-async function fetchLiveMarketRates() {
-  try {
-    const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=the-open-network,bitcoin,ethereum,solana&vs_currencies=usd&x_cg_demo_api_key=${LIVE_CRYPTO_API_KEY}`);
-    const data = await res.json();
-    if (data['the-open-network']) document.getElementById('spotPriceTON').innerText = `$${data['the-open-network'].usd}`;
-    if (data['bitcoin']) {
-      document.getElementById('livePriceBTC').innerText = `$${data['bitcoin'].usd.toLocaleString()}`;
-      document.getElementById('predAssetTicker').innerText = `BTC/USD: $${data['bitcoin'].usd.toLocaleString()}`;
-    }
-    if (data['ethereum']) document.getElementById('livePriceETH').innerText = `$${data['ethereum'].usd.toLocaleString()}`;
-    if (data['solana']) document.getElementById('livePriceSOL').innerText = `$${data['solana'].usd}`;
-  } catch (err) {
-    // Graceful offline fallback
+let ad15Timer = null;
+function triggerMonetagAdStation(id, btn) {
+  if (typeof show_11747021 === 'function') {
+    show_11747021().then(() => {
+      completeAdReward(id, btn);
+    }).catch(() => {
+      start15sFallbackAd(id, btn);
+    });
+  } else {
+    start15sFallbackAd(id, btn);
   }
 }
 
-function renderCanvasChart() {
-  const canvas = document.getElementById('liveCoinGeckoChart');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  canvas.width = canvas.parentElement.clientWidth;
-  canvas.height = canvas.parentElement.clientHeight;
+function start15sFallbackAd(id, btn) {
+  openModal('modal15sAd');
+  document.getElementById('adLockCloseBtn').classList.add('hidden');
+  let sec = 15;
+  document.getElementById('adTimerCount').innerText = sec;
 
+  clearInterval(ad15Timer);
+  ad15Timer = setInterval(() => {
+    sec--;
+    document.getElementById('adTimerCount').innerText = sec;
+    if (sec <= 0) {
+      clearInterval(ad15Timer);
+      document.getElementById('adLockCloseBtn').classList.remove('hidden');
+      completeAdReward(id, btn);
+    }
+  }, 1000);
+}
+
+function completeAdReward(id, btn) {
+  userTKVH += 150;
+  adsWatched++;
+  document.getElementById('adStreamCounter').innerText = `Watched: ${adsWatched} / 100`;
+  if (btn) {
+    btn.classList.add('opacity-50', 'pointer-events-none', 'bg-green-50');
+  }
+  updateUI();
+  saveLocalState();
+  showToast(`🎉 Ad #${id} completed: +150 TKVH Credited!`);
+  playSynthSound(880, 'sine', 0.25);
+}
+
+function close15sAd() {
+  closeModal('modal15sAd');
+}
+
+// ────────────────────────────────────────────────────────────────
+// M. RENDER TELECOM PACKAGES WITH "DEPOSIT & BUY" LOGIC
+// ────────────────────────────────────────────────────────────────
+function renderTelecomPackages() {
+  // Ethio Telecom
+  document.getElementById('telebirrPackagesContainer').innerHTML = telebirrPackagesAll.map(p => {
+    const hasEnough = userDepositETB >= p.birr;
+    return `
+      <div class="bg-white border border-blue-100 rounded-2xl p-3 shadow-sm flex items-center justify-between">
+        <div>
+          <div class="font-extrabold text-xs text-tkvDark mb-0.5">${p.name}</div>
+          <div class="flex items-center gap-2 font-mono text-[11px]">
+            <span class="text-teleGreenDark font-bold">${p.birr} Birr</span>
+            <span class="text-gray-400 line-through text-[10px]">${p.regular} ETB</span>
+          </div>
+        </div>
+        ${hasEnough ? `
+          <button class="bg-teleGreen text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl shadow-md active:scale-95" onclick="executePackagePurchase('${p.name}', ${p.birr})">
+            Buy Now
+          </button>
+        ` : `
+          <button class="bg-amber-500 text-white font-extrabold text-[10px] px-2.5 py-1.5 rounded-xl shadow-md active:scale-95" onclick="quickDepositAndBuy(${p.birr})">
+            Deposit & Buy
+          </button>
+        `}
+      </div>
+    `;
+  }).join('');
+
+  // Safaricom
+  document.getElementById('safaricomPackagesContainer').innerHTML = safaricomPackagesAll.map(p => {
+    const hasEnough = userDepositETB >= p.birr;
+    return `
+      <div class="bg-white border border-red-100 rounded-2xl p-3 shadow-sm flex items-center justify-between">
+        <div>
+          <div class="font-extrabold text-xs text-tkvDark mb-0.5">${p.name}</div>
+          <div class="flex items-center gap-2 font-mono text-[11px]">
+            <span class="text-safariRed font-bold">${p.birr} Birr</span>
+            <span class="text-gray-400 line-through text-[10px]">${p.regular} ETB</span>
+          </div>
+        </div>
+        ${hasEnough ? `
+          <button class="bg-safariRed text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl shadow-md active:scale-95" onclick="executePackagePurchase('${p.name}', ${p.birr})">
+            Buy Now
+          </button>
+        ` : `
+          <button class="bg-amber-500 text-white font-extrabold text-[10px] px-2.5 py-1.5 rounded-xl shadow-md active:scale-95" onclick="quickDepositAndBuy(${p.birr})">
+            Deposit & Buy
+          </button>
+        `}
+      </div>
+    `;
+  }).join('');
+}
+renderTelecomPackages();
+
+function executePackagePurchase(name, cost) {
+  if (userDepositETB < cost) {
+    showToast('❌ Insufficient Deposited Birr! Please deposit first.');
+    return;
+  }
+  userDepositETB -= cost;
+  updateUI();
+  renderTelecomPackages();
+  saveLocalState();
+  showToast(`✅ ${name} activated to your registered phone!`);
+  playSynthSound(880, 'sine', 0.35);
+}
+
+function quickDepositAndBuy(requiredAmount) {
+  switchTelecomSubTab('deposit');
+  document.getElementById('depositAmountInput').value = requiredAmount;
+  showToast(`Please deposit ${requiredAmount} ETB to activate this package.`);
+}
+
+function buySpinWithDeposit(count, cost) {
+  if (userDepositETB < cost) {
+    showToast(`❌ Insufficient Deposited Birr. You need ${cost} ETB.`);
+    quickDepositAndBuy(cost);
+    return;
+  }
+  userDepositETB -= cost;
+  spinTickets += count;
+  updateUI();
+  renderTelecomPackages();
+  saveLocalState();
+  showToast(`🎟️ +${count} Spin Ticket(s) added!`);
+  playSynthSound(880, 'sine', 0.3);
+}
+
+// ────────────────────────────────────────────────────────────────
+// N. WHEEL ENGINE (PDF PROVABLY FAIR 8 SECTORS)
+// ────────────────────────────────────────────────────────────────
+const canvas = document.getElementById('wheelCanvas');
+const ctx = canvas.getContext('2d');
+let currentAngle = 0;
+
+function drawWheel() {
+  const arc = 2 * Math.PI / wheelSectors.length;
+  const radius = canvas.width / 2;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  grad.addColorStop(0, 'rgba(0, 154, 202, 0.4)');
-  grad.addColorStop(1, 'rgba(0, 154, 202, 0)');
+  wheelSectors.forEach((s, i) => {
+    const angle = currentAngle + i * arc;
+    ctx.beginPath();
+    ctx.fillStyle = s.color;
+    ctx.moveTo(radius, radius);
+    ctx.arc(radius, radius, radius - 6, angle, angle + arc);
+    ctx.lineTo(radius, radius);
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.stroke();
 
-  const points = [
-    {x:0, y:100}, {x:50, y:85}, {x:100, y:92},
-    {x:150, y:60}, {x:200, y:70}, {x:260, y:35},
-    {x:320, y:45}, {x:canvas.width, y:20}
-  ];
+    ctx.save();
+    ctx.translate(radius, radius);
+    ctx.rotate(angle + arc / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 10px DM Mono, sans-serif';
+    ctx.fillText(s.text, radius - 16, 3.5);
+    ctx.restore();
+  });
+}
+drawWheel();
 
-  ctx.beginPath();
-  ctx.moveTo(points[0].x, points[0].y);
-  for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
-  ctx.strokeStyle = '#009ACA';
-  ctx.lineWidth = 3;
-  ctx.stroke();
+function triggerSpin() {
+  if (isSpinning) return;
+  if (spinTickets <= 0) {
+    showToast('No spin tickets! Buy with deposit or invite friends.');
+    return;
+  }
+  spinTickets--;
+  updateUI();
+  isSpinning = true;
 
-  ctx.lineTo(canvas.width, canvas.height);
-  ctx.lineTo(0, canvas.height);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
+  const weights = [250, 250, 150, 100, 80, 70, 99, 1];
+  let rand = Math.random() * 1000;
+  let winIdx = 0;
+  for (let i = 0; i < weights.length; i++) {
+    if (rand < weights[i]) { winIdx = i; break; }
+    rand -= weights[i];
+  }
+
+  const arc = 2 * Math.PI / wheelSectors.length;
+  const totalRotations = 5 * 2 * Math.PI; 
+  const targetAngle = totalRotations + (wheelSectors.length - winIdx) * arc - (arc / 2) - (Math.PI / 2);
+
+  const duration = 4000;
+  const start = performance.now();
+  const initialAngle = currentAngle % (2 * Math.PI);
+
+  function animate(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    currentAngle = initialAngle + targetAngle * ease;
+    drawWheel();
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      isSpinning = false;
+      const prize = wheelSectors[winIdx];
+      handleSpinReward(prize);
+    }
+  }
+  requestAnimationFrame(animate);
 }
 
-function switchChartTimeframe(btn, tf) {
-  document.querySelectorAll('.ctf-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderCanvasChart();
+function handleSpinReward(prize) {
+  if (prize.type === 'tkvh') userTKVH += prize.val;
+  if (prize.type === 'usd') userUSD += prize.val;
+  if (prize.type === 'spins') spinTickets += prize.val;
+  
+  if (prize.type === 'booster') {
+    startBoosterTimer(3600);
+    showToast('🔥 2x Referral Booster Active for 1 Hour!');
+  }
+  
+  if (prize.type === 'mystery') {
+    const bonus = Math.floor(Math.random() * 2000) + 500;
+    userTKVH += bonus;
+    showToast(`🎁 Mystery Box Opened: +${bonus} TKVH!`);
+  }
+
+  updateUI();
+  saveLocalState();
+  showToast(`🎉 Won: ${prize.text}!`);
+  playSynthSound(880, 'sine', 0.3);
 }
 
-function submitPrediction(type) {
-  showToast(`🎯 ${type} Prediction Staked: 100 TKVH!`);
-  playAudioSynth(type === 'BULL' ? 700 : 400, 'sine', 0.2);
+function startBoosterTimer(seconds) {
+  boosterTimeRemaining = seconds;
+  document.getElementById('boosterActiveBanner').classList.remove('hidden');
+  clearInterval(boosterTimerInterval);
+  boosterTimerInterval = setInterval(() => {
+    boosterTimeRemaining--;
+    const mins = Math.floor(boosterTimeRemaining / 60);
+    const secs = boosterTimeRemaining % 60;
+    document.getElementById('boosterTimerText').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    if (boosterTimeRemaining <= 0) {
+      clearInterval(boosterTimerInterval);
+      document.getElementById('boosterActiveBanner').classList.add('hidden');
+    }
+  }, 1000);
 }
 
-// 8. Fayda e-KYC Manual Document Uploader
-function triggerFileUpload(id) {
-  document.getElementById(id).click();
+// ────────────────────────────────────────────────────────────────
+// O. TOKEN CASHOUT & CONVERTER
+// ────────────────────────────────────────────────────────────────
+function previewTkvhConversion() {
+  const tkvh = parseFloat(document.getElementById('convertTkvhInput').value) || 0;
+  const gainedUSD = tkvh / 10000;
+  const gainedETB = gainedUSD * exchangeRate;
+  document.getElementById('convertTkvhUsdOutput').innerText = `$${gainedUSD.toFixed(2)} USD (${gainedETB.toFixed(2)} ETB)`;
 }
 
-function previewKycDoc(input, previewId) {
+function setMaxTkvhConvert() {
+  document.getElementById('convertTkvhInput').value = userTKVH;
+  previewTkvhConversion();
+}
+
+function executeTkvhToUsdSwap() {
+  const tkvh = parseFloat(document.getElementById('convertTkvhInput').value) || 0;
+  if (tkvh <= 0 || tkvh > userTKVH) {
+    showToast('❌ Insufficient TKVH tokens!');
+    return;
+  }
+  userTKVH -= tkvh;
+  const gainedUSD = tkvh / 10000;
+  userUSD += gainedUSD;
+  updateUI();
+  saveLocalState();
+  showToast(`✅ Converted ${tkvh.toLocaleString()} TKVH to $${gainedUSD.toFixed(2)} USD!`);
+  playSynthSound(880, 'sine', 0.3);
+}
+
+// ────────────────────────────────────────────────────────────────
+// P. FAYDA FULL-PAGE MULTI-STEP ENGINE
+// ────────────────────────────────────────────────────────────────
+function openKycFullView() {
+  document.getElementById('fullViewKyc').classList.remove('hidden');
+  document.getElementById('fullViewKyc').classList.add('flex');
+}
+
+function closeKycFullView() {
+  document.getElementById('fullViewKyc').classList.add('hidden');
+  document.getElementById('fullViewKyc').classList.remove('flex');
+}
+
+function goToKycStep(stepNum) {
+  document.getElementById('kycStep1Container').classList.add('hidden');
+  document.getElementById('kycStep2Container').classList.add('hidden');
+  document.getElementById('kycStep3Container').classList.add('hidden');
+
+  // Reset Badges
+  ['1', '2', '3'].forEach(s => {
+    document.getElementById(`kycStepBadge${s}`).classList.remove('bg-tkvBlue', 'text-white');
+    document.getElementById(`kycStepBadge${s}`).classList.add('bg-gray-200', 'text-gray-600');
+  });
+
+  for (let i = 1; i <= stepNum; i++) {
+    document.getElementById(`kycStepBadge${i}`).classList.add('bg-tkvBlue', 'text-white');
+    document.getElementById(`kycStepBadge${i}`).classList.remove('bg-gray-200', 'text-gray-600');
+  }
+
+  document.getElementById(`kycStep${stepNum}Container`).classList.remove('hidden');
+}
+
+function togglePayoutMethod(method) {
+  if (method === 'usd') {
+    document.getElementById('payoutUsdFields').classList.remove('hidden');
+    document.getElementById('payoutEtbFields').classList.add('hidden');
+    document.getElementById('payoutTabUsdBtn').classList.add('bg-tkvBlue', 'text-white');
+    document.getElementById('payoutTabUsdBtn').classList.remove('text-gray-600');
+    document.getElementById('payoutTabEtbBtn').classList.remove('bg-tkvBlue', 'text-white');
+    document.getElementById('payoutTabEtbBtn').classList.add('text-gray-600');
+  } else {
+    document.getElementById('payoutUsdFields').classList.add('hidden');
+    document.getElementById('payoutEtbFields').classList.remove('hidden');
+    document.getElementById('payoutTabEtbBtn').classList.add('bg-tkvBlue', 'text-white');
+    document.getElementById('payoutTabEtbBtn').classList.remove('text-gray-600');
+    document.getElementById('payoutTabUsdBtn').classList.remove('bg-tkvBlue', 'text-white');
+    document.getElementById('payoutTabUsdBtn').classList.add('text-gray-600');
+  }
+}
+
+function submitFinalKycForReview() {
+  document.getElementById('kycStep3Container').classList.add('hidden');
+  document.getElementById('kycUnderReviewNotice').classList.remove('hidden');
+  document.getElementById('kycCardStatusText').innerText = "Pending 24h";
+  document.getElementById('uiHeaderKycText').innerText = "Under Review";
+  document.getElementById('profileKycStatus').innerText = "In 24h Review";
+  showToast('📄 Submitted for 24-Hour Review!');
+  saveLocalState();
+  startKyc24hTimer();
+}
+
+let kycTimerSecs = 86382; // ~24h
+function startKyc24hTimer() {
+  setInterval(() => {
+    kycTimerSecs--;
+    const h = Math.floor(kycTimerSecs / 3600);
+    const m = Math.floor((kycTimerSecs % 3600) / 60);
+    const s = kycTimerSecs % 60;
+    const el = document.getElementById('kycReviewTimer');
+    if (el) el.innerText = `${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+  }, 1000);
+}
+
+// ────────────────────────────────────────────────────────────────
+// Q. LIVE SUPPORT CHAT ENGINE
+// ────────────────────────────────────────────────────────────────
+function openSupportModal() { openModal('modalSupport'); }
+function sendQuickSupport(question) {
+  document.getElementById('supportInput').value = question;
+  sendSupportMessage();
+}
+
+function sendSupportMessage() {
+  const input = document.getElementById('supportInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const box = document.getElementById('supportMessages');
+  box.innerHTML += `
+    <div class="bg-tkvBlue text-white p-2.5 rounded-2xl rounded-tr-none max-w-[85%] self-end">
+      ${text}
+    </div>
+  `;
+  input.value = '';
+  box.scrollTop = box.scrollHeight;
+
+  // Smart Automated Reply
+  setTimeout(() => {
+    let reply = "ጥያቄዎ ተቀብለናል! ለተጨማሪ እርዳታ በቀጥታ የቴሌግራም አድሚናችንን @tikvahsupportbot ማነጋገር ይችላሉ።";
+    if (text.includes('ፓኬጅ')) {
+      reply = "የቴሌኮም ፓኬጆች የሚገዙት በቀጥታ በDeposited Birr ነው። በቴሌብር ወይም በሲቢኢ ዲፖዚት በማድረግ ፓኬጁን ወዲያውኑ ማግኘት ይችላሉ።";
+    } else if (text.includes('ማውጣት') || text.includes('5.00')) {
+      reply = "ዝቅተኛው የማውጫ ወሰን $5.00 (800 ብር) ነው። የፋይዳ e-KYC ካረጋገጡ በኋላ በTRC-20, TON ወይም በኢትዮጵያ ባንኮች ይላክልዎታል።";
+    } else if (text.includes('ፋይዳ') || text.includes('Fayda')) {
+      reply = "የፋይዳ e-KYC ማረጋገጫ በደህንነት ቡድናችን በ24 ሰዓት ውስጥ በእጅ ታይቶ ይፀድቃል ወይም ውድቅ ይደረጋል።";
+    }
+
+    box.innerHTML += `
+      <div class="bg-gray-100 p-2.5 rounded-2xl rounded-tl-none max-w-[85%] text-gray-700">
+        ${reply}
+      </div>
+    `;
+    box.scrollTop = box.scrollHeight;
+  }, 800);
+}
+
+// ────────────────────────────────────────────────────────────────
+// R. DEPOSIT MASKED COPY & PROOF SUBMISSION
+// ────────────────────────────────────────────────────────────────
+function copyDepositNum(realNumber, method) {
+  navigator.clipboard.writeText(realNumber);
+  showToast(`✅ Official ${method} merchant account copied!`);
+}
+
+function previewDepositProof(input) {
   if (input.files && input.files[0]) {
     const reader = new FileReader();
-    reader.onload = function(e) {
-      const img = document.getElementById(previewId);
+    reader.onload = e => {
+      const img = document.getElementById('depositProofPreview');
       img.src = e.target.result;
-      img.style.display = 'block';
-      playAudioSynth(600, 'sine', 0.1);
+      img.classList.remove('hidden');
     };
     reader.readAsDataURL(input.files[0]);
   }
 }
 
-function submitFaydaKyc() {
-  const fin = document.getElementById('faydaNumberInput').value.trim();
-  const name = document.getElementById('faydaNameInput').value.trim();
-  const front = document.getElementById('faydaFrontFile').files.length;
-  const back = document.getElementById('faydaBackFile').files.length;
-
-  if (!fin || !name || !front || !back) {
-    showToast('⚠️ Please fill all fields and upload Front & Back photos');
-    playAudioSynth(220, 'sawtooth', 0.2);
+function submitDepositProof() {
+  const amt = parseFloat(document.getElementById('depositAmountInput').value) || 0;
+  const tx = document.getElementById('depositTxIdInput').value;
+  if (!tx || amt <= 0) {
+    showToast('Please enter deposited Amount and Transaction ID!');
     return;
   }
-
-  showToast('📄 Fayda Documents Submitted to Team Review!');
-  document.getElementById('kycVerificationBadgeText').innerText = '● Review in Progress ⏳';
-  document.getElementById('kycVerificationBadgeText').style.color = '#F5A623';
-  document.getElementById('kycStatusBadge').innerText = 'Tier 2: Review in Progress ⏳';
-  document.getElementById('headerKycDot').className = 'kyc-dot pending';
-  playAudioSynth(750, 'sine', 0.3);
+  // Simulate 30% instant bonus addition to Deposited Birr
+  const bonus = amt * 0.30;
+  userDepositETB += (amt + bonus);
+  updateUI();
+  renderTelecomPackages();
+  saveLocalState();
+  showToast(`Deposit submitted! Credited ${amt + bonus} ETB (+30% bonus).`);
+  playSynthSound(880, 'sine', 0.3);
 }
 
-function simulateAdminApproval() {
-  document.getElementById('kycVerificationBadgeText').innerText = '● Verified Active 🛡️';
-  document.getElementById('kycVerificationBadgeText').style.color = '#00CB00';
-  document.getElementById('kycStatusBadge').innerText = 'Tier 2: Fayda Verified 🛡️';
-  document.getElementById('headerKycDot').className = 'kyc-dot';
-  showToast('✅ [DEMO] Team Verification Approved! 100% Airdrop Unlocked');
-  playAudioSynth(880, 'sine', 0.35);
-}
+// ────────────────────────────────────────────────────────────────
+// S. SUB-TAB ROUTING & UI REFRESH
+// ────────────────────────────────────────────────────────────────
+function switchTelecomView(subId, btn) {
+  document.getElementById('subview-telebirr').classList.add('hidden');
+  document.getElementById('subview-safaricom').classList.add('hidden');
+  document.getElementById('subview-buy-spins').classList.add('hidden');
+  document.getElementById('subview-deposit').classList.add('hidden');
+  document.getElementById(`subview-${subId}`).classList.remove('hidden');
 
-// 9. Monetag Rewarded Ads Engine (15s Countdown)
-let adTimerInterval = null;
-function openRewardedAd() {
-  const modal = document.getElementById('modalAdPlayer');
-  const timerEl = document.getElementById('txtAdTimer');
-  let left = 15;
-  timerEl.innerText = left;
-  modal.classList.add('open');
+  document.querySelectorAll('.telecom-subtab-btn').forEach(b => {
+    b.classList.remove('text-white', 'bg-teleGreen', 'bg-safariRed', 'bg-tkvBlue', 'bg-amber-500');
+    b.classList.add('text-gray-700', 'bg-transparent');
+  });
 
-  clearInterval(adTimerInterval);
-  adTimerInterval = setInterval(() => {
-    left--;
-    timerEl.innerText = left;
-    if (left <= 0) {
-      clearInterval(adTimerInterval);
-      modal.classList.remove('open');
-      userBalance += 100;
-      document.getElementById('txtUserBalance').innerText = userBalance.toLocaleString();
-      showToast('🎉 +100 TKVH Rewarded from Video Ad!');
-      playAudioSynth(780, 'sine', 0.3);
-    }
-  }, 1000);
-}
-
-// 10. Missions & Cash-Out Gateway
-function claimMission(btn, reward) {
-  btn.classList.add('done');
-  btn.innerText = 'Claimed ✓';
-  userBalance += reward;
-  document.getElementById('txtUserBalance').innerText = userBalance.toLocaleString();
-  showToast(`✅ +${reward.toLocaleString()} TKVH Credited!`);
-  playAudioSynth(650, 'sine', 0.2);
-}
-
-function openCipherModal() { document.getElementById('modalCipher').classList.add('open'); }
-function closeCipherModal() { document.getElementById('modalCipher').classList.remove('open'); }
-function openCashoutModal() { document.getElementById('modalCashout').classList.add('open'); }
-function closeCashoutModal() { document.getElementById('modalCashout').classList.remove('open'); }
-
-function executeCashout() {
-  showToast('💸 Cash-Out Request Sent to Telebirr/CBE Gateway!');
-  closeCashoutModal();
-  playAudioSynth(880, 'sine', 0.3);
-}
-
-function validateCipher() {
-  const ans = document.getElementById('inputCipher').value.trim().toLowerCase();
-  if (ans.includes('lalibela') || ans.includes('ላሊበላ')) {
-    userBalance += 500;
-    document.getElementById('txtUserBalance').innerText = userBalance.toLocaleString();
-    closeCipherModal();
-    showToast('🏛️ ትክክል ነው! +500 TKVH ተሸልመዋል');
-    playAudioSynth(880, 'sine', 0.35);
-  } else {
-    showToast('❌ የተሳሳተ መልስ ነው (Try Again)');
-    playAudioSynth(220, 'sawtooth', 0.2);
+  if (btn) {
+    btn.classList.remove('text-gray-700', 'bg-transparent');
+    if (subId === 'telebirr') btn.classList.add('text-white', 'bg-teleGreen');
+    if (subId === 'safaricom') btn.classList.add('text-white', 'bg-safariRed');
+    if (subId === 'buy-spins') btn.classList.add('text-white', 'bg-tkvBlue');
+    if (subId === 'deposit') btn.classList.add('text-white', 'bg-amber-500');
   }
 }
 
-// 11. Tri-Lingual Switcher
-function cycleLanguage() {
-  langIndex = (langIndex + 1) % languages.length;
-  const lang = languages[langIndex];
-  document.getElementById('btnLang').innerText = lang === 'am' ? 'አማርኛ' : (lang === 'en' ? 'English' : 'Oromoo');
-  showToast(lang === 'am' ? '🇪🇹 ቋንቋ ወደ አማርኛ ተቀይሯል' : (lang === 'en' ? '🌐 Switched to English' : '🌳 Gara Afaan Oromootti Jijjiirame'));
+function switchTelecomSubTab(subId) {
+  switchTab('view-telecom');
+  const btn = Array.from(document.querySelectorAll('.telecom-subtab-btn')).find(b => b.innerText.toLowerCase().includes(subId.replace('-', ' ')));
+  switchTelecomView(subId, btn);
+}
+
+function switchTab(viewId, btn) {
+  document.querySelectorAll('.screen-view').forEach(v => v.classList.remove('active'));
+  document.getElementById(viewId).classList.add('active');
+
+  if (btn) {
+    document.querySelectorAll('.dock-btn').forEach(b => {
+      b.classList.remove('text-tkvBlue', 'active');
+      b.classList.add('text-gray-400');
+    });
+    btn.classList.add('text-tkvBlue', 'active');
+    btn.classList.remove('text-gray-400');
+  }
+  playSynthSound(450, 'sine', 0.05);
+}
+
+function updateUI() {
+  document.getElementById('balTKVH').innerText = userTKVH.toLocaleString();
+  document.getElementById('balUSD').innerText = userUSD.toFixed(2);
+  document.getElementById('topSpinTickets').innerText = spinTickets;
+  document.getElementById('uiSpinTickets').innerText = spinTickets;
+  document.getElementById('empPassiveRateDisplay').innerText = `+${passiveRate.toLocaleString()} TKVH/hr`;
+  document.getElementById('headerPassiveRate').innerText = `+${passiveRate.toLocaleString()}/h`;
+  document.getElementById('uiWalletUsdTotal').innerText = `$${userUSD.toFixed(2)} USD`;
+  document.getElementById('telecomDepositBal').innerText = `${userDepositETB.toFixed(2)} ETB`;
+  
+  // Profile Modal Updates
+  document.getElementById('profileDepositedBirr').innerText = `${userDepositETB.toFixed(2)} ETB`;
+  document.getElementById('profileTkvhTokens').innerText = `${userTKVH.toLocaleString()} TKVH`;
+
+  // Progress to $5.00 Threshold (Tokens + USD)
+  const totalUsdEquivalent = userUSD + (userTKVH / 10000);
+  const pct = Math.min((totalUsdEquivalent / 5.00) * 100, 100);
+  document.getElementById('cashProgressBar').style.width = pct + '%';
+  document.getElementById('cashProgressText').innerText = `$${totalUsdEquivalent.toFixed(2)} / $5.00`;
+}
+
+function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+
+function openTonModal() { openModal('modalTon'); }
+function openCipherModal() { openModal('modalCipher'); }
+function openProfileModal() { openModal('modalProfile'); }
+
+function selectTonWallet(name) {
+  document.getElementById('uiTonBtn').innerText = name.substring(0, 6) + '...';
+  closeModal('modalTon');
+  showToast(`Connected to ${name}`);
+}
+
+function verifyCipher() {
+  const ans = document.getElementById('cipherInput').value.trim().toLowerCase();
+  if (ans.includes('lalibela') || ans.includes('ላሊበላ')) {
+    userTKVH += 500;
+    updateUI();
+    closeModal('modalCipher');
+    saveLocalState();
+    showToast('Correct! +500 TKVH Added');
+  } else {
+    showToast('Incorrect cipher riddle answer');
+  }
+}
+
+function shareReferral() {
+  const text = encodeURIComponent(`🦁 Join Tikvah Ethiopia SuperApp! Win Free Telecom Data & Cash: https://t.me/tikvahetcryptobot/tikvaheth?startapp=ref_${tgUser.id}`);
+  window.open(`https://t.me/share/url?url=https://t.me/tikvahetcryptobot/tikvaheth?startapp=ref_${tgUser.id}&text=${text}`);
+}
+
+function copyRefLink() {
+  navigator.clipboard.writeText(document.getElementById('refLinkInput').value);
+  showToast('Referral Link Copied!');
 }
 
 function copyAddress(addr) {
   navigator.clipboard.writeText(addr);
-  showToast('📋 TON Wallet Address Copied!');
+  showToast('TON Address Copied!');
+}
+
+function chooseRegion(region) {
+  userRegion = region;
+  document.getElementById('uiUserRegion').innerText = region.split(' ')[0];
+  document.getElementById('profileRegionText').innerText = region.split(' ')[0];
+  closeModal('modalCitySelect');
+  saveLocalState();
+  showToast(`✅ Welcome! Selected ${region}`);
+}
+
+function cycleLanguage() {
+  langIndex = (langIndex + 1) % languages.length;
+  const lang = languages[langIndex];
+  document.getElementById('uiLangBtn').innerText = lang === 'am' ? 'አማ' : (lang === 'en' ? 'EN' : 'OR');
+  showToast(lang === 'am' ? 'ቋንቋ ወደ አማርኛ ተቀይሯል' : (lang === 'en' ? 'Switched to English' : 'Gara Afaan Oromootti Jijjiirame'));
 }
 
 let toastTimer;
 function showToast(msg) {
-  const t = document.getElementById('appToast');
+  const t = document.getElementById('toast');
   t.innerText = msg;
-  t.classList.add('visible');
+  t.classList.remove('opacity-0', 'pointer-events-none');
+  t.classList.add('opacity-100');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('visible'), 2400);
+  toastTimer = setTimeout(() => {
+    t.classList.remove('opacity-100');
+    t.classList.add('opacity-0', 'pointer-events-none');
+  }, 2200);
 }
+
+function refreshLeaderboardWithSkeleton() {
+  const container = document.getElementById('regionalListContainer');
+  container.innerHTML = `
+    <div class="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-xl skeleton"></div>
+        <div class="flex flex-col gap-1"><div class="w-28 h-3 rounded skeleton"></div><div class="w-16 h-2 rounded skeleton"></div></div>
+      </div>
+      <div class="w-16 h-3 rounded skeleton"></div>
+    </div>
+  `;
+  setTimeout(() => {
+    container.innerHTML = regionalLeagues.map(r => `
+      <div class="bg-white border border-blue-100 p-3 rounded-2xl shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 rounded-xl flex items-center justify-center font-bold text-xs font-mono" style="background:${r.color}20;color:${r.color}">#${r.rank}</div>
+          <div class="font-extrabold text-xs text-tkvDark">${r.name}</div>
+        </div>
+        <div class="text-right font-mono text-xs font-bold text-tkvBlue">${r.pool}</div>
+      </div>
+    `).join('');
+  }, 900);
+}
+refreshLeaderboardWithSkeleton();
+
+// ────────────────────────────────────────────────────────────────
+// T. PERSISTENCE & LIFECYCLE
+// ────────────────────────────────────────────────────────────────
+function saveLocalState() {
+  localStorage.setItem('tikvah_user_state_v5', JSON.stringify({
+    userTKVH, userUSD, userDepositETB, spinTickets, passiveRate, adsWatched, userRegion
+  }));
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('tikvah_user_state_v5');
+  if (saved) {
+    try {
+      const p = JSON.parse(saved);
+      userTKVH = p.userTKVH || 0;
+      userUSD = p.userUSD || 0;
+      userDepositETB = p.userDepositETB || 0;
+      spinTickets = p.spinTickets !== undefined ? p.spinTickets : 3;
+      passiveRate = p.passiveRate || 150;
+      adsWatched = p.adsWatched || 0;
+      userRegion = p.userRegion || "";
+      if (userRegion) {
+        document.getElementById('uiUserRegion').innerText = userRegion.split(' ')[0];
+        document.getElementById('profileRegionText').innerText = userRegion.split(' ')[0];
+      }
+    } catch (e) {}
+  }
+
+  // Telegram WebApp Setup
+  if (window.Telegram && window.Telegram.WebApp) {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      tgUser = tg.initDataUnsafe.user;
+      document.getElementById('uiName').innerText = tgUser.first_name || 'Tikvah Member';
+      document.getElementById('profileName').innerText = tgUser.first_name || 'Tikvah Member';
+      document.getElementById('uiUserId').innerText = tgUser.id;
+      document.getElementById('profileUid').innerText = tgUser.id;
+      document.getElementById('refLinkInput').value = `https://t.me/tikvahetcryptobot/tikvaheth?startapp=ref_${tgUser.id}`;
+    }
+  }
+
+  initMonetagAds();
+  updateUI();
+  renderTelecomPackages();
+
+  if (!userRegion) {
+    openModal('modalCitySelect');
+  }
+});
 </script>
 </body>
 </html>
-
