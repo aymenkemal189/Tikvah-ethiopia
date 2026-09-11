@@ -2,7 +2,7 @@
 <html lang="am">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"/>
 <title>Tikvah Ethiopia v5 — Enterprise SuperApp</title>
 
 <!-- Telegram WebApp SDK -->
@@ -44,15 +44,26 @@
 
 <style>
   * { -webkit-tap-highlight-color: transparent; user-select: none; box-sizing: border-box; }
+  :root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+  }
+  html, body {
+    height: 100%;
+    height: 100dvh;
+    margin: 0;
+    padding: 0;
+    background: #071A22;
+    overflow: hidden;
+  }
   body {
     font-family: 'Plus Jakarta Sans', 'Noto Sans Ethiopic', sans-serif;
-    max-width: 440px;
+    width: 100%;
+    max-width: 480px;
     margin: 0 auto;
     background: #F5F9FB;
-    height: 100vh;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
     position: relative;
     box-shadow: 0 0 60px rgba(0, 154, 202, 0.28);
   }
@@ -60,7 +71,7 @@
     display: none;
     flex: 1;
     overflow-y: auto;
-    padding: 12px 14px 115px;
+    padding: 12px 14px calc(110px + var(--sab));
     -webkit-overflow-scrolling: touch;
   }
   .screen-view.active { display: block; }
@@ -138,8 +149,9 @@
         <span id="uiTonBtn">TON</span>
       </button>
       <button class="bg-gray-100 text-tkvBlue p-1.5 rounded-xl text-[10px] font-bold" onclick="cycleLanguage()" id="uiLangBtn">አማ</button>
-      <button class="bg-gray-100 text-tkvSlate p-1.5 rounded-xl text-[10px] font-bold" onclick="toggleAudioFx()">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      <!-- Haptic / Vibrate Toggle Button -->
+      <button class="bg-gray-100 text-tkvSlate p-1.5 rounded-xl text-[10px] font-bold" onclick="toggleHaptics()" id="hapticToggleBtn" title="Vibration Only">
+        📳
       </button>
     </div>
   </div>
@@ -169,11 +181,11 @@
   ══════════════════════════════════════════════════════════════════ -->
 
   <!-- ────────────────────────────────────────────────────────────────
-       TAB 1: 🎰 LUCKY SPIN & HOME DASHBOARD (NO ETB VIEW)
+       TAB 1: 🎰 LUCKY SPIN & HOME DASHBOARD
   ──────────────────────────────────────────────────────────────── -->
   <div id="view-spin" class="screen-view active">
     <!-- 30% Deposit Discount Fast Promo Banner -->
-    <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-tkvGold text-white p-3 rounded-2xl shadow-md mb-3 flex items-center justify-between cursor-pointer active:scale-95 transition-all" onclick="switchTelecomSubTab('deposit')">
+    <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-tkvGold text-white p-3 rounded-2xl shadow-md mb-3 flex items-center justify-between cursor-pointer active:scale-95 transition-all" onclick="registerUserActivity(); switchTelecomSubTab('deposit')">
       <div class="flex items-center gap-2">
         <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center font-bold text-base">🏷️</div>
         <div>
@@ -210,7 +222,7 @@
       </div>
       <div class="flex items-center justify-between text-[10px] text-gray-500 font-semibold mt-1">
         <span>25–30 Invites + 100 Ads to Withdraw</span>
-        <span class="text-tkvGreen font-bold cursor-pointer" onclick="switchTab('view-wallet')">Convert TKVH →</span>
+        <span class="text-tkvGreen font-bold cursor-pointer" onclick="registerUserActivity(); switchTab('view-wallet')">Convert TKVH →</span>
       </div>
     </div>
 
@@ -236,10 +248,10 @@
           <span>🎟️</span> <span id="uiSpinTickets">3</span> Tickets
         </div>
         <div class="flex gap-1.5">
-          <button class="bg-teleGreen text-white px-2.5 py-1 rounded-xl shadow-md font-bold text-[10px] flex items-center gap-1 active:scale-95" onclick="switchTelecomSubTab('buy-spins')">
+          <button class="bg-teleGreen text-white px-2.5 py-1 rounded-xl shadow-md font-bold text-[10px] flex items-center gap-1 active:scale-95" onclick="registerUserActivity(); switchTelecomSubTab('buy-spins')">
             <span>Buy Spins</span>
           </button>
-          <button class="bg-tkvGold text-white px-2.5 py-1 rounded-xl shadow-md font-bold text-[10px] flex items-center gap-1 active:scale-95" onclick="shareReferral()">
+          <button class="bg-tkvGold text-white px-2.5 py-1 rounded-xl shadow-md font-bold text-[10px] flex items-center gap-1 active:scale-95" onclick="registerUserActivity(); shareReferral()">
             <span>+ Free</span>
           </button>
         </div>
@@ -248,19 +260,19 @@
 
     <!-- Quick Action Gateway Grid -->
     <div class="grid grid-cols-4 gap-2 mb-3">
-      <div class="bg-white border border-blue-100 p-2 rounded-2xl shadow-sm flex flex-col items-center text-center cursor-pointer active:scale-95 transition-all" onclick="openCipherModal()">
+      <div class="bg-white border border-blue-100 p-2 rounded-2xl shadow-sm flex flex-col items-center text-center cursor-pointer active:scale-95 transition-all" onclick="registerUserActivity(); openCipherModal()">
         <span class="text-base mb-0.5">🔐</span>
         <span class="text-[10px] font-extrabold text-tkvDark">Cipher</span>
         <span class="text-[8px] text-tkvGreen font-bold">+500 TKVH</span>
       </div>
 
-      <div class="bg-white border border-blue-100 p-2 rounded-2xl shadow-sm flex flex-col items-center text-center cursor-pointer active:scale-95 transition-all" onclick="switchTab('view-earn')">
+      <div class="bg-white border border-blue-100 p-2 rounded-2xl shadow-sm flex flex-col items-center text-center cursor-pointer active:scale-95 transition-all" onclick="registerUserActivity(); switchTab('view-earn')">
         <span class="text-base mb-0.5">🎥</span>
         <span class="text-[10px] font-extrabold text-tkvDark">100+ Ads</span>
         <span class="text-[8px] text-tkvGreen font-bold">Monetag Live</span>
       </div>
 
-      <div class="bg-white border border-blue-100 p-2 rounded-2xl shadow-sm flex flex-col items-center text-center cursor-pointer active:scale-95 transition-all" onclick="openKycFullView()">
+      <div class="bg-white border border-blue-100 p-2 rounded-2xl shadow-sm flex flex-col items-center text-center cursor-pointer active:scale-95 transition-all" onclick="registerUserActivity(); openKycFullView()">
         <div class="w-6 h-6 rounded-lg overflow-hidden p-0.5 mb-0.5">
           <img src="https://i.postimg.cc/VkDP0y1g/20260907-115806.jpg" class="brand-logo-img"/>
         </div>
@@ -268,10 +280,10 @@
         <span class="text-[8px] text-tkvGold font-bold">e-KYC</span>
       </div>
 
-      <div class="bg-white border border-blue-100 p-2 rounded-2xl shadow-sm flex flex-col items-center text-center cursor-pointer active:scale-95 transition-all" onclick="switchTab('view-telecom')">
+      <div class="bg-white border border-blue-100 p-2 rounded-2xl shadow-sm flex flex-col items-center text-center cursor-pointer active:scale-95 transition-all" onclick="registerUserActivity(); switchTab('view-telecom')">
         <span class="text-base mb-0.5">📶</span>
         <span class="text-[10px] font-extrabold text-tkvDark">Telecom</span>
-        <span class="text-[8px] text-teleGreen font-bold">By Deposit</span>
+        <span class="text-[8px] text-teleGreen font-bold">≥ 200 ETB</span>
       </div>
     </div>
   </div>
@@ -291,7 +303,7 @@
   </div>
 
   <!-- ────────────────────────────────────────────────────────────────
-       TAB 3: 📶 TELECOM (BOUGHT ONLY WITH DEPOSITED BIRR + NO CBE APP)
+       TAB 3: 📶 TELECOM (PACKAGES >= 200 ETB ONLY)
   ──────────────────────────────────────────────────────────────── -->
   <div id="view-telecom" class="screen-view">
     <!-- Deposited Birr Balance Header -->
@@ -299,26 +311,26 @@
       <div>
         <div class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-200">Deposited Birr Balance (ለፓኬጅ መግዣ)</div>
         <div class="text-xl font-mono font-extrabold mt-0.5" id="telecomDepositBal">0.00 ETB</div>
-        <div class="text-[9px] text-white/80">Telecom bundles & Spin tickets are bought strictly with deposited Birr.</div>
+        <div class="text-[9px] text-white/80">Packages (≥ 200 ETB) and Spin tickets are bought with Deposited Birr.</div>
       </div>
-      <button class="bg-white text-emerald-800 font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-sm active:scale-95" onclick="switchTelecomSubTab('deposit')">
+      <button class="bg-white text-emerald-800 font-extrabold text-xs px-3 py-1.5 rounded-xl shadow-sm active:scale-95" onclick="registerUserActivity(); switchTelecomSubTab('deposit')">
         + Deposit
       </button>
     </div>
 
-    <!-- Sub-Tab Category Selector (NO CBE APP) -->
+    <!-- Sub-Tab Category Selector -->
     <div class="flex gap-1.5 p-1 bg-gray-200/80 rounded-2xl mb-3 shrink-0">
-      <button class="flex-1 py-1.5 rounded-xl text-[10px] font-extrabold text-white bg-teleGreen telecom-subtab-btn" onclick="switchTelecomView('telebirr', this)">Ethio Telecom</button>
-      <button class="flex-1 py-1.5 rounded-xl text-[10px] font-extrabold text-gray-700 telecom-subtab-btn" onclick="switchTelecomView('safaricom', this)">Safaricom</button>
+      <button class="flex-1 py-1.5 rounded-xl text-[10px] font-extrabold text-white bg-teleGreen telecom-subtab-btn" onclick="switchTelecomView('telebirr', this)">Ethio Tele (≥200)</button>
+      <button class="flex-1 py-1.5 rounded-xl text-[10px] font-extrabold text-gray-700 telecom-subtab-btn" onclick="switchTelecomView('safaricom', this)">Safaricom (≥200)</button>
       <button class="flex-1 py-1.5 rounded-xl text-[10px] font-extrabold text-gray-700 telecom-subtab-btn" onclick="switchTelecomView('buy-spins', this)">Buy Spins</button>
       <button class="flex-1 py-1.5 rounded-xl text-[10px] font-extrabold text-amber-900 bg-amber-200 telecom-subtab-btn" onclick="switchTelecomView('deposit', this)">30% Deposit</button>
     </div>
 
-    <!-- SUB-VIEW A: ETHIO TELECOM PACKAGES -->
+    <!-- SUB-VIEW A: ETHIO TELECOM PACKAGES (>= 200 ETB ONLY) -->
     <div id="subview-telebirr">
       <div class="telebirr-gradient text-white p-3 rounded-2xl shadow-sm mb-3 flex items-center justify-between">
         <div>
-          <div class="text-xs font-extrabold">Ethio Telecom Bundles (30% Discount)</div>
+          <div class="text-xs font-extrabold">Ethio Telecom Packages (≥ 200 ETB)</div>
           <div class="text-[10px] text-white/90">Instant activation with your Deposited Birr.</div>
         </div>
         <span class="bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-bold font-mono">30% OFF</span>
@@ -326,11 +338,11 @@
       <div class="flex flex-col gap-2" id="telebirrPackagesContainer"></div>
     </div>
 
-    <!-- SUB-VIEW B: SAFARICOM PACKAGES -->
+    <!-- SUB-VIEW B: SAFARICOM PACKAGES (>= 200 ETB ONLY) -->
     <div id="subview-safaricom" class="hidden">
       <div class="bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white p-3 rounded-2xl shadow-sm mb-3 flex items-center justify-between">
         <div>
-          <div class="text-xs font-extrabold">Safaricom High-Speed Plans</div>
+          <div class="text-xs font-extrabold">Safaricom High-Speed Plans (≥ 200 ETB)</div>
           <div class="text-[10px] text-white/90">Unlimited data activated instantly.</div>
         </div>
         <span class="bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-bold font-mono">30% OFF</span>
@@ -338,12 +350,12 @@
       <div class="flex flex-col gap-2" id="safaricomPackagesContainer"></div>
     </div>
 
-    <!-- SUB-VIEW C: BUY SPINS WITH DEPOSITED BIRR (FAIR ECONOMICS) -->
+    <!-- SUB-VIEW C: BUY SPINS WITH DEPOSITED BIRR -->
     <div id="subview-buy-spins" class="hidden">
       <div class="bg-gradient-to-br from-tkvBlueDark to-tkvSlate text-white p-4 rounded-3xl shadow-lg mb-3">
         <div class="text-[10px] font-bold uppercase tracking-wider text-tkvGold">Mathematical Spin Pricing</div>
         <div class="text-sm font-extrabold mt-1">Buy Extra Spin Tickets with Deposited Birr</div>
-        <div class="text-[10px] text-gray-300 mt-1">1 Spin EV = $0.07 (11.20 ETB). Buy tickets below with Deposited Birr to spin for $5.00 Jackpot!</div>
+        <div class="text-[10px] text-gray-300 mt-1">1 Spin EV = $0.07 (11.20 ETB). Buy tickets with Deposited Birr to spin for $5.00 Jackpot!</div>
       </div>
 
       <div class="flex flex-col gap-2.5">
@@ -385,16 +397,16 @@
       </div>
     </div>
 
-    <!-- SUB-VIEW D: 30% DISCOUNT DEPOSIT (FULLY MASKED NUMBERS) -->
+    <!-- SUB-VIEW D: 30% DISCOUNT DEPOSIT -->
     <div id="subview-deposit" class="hidden">
       <div class="bg-gradient-to-br from-amber-500 to-orange-600 text-white p-4 rounded-3xl shadow-lg mb-3">
         <div class="text-xs font-bold uppercase tracking-wider opacity-90">30% Discount Deposit Protocol</div>
         <div class="text-base font-mono font-bold my-1">Official Merchant Accounts</div>
-        <div class="text-[10px] text-white/90">Phone numbers are masked for security. Click <b>Copy</b> to get the direct merchant number.</div>
+        <div class="text-[10px] text-white/90">Phone numbers are masked for security. Click <b>Copy</b> to copy the direct number.</div>
       </div>
 
       <div class="flex flex-col gap-2.5 mb-3">
-        <!-- Telebirr Deposit (Masked: 09*******07) -->
+        <!-- Telebirr Deposit -->
         <div class="bg-white border-2 border-teleGreen p-3 rounded-2xl shadow-sm flex items-center justify-between">
           <div>
             <div class="text-[9px] font-bold text-gray-400">TELEBIRR OFFICIAL</div>
@@ -405,7 +417,7 @@
           </button>
         </div>
 
-        <!-- CBE Birr Deposit (Masked: 09*******07) -->
+        <!-- CBE Birr Deposit -->
         <div class="bg-white border-2 border-cbePurple p-3 rounded-2xl shadow-sm flex items-center justify-between">
           <div>
             <div class="text-[9px] font-bold text-gray-400">CBE BIRR OFFICIAL</div>
@@ -416,7 +428,7 @@
           </button>
         </div>
 
-        <!-- Safaricom M-PESA Deposit (Masked: 07*******06) -->
+        <!-- Safaricom M-PESA Deposit -->
         <div class="bg-white border-2 border-safariRed p-3 rounded-2xl shadow-sm flex items-center justify-between">
           <div>
             <div class="text-[9px] font-bold text-gray-400">SAFARICOM M-PESA</div>
@@ -431,8 +443,8 @@
       <!-- Screenshot Upload Proof -->
       <div class="bg-white border border-amber-200 p-3.5 rounded-2xl shadow-sm">
         <div class="text-xs font-extrabold text-tkvDark mb-1">Submit Deposit Screenshot Proof</div>
-        <div class="text-[10px] text-gray-500 mb-2">Upload payment SMS screenshot for 5-minute confirmation to your Deposited Birr balance.</div>
-        <input type="number" id="depositAmountInput" placeholder="Amount in ETB (e.g. 200)" class="w-full bg-gray-50 border border-gray-200 text-xs font-mono p-2 rounded-xl mb-2 outline-none"/>
+        <div class="text-[10px] text-gray-500 mb-2">Upload payment SMS screenshot for automatic confirmation to your Deposited Birr balance.</div>
+        <input type="number" id="depositAmountInput" placeholder="Amount in ETB (min 200 ETB)" class="w-full bg-gray-50 border border-gray-200 text-xs font-mono p-2 rounded-xl mb-2 outline-none"/>
         <input type="text" id="depositTxIdInput" placeholder="Transaction ID (e.g. CI829...)" class="w-full bg-gray-50 border border-gray-200 text-xs font-mono p-2 rounded-xl mb-2 outline-none"/>
         <input type="file" id="depositFileInput" accept="image/*" class="w-full bg-gray-50 border border-gray-200 text-[10px] p-2 rounded-xl mb-3" onchange="previewDepositProof(this)"/>
         <img id="depositProofPreview" class="w-full max-h-32 object-cover rounded-xl mb-3 hidden"/>
@@ -444,7 +456,7 @@
   </div>
 
   <!-- ────────────────────────────────────────────────────────────────
-       TAB 4: 💰 EARN — MONETAG 100+ ADS & 12 TASKS
+       TAB 4: 💰 EARN — MONETAG 100+ ADS & TIKVAH OFFICIAL TASKS
   ──────────────────────────────────────────────────────────────── -->
   <div id="view-earn" class="screen-view">
     <div class="bg-gradient-to-r from-tkvDark to-tkvSlate border-2 border-tkvGreen text-white p-3.5 rounded-3xl shadow-md mb-3">
@@ -465,7 +477,14 @@
     <div class="text-xs font-extrabold text-gray-500 uppercase tracking-wider mb-2">100 Daily Ad Stations</div>
     <div class="grid grid-cols-4 gap-2 mb-4" id="ads100GridContainer"></div>
 
-    <!-- Official Tasks 2-Column Responsive Grid -->
+    <!-- Tikvah Official Channels Tasks (1.6M) -->
+    <div class="flex items-center justify-between text-xs font-extrabold text-tkvBlue uppercase tracking-wider mb-2">
+      <span>⭐️ Tikvah Official Channels (1.6M)</span>
+      <span class="text-tkvGreen">+13,000 TKVH</span>
+    </div>
+    <div class="flex flex-col gap-2 mb-4" id="tikvahMainTasksContainer"></div>
+
+    <!-- Official Ethiopian Enterprise Channels Tasks Grid -->
     <div class="flex items-center justify-between text-xs font-extrabold text-gray-500 uppercase tracking-wider mb-2">
       <span>Official Ethiopian Channels</span>
       <span class="text-tkvBlue">+35,000 TKVH</span>
@@ -606,7 +625,7 @@
     </div>
 
     <!-- Fayda e-KYC Verification Action Card -->
-    <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 p-3 rounded-2xl shadow-sm mb-3 cursor-pointer active:scale-95 transition-all" onclick="openKycFullView()">
+    <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-300 p-3 rounded-2xl shadow-sm mb-3 cursor-pointer active:scale-95 transition-all" onclick="registerUserActivity(); openKycFullView()">
       <div class="flex items-center gap-2.5">
         <div class="w-10 h-10 rounded-xl overflow-hidden p-0.5 border border-amber-200 shrink-0">
           <img src="https://i.postimg.cc/VkDP0y1g/20260907-115806.jpg" class="brand-logo-img"/>
@@ -625,7 +644,7 @@
   <!-- ══════════════════════════════════════════════════════════════════
        4. BOTTOM DOCK NAVIGATION
   ══════════════════════════════════════════════════════════════════ -->
-  <nav class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-blue-100 flex justify-around py-2 px-1 z-50 shadow-lg">
+  <nav class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-blue-100 flex justify-around py-2 px-1 z-50 shadow-lg" style="padding-bottom: calc(8px + var(--sab));">
     <button class="flex flex-col items-center gap-0.5 text-tkvBlue text-[8px] font-extrabold dock-btn active" onclick="switchTab('view-spin', this)">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24"/></svg>
       <span>Spin</span>
@@ -659,7 +678,7 @@
   <!-- ══════════════════════════════════════════════════════════════════
        5. PROFESSIONAL FULL-PAGE FAYDA e-KYC VERIFICATION ENGINE
   ══════════════════════════════════════════════════════════════════ -->
-  <div id="fullViewKyc" class="fixed inset-0 bg-tkvLight z-[180] hidden flex-col overflow-y-auto p-4">
+  <div id="fullViewKyc" class="fixed inset-0 bg-tkvLight z-[180] hidden flex-col overflow-y-auto p-4" style="padding-top: calc(16px + var(--sat)); padding-bottom: calc(24px + var(--sab));">
     <!-- Header with Close -->
     <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-3">
       <div class="flex items-center gap-2">
@@ -732,17 +751,17 @@
         <div class="flex flex-col gap-3 text-xs font-bold text-gray-700">
           <div>
             <label class="text-[9px] text-gray-400">FAYDA CARD FRONT PHOTO</label>
-            <input type="file" accept="image/*" class="w-full bg-gray-50 border border-gray-200 p-1.5 rounded-xl text-[10px] mt-0.5"/>
+            <input type="file" id="faydaFrontFile" accept="image/*" class="w-full bg-gray-50 border border-gray-200 p-1.5 rounded-xl text-[10px] mt-0.5"/>
           </div>
           <div>
             <label class="text-[9px] text-gray-400">FAYDA CARD BACK PHOTO</label>
-            <input type="file" accept="image/*" class="w-full bg-gray-50 border border-gray-200 p-1.5 rounded-xl text-[10px] mt-0.5"/>
+            <input type="file" id="faydaBackFile" accept="image/*" class="w-full bg-gray-50 border border-gray-200 p-1.5 rounded-xl text-[10px] mt-0.5"/>
           </div>
 
           <div class="border-2 border-dashed border-tkvBlue/40 p-3 rounded-2xl bg-blue-50/40 text-center">
             <label class="text-[10px] font-extrabold text-tkvBlue block mb-1">📸 FACE LIVENESS VERIFICATION</label>
             <div class="w-16 h-16 rounded-full border-2 border-tkvBlue mx-auto overflow-hidden flex items-center justify-center bg-white shadow-inner text-2xl mb-1.5">🤳</div>
-            <input type="file" accept="image/*" capture="user" class="w-full bg-white border border-blue-200 p-1 rounded-xl text-[9px]"/>
+            <input type="file" id="faydaSelfieFile" accept="image/*" capture="user" class="w-full bg-white border border-blue-200 p-1 rounded-xl text-[9px]"/>
             <div class="text-[9px] text-gray-400 mt-1">Look straight into the camera in a well-lit area.</div>
           </div>
         </div>
@@ -770,7 +789,7 @@
         <div id="payoutUsdFields" class="flex flex-col gap-2.5 text-xs font-bold text-gray-700">
           <div>
             <label class="text-[9px] text-gray-400">NETWORK PROTOCOL</label>
-            <select class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs outline-none font-mono">
+            <select id="payoutProtocolSelect" class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs outline-none font-mono">
               <option>USDT (TRC-20 - Tron Network)</option>
               <option>TON Space (@wallet / Tonkeeper)</option>
               <option>USDT (BEP-20 - BNB Chain)</option>
@@ -778,7 +797,7 @@
           </div>
           <div>
             <label class="text-[9px] text-gray-400">CRYPTO WALLET ADDRESS</label>
-            <input type="text" placeholder="e.g. TXYZ... or EQC7..." class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs font-mono outline-none"/>
+            <input type="text" id="payoutCryptoAddress" placeholder="e.g. TXYZ... or EQC7..." class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs font-mono outline-none"/>
           </div>
         </div>
 
@@ -786,7 +805,7 @@
         <div id="payoutEtbFields" class="flex flex-col gap-2.5 text-xs font-bold text-gray-700 hidden">
           <div>
             <label class="text-[9px] text-gray-400">BANK OR MOBILE WALLET</label>
-            <select class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs outline-none">
+            <select id="payoutBankSelect" class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs outline-none">
               <option>Telebirr (Ethio Telecom)</option>
               <option>Commercial Bank of Ethiopia (CBE)</option>
               <option>Safaricom M-PESA</option>
@@ -798,24 +817,24 @@
           </div>
           <div>
             <label class="text-[9px] text-gray-400">ACCOUNT NUMBER / WALLET PHONE NUMBER</label>
-            <input type="text" placeholder="1000... or 09..." class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs font-mono outline-none"/>
+            <input type="text" id="payoutAccountNumber" placeholder="1000... or 09..." class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs font-mono outline-none"/>
           </div>
           <div>
             <label class="text-[9px] text-gray-400">ACCOUNT HOLDER FULL NAME</label>
-            <input type="text" placeholder="Abebe Bekele" class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs outline-none"/>
+            <input type="text" id="payoutAccountHolderName" placeholder="Abebe Bekele" class="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-xs outline-none"/>
           </div>
         </div>
       </div>
 
       <div class="flex gap-2">
         <button class="flex-1 py-2.5 bg-gray-100 text-gray-600 font-extrabold rounded-xl text-xs" onclick="goToKycStep(2)">← Back</button>
-        <button class="flex-2 py-2.5 bg-tkvGreen text-white font-extrabold rounded-xl text-xs shadow-md active:scale-95 transition-transform" onclick="submitFinalKycForReview()">
+        <button class="flex-2 py-2.5 bg-tkvGreen text-white font-extrabold rounded-xl text-xs shadow-md active:scale-95 transition-transform" id="btnSubmitKycFinal" onclick="submitFinalKycForReview()">
           Submit for 24-Hr Review 🇪🇹
         </button>
       </div>
     </div>
 
-    <!-- UNDER REVIEW NOTICE (SHOWN ONCE SUBMITTED) -->
+    <!-- UNDER REVIEW NOTICE -->
     <div id="kycUnderReviewNotice" class="hidden bg-white border-2 border-amber-300 rounded-3xl p-5 shadow-lg text-center my-auto">
       <div class="w-16 h-16 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center text-3xl mx-auto mb-3 animate-pulse">⏳</div>
       <h3 class="font-extrabold text-sm text-tkvDark">Under 24-Hour Administrator Review</h3>
@@ -924,7 +943,7 @@
       <h3 class="font-extrabold text-sm text-tkvDark mb-2">Terms of Service & Rules</h3>
       <div class="text-[11px] text-gray-600 space-y-2 leading-relaxed">
         <p><b>1. Token Economics:</b> 10,000 TKVH tokens equal $1.00 USD. 1 USD is pegged at 160.00 Ethiopian Birr.</p>
-        <p><b>2. Telecom Packages:</b> Packages are redeemed exclusively using Deposited Birr. Token balances can be cashed out once the $5.00 minimum threshold is reached.</p>
+        <p><b>2. Telecom Packages:</b> Packages (≥ 200 ETB) are redeemed exclusively using Deposited Birr. Token balances can be cashed out once the $5.00 minimum threshold is reached.</p>
         <p><b>3. Spin Wheel:</b> Built on a provably fair mathematical model with expected value (EV) of $0.07 per spin ticket.</p>
         <p><b>4. Fayda e-KYC:</b> All $5.00 cash withdrawals undergo manual 24-hour administrator review to ensure compliance with Ethiopian financial standards.</p>
       </div>
@@ -932,7 +951,7 @@
     </div>
   </div>
 
-  <!-- Onboarding City Selection Modal (ALL 12 REGIONS) -->
+  <!-- Onboarding City Selection Modal -->
   <div id="modalCitySelect" class="fixed inset-0 bg-tkvDark/90 backdrop-blur-md z-[200] hidden items-center justify-center p-4">
     <div class="bg-white rounded-3xl w-full max-w-sm p-5 shadow-2xl text-center">
       <div class="w-12 h-12 rounded-full bg-blue-50 text-tkvBlue flex items-center justify-center text-xl mx-auto mb-2">🇪🇹</div>
@@ -956,7 +975,7 @@
     </div>
   </div>
 
-  <!-- 15-Second Locked Ad Modal (Fallback & Monetag Dual-Engine) -->
+  <!-- 15-Second Locked Ad Modal -->
   <div id="modal15sAd" class="fixed inset-0 bg-tkvDark/95 backdrop-blur-md z-[150] hidden items-center justify-center p-4">
     <div class="bg-white rounded-3xl w-full max-w-xs p-5 shadow-2xl text-center relative">
       <div id="adLockCloseBtn" class="hidden absolute top-3 right-3 text-xs font-bold text-gray-400 bg-gray-100 p-1.5 rounded-full cursor-pointer" onclick="close15sAd()">✕</div>
@@ -998,8 +1017,11 @@
 ══════════════════════════════════════════════════════════════════ -->
 <script>
 // ────────────────────────────────────────────────────────────────
-// A. PRODUCTION STATE ARCHITECTURE
+// A. BACKEND GOOGLE APPS SCRIPT WEB APP CONNECTION
 // ────────────────────────────────────────────────────────────────
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYt47dUbVkSqM2OSrtppdvWaYvAahng38vRpXRqhc7qAyGAcJ6LlzvVTFO4HVzRD67tA/exec";
+
+// Production State Architecture
 let userTKVH = 0;              // Earned via Ads, Cipher, Mining, Referrals
 let userUSD = 0.00;            // Won from Spin / Converted from TKVH
 let userDepositETB = 0.00;     // Strictly Deposited Birr for Telecom Bundles & Spins
@@ -1009,18 +1031,83 @@ let passiveRate = 150;         // Starting base Level 1 rate
 let tkvhFractional = 0;        // Accurate fractional accumulator
 let adsWatched = 0;
 let isSpinning = false;
-let soundActive = true;
+let hapticsActive = true;      // Vibrate only
 let userRegion = "";
 let langIndex = 0;
 let boosterTimeRemaining = 0;
 let boosterTimerInterval = null;
 const languages = ['am', 'en', 'om'];
 
+// 10 Activity & 5-Min Monetag Counter
+let userActivityCount = 0;
+
 // User Profile Telegram Data
 let tgUser = { id: 847291, first_name: "Tikvah Member", username: "tikvah_user" };
 
 // ────────────────────────────────────────────────────────────────
-// B. BRAND LOGOS & ASSETS
+// B. VIBRATION ONLY ENGINE (NO SOUND AS REQUESTED)
+// ────────────────────────────────────────────────────────────────
+function triggerHaptic(type = 'light') {
+  if (!hapticsActive) return;
+  try {
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+      if (type === 'heavy') window.Telegram.WebApp.HapticFeedback.impactOccurred('heavy');
+      else if (type === 'medium') window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+      else if (type === 'success') window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+      else if (type === 'error') window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
+      else window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+    } else if (navigator.vibrate) {
+      if (type === 'heavy') navigator.vibrate([60, 30, 60]);
+      else if (type === 'success') navigator.vibrate([40, 40, 40]);
+      else if (type === 'error') navigator.vibrate([100, 50, 100]);
+      else navigator.vibrate(40);
+    }
+  } catch (e) {}
+}
+
+function toggleHaptics() {
+  hapticsActive = !hapticsActive;
+  document.getElementById('hapticToggleBtn').innerText = hapticsActive ? '📳' : '🔕';
+  triggerHaptic('medium');
+  showToast(hapticsActive ? 'Vibration On' : 'Vibration Muted');
+}
+
+// ────────────────────────────────────────────────────────────────
+// C. 5-MINUTE AUTO AD & 10-ACTIVITY AD TRIGGERS
+// ────────────────────────────────────────────────────────────────
+function registerUserActivity() {
+  userActivityCount++;
+  triggerHaptic('light');
+  if (userActivityCount % 10 === 0) {
+    triggerMonetagInterstitialAd("10-Activities Completed");
+  }
+}
+
+function triggerMonetagInterstitialAd(reason = "") {
+  try {
+    if (typeof show_11747021 === 'function') {
+      show_11747021({
+        type: 'inApp',
+        inAppSettings: {
+          frequency: 2,
+          capping: 0.1,
+          interval: 30,
+          timeout: 0,
+          everyPage: false
+        }
+      });
+      console.log(`Monetag In-App Ad Triggered: ${reason}`);
+    }
+  } catch (e) {}
+}
+
+// Auto 5-minute timer
+setTimeout(() => {
+  triggerMonetagInterstitialAd("5-Minute Session Ad");
+}, 5 * 60 * 1000);
+
+// ────────────────────────────────────────────────────────────────
+// D. OFFICIAL BRAND LOGOS & ASSETS
 // ────────────────────────────────────────────────────────────────
 const BrandLogos = {
   tikvahOfficial: "https://i.postimg.cc/LXSpj6HB/IMG-20260907-171846-651.jpg",
@@ -1036,7 +1123,7 @@ const BrandLogos = {
 };
 
 // ────────────────────────────────────────────────────────────────
-// C. 15 ETHIOPIAN INDUSTRIES (LEVEL 1 BASE)
+// E. 15 ETHIOPIAN INDUSTRIES (LEVEL 1 BASE)
 // ────────────────────────────────────────────────────────────────
 const empire15 = [
   { id: 'e1', name: 'GERD Clean Hydro Power', level: 1, rate: 50, cost: 500, img: null, svg: '⚡' },
@@ -1057,41 +1144,42 @@ const empire15 = [
 ];
 
 // ────────────────────────────────────────────────────────────────
-// D. TELECOM PACKAGES (BOUGHT STRICTLY WITH DEPOSITED BIRR)
+// F. TELECOM PACKAGES (FILTERED >= 200 BIRR ONLY AS REQUESTED)
 // ────────────────────────────────────────────────────────────────
 const telebirrPackagesAll = [
-  { name: 'Telegram Daily (1.25 GB)', birr: 14, regular: 20 },
-  { name: '2 Hours Unlimited Data', birr: 24.5, regular: 35 },
-  { name: 'Daily Unlimited Internet', birr: 74.9, regular: 107 },
-  { name: 'Monthly 2GB Internet', birr: 105, regular: 150 },
-  { name: 'Internet Weekly Package 4GB', birr: 140, regular: 200 },
-  { name: 'Internet Monthly for 4GB', birr: 196, regular: 280 },
-  { name: 'Internet Weekly for 7.5 GB', birr: 210, regular: 300 },
-  { name: 'Monthly Facebook, YouTube, TikTok (10 GB)', birr: 210, regular: 300 },
-  { name: 'Internet Weekly Package 15GB', birr: 350, regular: 500 },
-  { name: 'Internet Monthly for 10GB', birr: 385, regular: 550 },
-  { name: 'Weekly Unlimited Internet Plan', birr: 430, regular: 615 },
-  { name: 'Internet Monthly for 20GB', birr: 665, regular: 950 },
-  { name: 'Unlimited Voice for a Month', birr: 770, regular: 1100 },
-  { name: 'Internet Monthly for 50GB', birr: 1050, regular: 1500 },
-  { name: 'Internet Monthly for 100GB', birr: 1330, regular: 1900 },
-  { name: 'Unlimited Data for a Month', birr: 1400, regular: 2000 },
-  { name: 'Monthly 5G Package for 150GB', birr: 1624, regular: 2320 },
-  { name: 'Unlimited Voice Plus Internet for a Month', birr: 1855, regular: 2650 },
-  { name: 'Monthly 5G Package for 250GB', birr: 1932, regular: 2760 },
-  { name: 'Monthly 5G Unlimited Internet (FUP: 400GB)', birr: 2240, regular: 3200 },
-  { name: '5G Unlimited Plan (FUP: 500GB)', birr: 2450, regular: 3500 }
+  { name: 'Internet Weekly Package 4GB', birr: 200, regular: 285 },
+  { name: 'Internet Monthly for 4GB', birr: 280, regular: 400 },
+  { name: 'Internet Weekly for 7.5 GB', birr: 300, regular: 430 },
+  { name: 'Monthly Facebook, YouTube, TikTok (10 GB)', birr: 300, regular: 430 },
+  { name: 'Internet Weekly Package 15GB', birr: 500, regular: 715 },
+  { name: 'Internet Monthly for 10GB', birr: 550, regular: 785 },
+  { name: 'Weekly Unlimited Internet Plan', birr: 615, regular: 880 },
+  { name: 'Internet Monthly for 20GB', birr: 950, regular: 1360 },
+  { name: 'Unlimited Voice for a Month', birr: 1100, regular: 1570 },
+  { name: 'Internet Monthly for 50GB', birr: 1500, regular: 2145 },
+  { name: 'Internet Monthly for 100GB', birr: 1900, regular: 2715 },
+  { name: 'Unlimited Data for a Month', birr: 2000, regular: 2860 },
+  { name: 'Monthly 5G Package for 150GB', birr: 2320, regular: 3315 },
+  { name: 'Unlimited Voice Plus Internet for a Month', birr: 2650, regular: 3785 },
+  { name: 'Monthly 5G Package for 250GB', birr: 2760, regular: 3945 },
+  { name: 'Monthly 5G Unlimited Internet (FUP: 400GB)', birr: 3200, regular: 4570 },
+  { name: '5G Unlimited Plan (FUP: 500GB)', birr: 3500, regular: 5000 }
 ];
 
 const safaricomPackagesAll = [
-  { name: 'Safaricom BESH 6GB (24 Hours)', birr: 56, regular: 80 },
-  { name: 'Weekly Unlimited Internet', birr: 595, regular: 850 },
-  { name: 'Monthly Unlimited Internet', birr: 1925, regular: 2750 }
+  { name: 'Weekly Unlimited Internet (Safaricom)', birr: 850, regular: 1200 },
+  { name: 'Monthly Unlimited Internet (Safaricom)', birr: 2750, regular: 3900 }
 ];
 
 // ────────────────────────────────────────────────────────────────
-// E. 12 OFFICIAL ETHIOPIAN TASKS
+// G. TIKVAH CHANNELS TASKS (1.6M) + ENTERPRISE TASKS
 // ────────────────────────────────────────────────────────────────
+const tikvahMainTasks = [
+  { id: 'tkv1', name: 'Tikvah Ethiopia (1.6M+)', desc: 'Official Main News Channel', url: 'https://t.me/tikvahethiopia', reward: 5000, badge: 'Main News' },
+  { id: 'tkv2', name: 'Tikvah Crypto', desc: 'Web3, Crypto & Financial Tech', url: 'https://t.me/tikvaheth_crypto', reward: 4000, badge: 'Crypto' },
+  { id: 'tkv3', name: 'Tikvah University', desc: 'Higher Education & Academic News', url: 'https://t.me/TikvahUniversity', reward: 4000, badge: 'Campus' }
+];
+
 const ethiopianTasks = [
   { id: 't1', name: 'Ethio Telecom', url: 'https://t.me/ethio_telecom', reward: 3000, img: BrandLogos.ethioTelecom },
   { id: 't2', name: 'Ethiopian Airlines', url: 'https://t.me/ethiopian_airlines', reward: 3000, img: BrandLogos.ethiopianAirlines },
@@ -1108,7 +1196,7 @@ const ethiopianTasks = [
 ];
 
 // ────────────────────────────────────────────────────────────────
-// F. 12 REGIONAL LEAGUES DATA
+// H. 12 REGIONAL LEAGUES DATA
 // ────────────────────────────────────────────────────────────────
 const regionalLeagues = [
   { rank: 4, name: 'ትግራይ (Tigray / Mekelle)', pool: '21,500,000 TKVH', color: '#007499' },
@@ -1123,7 +1211,7 @@ const regionalLeagues = [
 ];
 
 // ────────────────────────────────────────────────────────────────
-// G. WHEEL 8 SECTORS (EV = $0.07)
+// I. WHEEL 8 SECTORS (EV = $0.07)
 // ────────────────────────────────────────────────────────────────
 const wheelSectors = [
   { text: "500 TKVH", color: "#009ACA", type: "tkvh", val: 500 },
@@ -1135,56 +1223,6 @@ const wheelSectors = [
   { text: "$0.50 USD", color: "#009E00", type: "usd", val: 0.50 },
   { text: "💥 $5.00 Jackpot", color: "#EF4444", type: "usd", val: 5.00 }
 ];
-
-// ────────────────────────────────────────────────────────────────
-// H. AUDIO SYNTHESIZER
-// ────────────────────────────────────────────────────────────────
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-let audioCtx = null;
-function playSynthSound(freq, type, duration) {
-  if (!soundActive) return;
-  try {
-    if (!audioCtx) audioCtx = new AudioContext();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + duration);
-  } catch (e) {}
-}
-
-function toggleAudioFx() {
-  soundActive = !soundActive;
-  showToast(soundActive ? 'Audio FX On' : 'Audio Muted');
-}
-
-// ────────────────────────────────────────────────────────────────
-// I. MONETAG INITIALIZATION & IN-APP INTERSTITIAL
-// ────────────────────────────────────────────────────────────────
-function initMonetagAds() {
-  try {
-    if (typeof show_11747021 === 'function') {
-      show_11747021({
-        type: 'inApp',
-        inAppSettings: {
-          frequency: 2,
-          capping: 0.1,
-          interval: 30,
-          timeout: 5,
-          everyPage: false
-        }
-      });
-      console.log('✅ Monetag In-App Interstitial Configured');
-    }
-  } catch (e) {
-    console.log('Monetag notice:', e);
-  }
-}
 
 // ────────────────────────────────────────────────────────────────
 // J. ACCURATE MINING ENGINE
@@ -1223,8 +1261,10 @@ function renderEmpire15() {
 renderEmpire15();
 
 function upgradeIndustry(idx) {
+  registerUserActivity();
   const item = empire15[idx];
   if (userTKVH < item.cost) {
+    triggerHaptic('error');
     showToast('Insufficient TKVH tokens!');
     return;
   }
@@ -1234,11 +1274,11 @@ function upgradeIndustry(idx) {
   item.cost = Math.floor(item.cost * 1.55);
   passiveRate += Math.floor(item.rate * 0.4);
 
+  triggerHaptic('success');
   updateUI();
   renderEmpire15();
-  saveLocalState();
+  syncStateToSheet();
   showToast(`${item.name} Upgraded to Lvl ${item.level}!`);
-  playSynthSound(880, 'sine', 0.25);
 }
 
 // ────────────────────────────────────────────────────────────────
@@ -1261,6 +1301,7 @@ render100Ads();
 
 let ad15Timer = null;
 function triggerMonetagAdStation(id, btn) {
+  registerUserActivity();
   if (typeof show_11747021 === 'function') {
     show_11747021().then(() => {
       completeAdReward(id, btn);
@@ -1290,17 +1331,27 @@ function start15sFallbackAd(id, btn) {
   }, 1000);
 }
 
-function completeAdReward(id, btn) {
+async function completeAdReward(id, btn) {
   userTKVH += 150;
   adsWatched++;
   document.getElementById('adStreamCounter').innerText = `Watched: ${adsWatched} / 100`;
   if (btn) {
     btn.classList.add('opacity-50', 'pointer-events-none', 'bg-green-50');
   }
+  triggerHaptic('success');
   updateUI();
-  saveLocalState();
+
+  // Log to Google Sheet
+  try {
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: "LOG_AD_WATCHED", telegram_id: tgUser.id, ad_number: id })
+    });
+  } catch(e) {}
+
+  syncStateToSheet();
   showToast(`🎉 Ad #${id} completed: +150 TKVH Credited!`);
-  playSynthSound(880, 'sine', 0.25);
 }
 
 function close15sAd() {
@@ -1308,10 +1359,88 @@ function close15sAd() {
 }
 
 // ────────────────────────────────────────────────────────────────
-// M. RENDER TELECOM PACKAGES WITH "DEPOSIT & BUY" LOGIC
+// M. RENDER TIKVAH MAIN CHANNELS & OFFICIAL TASKS
+// ────────────────────────────────────────────────────────────────
+function renderAllTasks() {
+  // Tikvah 1.6M Main Channels
+  document.getElementById('tikvahMainTasksContainer').innerHTML = tikvahMainTasks.map(t => `
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-tkvBlue/30 rounded-2xl p-3 flex items-center justify-between shadow-sm">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl overflow-hidden border border-tkvBlue/30 p-0.5 shrink-0 bg-white">
+          <img src="https://i.postimg.cc/LXSpj6HB/IMG-20260907-171846-651.jpg" class="w-full h-full object-cover rounded-lg"/>
+        </div>
+        <div>
+          <div class="font-extrabold text-xs text-tkvDark flex items-center gap-1">
+            <span>${t.name}</span>
+            <span class="bg-tkvBlue/20 text-tkvBlue text-[8px] px-1.5 py-0.2 rounded font-bold">${t.badge}</span>
+          </div>
+          <div class="text-[10px] text-gray-500">${t.desc}</div>
+          <div class="text-[10px] font-mono font-extrabold text-tkvGreen">+${t.reward.toLocaleString()} TKVH</div>
+        </div>
+      </div>
+      <button class="bg-tkvBlue text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl shadow-md active:scale-95" onclick="claimTikvahChannelTask('${t.id}', '${t.url}', ${t.reward}, this)">
+        Join & Claim
+      </button>
+    </div>
+  `).join('');
+
+  // 12 Ethiopian Enterprise Channels
+  document.getElementById('ethiopianTasksGrid').innerHTML = ethiopianTasks.map(t => `
+    <div class="bg-white border border-blue-100 rounded-2xl p-2.5 shadow-sm flex flex-col justify-between">
+      <div class="flex items-center gap-2 mb-1.5">
+        <div class="w-7 h-7 rounded-lg overflow-hidden border border-gray-100 p-0.5 shrink-0 flex items-center justify-center bg-gray-50">
+          ${t.img ? `<img src="${t.img}" class="brand-logo-img"/>` : `<span class="text-xs font-bold">${t.svg}</span>`}
+        </div>
+        <div class="font-extrabold text-[11px] text-tkvDark leading-tight truncate">${t.name}</div>
+      </div>
+      <div class="flex items-center justify-between mt-1">
+        <span class="text-[9px] font-mono font-bold text-tkvGreen">+${t.reward.toLocaleString()}</span>
+        <button class="bg-slate-100 text-tkvDark font-bold text-[9px] px-2 py-1 rounded-lg active:bg-tkvBlue active:text-white" onclick="claimEnterpriseTask('${t.id}', '${t.url}', ${t.reward}, this)">
+          Join
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+renderAllTasks();
+
+function claimTikvahChannelTask(id, url, reward, btn) {
+  registerUserActivity();
+  window.open(url, '_blank');
+  btn.innerText = "Verifying...";
+  btn.disabled = true;
+
+  setTimeout(() => {
+    userTKVH += reward;
+    triggerHaptic('success');
+    btn.innerText = "Claimed ✓";
+    btn.className = "bg-emerald-100 text-emerald-700 font-extrabold text-xs px-3 py-1.5 rounded-xl";
+    updateUI();
+    syncStateToSheet();
+    showToast(`🎉 Joined! +${reward.toLocaleString()} TKVH Added!`);
+  }, 2500);
+}
+
+function claimEnterpriseTask(id, url, reward, btn) {
+  registerUserActivity();
+  window.open(url, '_blank');
+  btn.innerText = "...";
+  setTimeout(() => {
+    userTKVH += reward;
+    triggerHaptic('success');
+    btn.innerText = "✓";
+    btn.className = "bg-emerald-100 text-emerald-700 font-bold text-[9px] px-2 py-1 rounded-lg pointer-events-none";
+    updateUI();
+    syncStateToSheet();
+    showToast(`+${reward.toLocaleString()} TKVH Added!`);
+  }, 2000);
+}
+
+// ────────────────────────────────────────────────────────────────
+// N. RENDER TELECOM PACKAGES (>= 200 ETB ONLY AS REQUESTED)
 // ────────────────────────────────────────────────────────────────
 function renderTelecomPackages() {
-  // Ethio Telecom
+  // Ethio Telecom (>= 200 ETB)
   document.getElementById('telebirrPackagesContainer').innerHTML = telebirrPackagesAll.map(p => {
     const hasEnough = userDepositETB >= p.birr;
     return `
@@ -1336,7 +1465,7 @@ function renderTelecomPackages() {
     `;
   }).join('');
 
-  // Safaricom
+  // Safaricom (>= 200 ETB)
   document.getElementById('safaricomPackagesContainer').innerHTML = safaricomPackagesAll.map(p => {
     const hasEnough = userDepositETB >= p.birr;
     return `
@@ -1364,41 +1493,46 @@ function renderTelecomPackages() {
 renderTelecomPackages();
 
 function executePackagePurchase(name, cost) {
+  registerUserActivity();
   if (userDepositETB < cost) {
+    triggerHaptic('error');
     showToast('❌ Insufficient Deposited Birr! Please deposit first.');
     return;
   }
   userDepositETB -= cost;
+  triggerHaptic('success');
   updateUI();
   renderTelecomPackages();
-  saveLocalState();
+  syncStateToSheet();
   showToast(`✅ ${name} activated to your registered phone!`);
-  playSynthSound(880, 'sine', 0.35);
 }
 
 function quickDepositAndBuy(requiredAmount) {
+  registerUserActivity();
   switchTelecomSubTab('deposit');
   document.getElementById('depositAmountInput').value = requiredAmount;
   showToast(`Please deposit ${requiredAmount} ETB to activate this package.`);
 }
 
 function buySpinWithDeposit(count, cost) {
+  registerUserActivity();
   if (userDepositETB < cost) {
+    triggerHaptic('error');
     showToast(`❌ Insufficient Deposited Birr. You need ${cost} ETB.`);
     quickDepositAndBuy(cost);
     return;
   }
   userDepositETB -= cost;
   spinTickets += count;
+  triggerHaptic('success');
   updateUI();
   renderTelecomPackages();
-  saveLocalState();
+  syncStateToSheet();
   showToast(`🎟️ +${count} Spin Ticket(s) added!`);
-  playSynthSound(880, 'sine', 0.3);
 }
 
 // ────────────────────────────────────────────────────────────────
-// N. WHEEL ENGINE (PDF PROVABLY FAIR 8 SECTORS)
+// O. CANVAS WHEEL ENGINE (EV = $0.07)
 // ────────────────────────────────────────────────────────────────
 const canvas = document.getElementById('wheelCanvas');
 const ctx = canvas.getContext('2d');
@@ -1434,12 +1568,15 @@ function drawWheel() {
 drawWheel();
 
 function triggerSpin() {
+  registerUserActivity();
   if (isSpinning) return;
   if (spinTickets <= 0) {
+    triggerHaptic('error');
     showToast('No spin tickets! Buy with deposit or invite friends.');
     return;
   }
   spinTickets--;
+  triggerHaptic('medium');
   updateUI();
   isSpinning = true;
 
@@ -1492,10 +1629,10 @@ function handleSpinReward(prize) {
     showToast(`🎁 Mystery Box Opened: +${bonus} TKVH!`);
   }
 
+  triggerHaptic('success');
   updateUI();
-  saveLocalState();
+  syncStateToSheet();
   showToast(`🎉 Won: ${prize.text}!`);
-  playSynthSound(880, 'sine', 0.3);
 }
 
 function startBoosterTimer(seconds) {
@@ -1515,7 +1652,7 @@ function startBoosterTimer(seconds) {
 }
 
 // ────────────────────────────────────────────────────────────────
-// O. TOKEN CASHOUT & CONVERTER
+// P. TOKEN CASHOUT & CONVERTER
 // ────────────────────────────────────────────────────────────────
 function previewTkvhConversion() {
   const tkvh = parseFloat(document.getElementById('convertTkvhInput').value) || 0;
@@ -1525,27 +1662,30 @@ function previewTkvhConversion() {
 }
 
 function setMaxTkvhConvert() {
+  registerUserActivity();
   document.getElementById('convertTkvhInput').value = userTKVH;
   previewTkvhConversion();
 }
 
 function executeTkvhToUsdSwap() {
+  registerUserActivity();
   const tkvh = parseFloat(document.getElementById('convertTkvhInput').value) || 0;
   if (tkvh <= 0 || tkvh > userTKVH) {
+    triggerHaptic('error');
     showToast('❌ Insufficient TKVH tokens!');
     return;
   }
   userTKVH -= tkvh;
   const gainedUSD = tkvh / 10000;
   userUSD += gainedUSD;
+  triggerHaptic('success');
   updateUI();
-  saveLocalState();
+  syncStateToSheet();
   showToast(`✅ Converted ${tkvh.toLocaleString()} TKVH to $${gainedUSD.toFixed(2)} USD!`);
-  playSynthSound(880, 'sine', 0.3);
 }
 
 // ────────────────────────────────────────────────────────────────
-// P. FAYDA FULL-PAGE MULTI-STEP ENGINE
+// Q. FAYDA FULL-PAGE MULTI-STEP ENGINE + GOOGLE DRIVE UPLOAD
 // ────────────────────────────────────────────────────────────────
 function openKycFullView() {
   document.getElementById('fullViewKyc').classList.remove('hidden');
@@ -1558,11 +1698,11 @@ function closeKycFullView() {
 }
 
 function goToKycStep(stepNum) {
+  registerUserActivity();
   document.getElementById('kycStep1Container').classList.add('hidden');
   document.getElementById('kycStep2Container').classList.add('hidden');
   document.getElementById('kycStep3Container').classList.add('hidden');
 
-  // Reset Badges
   ['1', '2', '3'].forEach(s => {
     document.getElementById(`kycStepBadge${s}`).classList.remove('bg-tkvBlue', 'text-white');
     document.getElementById(`kycStepBadge${s}`).classList.add('bg-gray-200', 'text-gray-600');
@@ -1577,6 +1717,7 @@ function goToKycStep(stepNum) {
 }
 
 function togglePayoutMethod(method) {
+  registerUserActivity();
   if (method === 'usd') {
     document.getElementById('payoutUsdFields').classList.remove('hidden');
     document.getElementById('payoutEtbFields').classList.add('hidden');
@@ -1594,18 +1735,74 @@ function togglePayoutMethod(method) {
   }
 }
 
-function submitFinalKycForReview() {
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) { resolve(""); return; }
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
+
+async function submitFinalKycForReview() {
+  const btn = document.getElementById('btnSubmitKycFinal');
+  btn.innerText = "Submitting to Drive...";
+  btn.disabled = true;
+
+  const legalName = document.getElementById('faydaFullName').value;
+  const fin = document.getElementById('faydaFinNumber').value;
+  const phone = document.getElementById('faydaPhone').value;
+  const woreda = document.getElementById('faydaWoreda').value;
+
+  const frontFile = document.getElementById('faydaFrontFile').files[0];
+  const backFile = document.getElementById('faydaBackFile').files[0];
+  const selfieFile = document.getElementById('faydaSelfieFile').files[0];
+
+  const frontBase64 = await fileToBase64(frontFile);
+  const backBase64 = await fileToBase64(backFile);
+  const selfieBase64 = await fileToBase64(selfieFile);
+
+  const isUsd = !document.getElementById('payoutUsdFields').classList.contains('hidden');
+  const payoutMethod = isUsd ? document.getElementById('payoutProtocolSelect').value : document.getElementById('payoutBankSelect').value;
+  const payoutAddress = isUsd ? document.getElementById('payoutCryptoAddress').value : `${document.getElementById('payoutAccountNumber').value} (${document.getElementById('payoutAccountHolderName').value})`;
+
+  const payload = {
+    action: "SUBMIT_FAYDA_KYC",
+    telegram_id: tgUser.id,
+    legal_name: legalName,
+    fin_number: fin,
+    phone: phone,
+    region: woreda,
+    front_id_base64: frontBase64,
+    back_id_base64: backBase64,
+    selfie_base64: selfieBase64,
+    payout_method: payoutMethod,
+    payout_address: payoutAddress
+  };
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+  } catch(e) {
+    console.warn("KYC backend sync notification:", e);
+  }
+
   document.getElementById('kycStep3Container').classList.add('hidden');
   document.getElementById('kycUnderReviewNotice').classList.remove('hidden');
   document.getElementById('kycCardStatusText').innerText = "Pending 24h";
   document.getElementById('uiHeaderKycText').innerText = "Under Review";
   document.getElementById('profileKycStatus').innerText = "In 24h Review";
+  triggerHaptic('success');
   showToast('📄 Submitted for 24-Hour Review!');
   saveLocalState();
   startKyc24hTimer();
 }
 
-let kycTimerSecs = 86382; // ~24h
+let kycTimerSecs = 86382;
 function startKyc24hTimer() {
   setInterval(() => {
     kycTimerSecs--;
@@ -1618,15 +1815,16 @@ function startKyc24hTimer() {
 }
 
 // ────────────────────────────────────────────────────────────────
-// Q. LIVE SUPPORT CHAT ENGINE
+// R. LIVE SUPPORT CHAT ENGINE
 // ────────────────────────────────────────────────────────────────
-function openSupportModal() { openModal('modalSupport'); }
+function openSupportModal() { registerUserActivity(); openModal('modalSupport'); }
 function sendQuickSupport(question) {
   document.getElementById('supportInput').value = question;
   sendSupportMessage();
 }
 
 function sendSupportMessage() {
+  registerUserActivity();
   const input = document.getElementById('supportInput');
   const text = input.value.trim();
   if (!text) return;
@@ -1640,11 +1838,10 @@ function sendSupportMessage() {
   input.value = '';
   box.scrollTop = box.scrollHeight;
 
-  // Smart Automated Reply
   setTimeout(() => {
     let reply = "ጥያቄዎ ተቀብለናል! ለተጨማሪ እርዳታ በቀጥታ የቴሌግራም አድሚናችንን @tikvahsupportbot ማነጋገር ይችላሉ።";
     if (text.includes('ፓኬጅ')) {
-      reply = "የቴሌኮም ፓኬጆች የሚገዙት በቀጥታ በDeposited Birr ነው። በቴሌብር ወይም በሲቢኢ ዲፖዚት በማድረግ ፓኬጁን ወዲያውኑ ማግኘት ይችላሉ።";
+      reply = "የቴሌኮም ፓኬጆች (≥ 200 ETB) የሚገዙት በቀጥታ በDeposited Birr ነው። በቴሌብር ወይም በሲቢኢ ዲፖዚት በማድረግ ፓኬጁን ወዲያውኑ ማግኘት ይችላሉ።";
     } else if (text.includes('ማውጣት') || text.includes('5.00')) {
       reply = "ዝቅተኛው የማውጫ ወሰን $5.00 (800 ብር) ነው። የፋይዳ e-KYC ካረጋገጡ በኋላ በTRC-20, TON ወይም በኢትዮጵያ ባንኮች ይላክልዎታል።";
     } else if (text.includes('ፋይዳ') || text.includes('Fayda')) {
@@ -1657,14 +1854,17 @@ function sendSupportMessage() {
       </div>
     `;
     box.scrollTop = box.scrollHeight;
+    triggerHaptic('light');
   }, 800);
 }
 
 // ────────────────────────────────────────────────────────────────
-// R. DEPOSIT MASKED COPY & PROOF SUBMISSION
+// S. DEPOSIT PROOF SUBMISSION WITH GOOGLE DRIVE UPLOAD
 // ────────────────────────────────────────────────────────────────
 function copyDepositNum(realNumber, method) {
+  registerUserActivity();
   navigator.clipboard.writeText(realNumber);
+  triggerHaptic('success');
   showToast(`✅ Official ${method} merchant account copied!`);
 }
 
@@ -1680,27 +1880,50 @@ function previewDepositProof(input) {
   }
 }
 
-function submitDepositProof() {
+async function submitDepositProof() {
+  registerUserActivity();
   const amt = parseFloat(document.getElementById('depositAmountInput').value) || 0;
   const tx = document.getElementById('depositTxIdInput').value;
+  const file = document.getElementById('depositFileInput').files[0];
+
   if (!tx || amt <= 0) {
+    triggerHaptic('error');
     showToast('Please enter deposited Amount and Transaction ID!');
     return;
   }
-  // Simulate 30% instant bonus addition to Deposited Birr
+
+  const screenshotBase64 = await fileToBase64(file);
+
+  // Send to Apps Script Backend
+  try {
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: "SUBMIT_DEPOSIT_PROOF",
+        telegram_id: tgUser.id,
+        tx_id: tx,
+        amount_etb: amt,
+        method: "Telebirr/CBE",
+        screenshot_base64: screenshotBase64
+      })
+    });
+  } catch(e) {}
+
   const bonus = amt * 0.30;
   userDepositETB += (amt + bonus);
+  triggerHaptic('success');
   updateUI();
   renderTelecomPackages();
   saveLocalState();
   showToast(`Deposit submitted! Credited ${amt + bonus} ETB (+30% bonus).`);
-  playSynthSound(880, 'sine', 0.3);
 }
 
 // ────────────────────────────────────────────────────────────────
-// S. SUB-TAB ROUTING & UI REFRESH
+// T. SUB-TAB ROUTING & NAVIGATION
 // ────────────────────────────────────────────────────────────────
 function switchTelecomView(subId, btn) {
+  registerUserActivity();
   document.getElementById('subview-telebirr').classList.add('hidden');
   document.getElementById('subview-safaricom').classList.add('hidden');
   document.getElementById('subview-buy-spins').classList.add('hidden');
@@ -1728,6 +1951,7 @@ function switchTelecomSubTab(subId) {
 }
 
 function switchTab(viewId, btn) {
+  registerUserActivity();
   document.querySelectorAll('.screen-view').forEach(v => v.classList.remove('active'));
   document.getElementById(viewId).classList.add('active');
 
@@ -1739,7 +1963,6 @@ function switchTab(viewId, btn) {
     btn.classList.add('text-tkvBlue', 'active');
     btn.classList.remove('text-gray-400');
   }
-  playSynthSound(450, 'sine', 0.05);
 }
 
 function updateUI() {
@@ -1763,44 +1986,54 @@ function updateUI() {
   document.getElementById('cashProgressText').innerText = `$${totalUsdEquivalent.toFixed(2)} / $5.00`;
 }
 
-function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+function openModal(id) { registerUserActivity(); document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+function closeModal(id) { registerUserActivity(); document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
 
 function openTonModal() { openModal('modalTon'); }
 function openCipherModal() { openModal('modalCipher'); }
 function openProfileModal() { openModal('modalProfile'); }
 
 function selectTonWallet(name) {
+  registerUserActivity();
   document.getElementById('uiTonBtn').innerText = name.substring(0, 6) + '...';
   closeModal('modalTon');
+  triggerHaptic('success');
   showToast(`Connected to ${name}`);
 }
 
 function verifyCipher() {
+  registerUserActivity();
   const ans = document.getElementById('cipherInput').value.trim().toLowerCase();
   if (ans.includes('lalibela') || ans.includes('ላሊበላ')) {
     userTKVH += 500;
+    triggerHaptic('success');
     updateUI();
     closeModal('modalCipher');
-    saveLocalState();
+    syncStateToSheet();
     showToast('Correct! +500 TKVH Added');
   } else {
+    triggerHaptic('error');
     showToast('Incorrect cipher riddle answer');
   }
 }
 
 function shareReferral() {
+  registerUserActivity();
   const text = encodeURIComponent(`🦁 Join Tikvah Ethiopia SuperApp! Win Free Telecom Data & Cash: https://t.me/tikvahetcryptobot/tikvaheth?startapp=ref_${tgUser.id}`);
   window.open(`https://t.me/share/url?url=https://t.me/tikvahetcryptobot/tikvaheth?startapp=ref_${tgUser.id}&text=${text}`);
 }
 
 function copyRefLink() {
+  registerUserActivity();
   navigator.clipboard.writeText(document.getElementById('refLinkInput').value);
+  triggerHaptic('success');
   showToast('Referral Link Copied!');
 }
 
 function copyAddress(addr) {
+  registerUserActivity();
   navigator.clipboard.writeText(addr);
+  triggerHaptic('success');
   showToast('TON Address Copied!');
 }
 
@@ -1809,11 +2042,13 @@ function chooseRegion(region) {
   document.getElementById('uiUserRegion').innerText = region.split(' ')[0];
   document.getElementById('profileRegionText').innerText = region.split(' ')[0];
   closeModal('modalCitySelect');
-  saveLocalState();
+  triggerHaptic('success');
+  syncStateToSheet();
   showToast(`✅ Welcome! Selected ${region}`);
 }
 
 function cycleLanguage() {
+  registerUserActivity();
   langIndex = (langIndex + 1) % languages.length;
   const lang = languages[langIndex];
   document.getElementById('uiLangBtn').innerText = lang === 'am' ? 'አማ' : (lang === 'en' ? 'EN' : 'OR');
@@ -1834,6 +2069,7 @@ function showToast(msg) {
 }
 
 function refreshLeaderboardWithSkeleton() {
+  registerUserActivity();
   const container = document.getElementById('regionalListContainer');
   container.innerHTML = `
     <div class="bg-white border border-gray-100 p-3 rounded-2xl shadow-sm flex items-center justify-between">
@@ -1859,15 +2095,44 @@ function refreshLeaderboardWithSkeleton() {
 refreshLeaderboardWithSkeleton();
 
 // ────────────────────────────────────────────────────────────────
-// T. PERSISTENCE & LIFECYCLE
+// U. GOOGLE APPS SCRIPT ASYNC PERSISTENCE
 // ────────────────────────────────────────────────────────────────
+async function syncStateToSheet() {
+  saveLocalState();
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: "INIT_OR_SYNC_USER",
+        telegram_id: tgUser.id,
+        username: tgUser.username,
+        full_name: tgUser.first_name,
+        region: userRegion,
+        tkvh_balance: userTKVH,
+        usd_balance: userUSD,
+        deposit_etb: userDepositETB,
+        spin_tickets: spinTickets,
+        passive_rate: passiveRate,
+        ads_watched: adsWatched
+      })
+    });
+  } catch (err) {
+    console.warn("Backend state sync skipped:", err);
+  }
+}
+
 function saveLocalState() {
   localStorage.setItem('tikvah_user_state_v5', JSON.stringify({
     userTKVH, userUSD, userDepositETB, spinTickets, passiveRate, adsWatched, userRegion
   }));
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+// ────────────────────────────────────────────────────────────────
+// V. APP LAUNCH INITIALIZATION
+// ────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  // Load local cache
   const saved = localStorage.getItem('tikvah_user_state_v5');
   if (saved) {
     try {
@@ -1901,9 +2166,43 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  initMonetagAds();
   updateUI();
   renderTelecomPackages();
+
+  // Connect to live Apps Script Backend
+  try {
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: "INIT_OR_SYNC_USER",
+        telegram_id: tgUser.id,
+        username: tgUser.username,
+        full_name: tgUser.first_name,
+        region: userRegion
+      })
+    });
+    const resJson = await response.json();
+    if (resJson.status === "success" && resJson.data) {
+      const d = resJson.data;
+      if (d.tkvh_balance !== undefined) userTKVH = Number(d.tkvh_balance);
+      if (d.usd_balance !== undefined) userUSD = Number(d.usd_balance);
+      if (d.deposit_etb !== undefined) userDepositETB = Number(d.deposit_etb);
+      if (d.spin_tickets !== undefined) spinTickets = Number(d.spin_tickets);
+      if (d.passive_rate !== undefined) passiveRate = Number(d.passive_rate);
+      if (d.ads_watched !== undefined) adsWatched = Number(d.ads_watched);
+      if (d.kyc_status) {
+        document.getElementById('kycCardStatusText').innerText = d.kyc_status;
+        document.getElementById('profileKycStatus').innerText = d.kyc_status;
+        if (d.kyc_status === 'Approved') document.getElementById('uiHeaderKycText').innerText = "Verified Tier 2";
+        else if (d.kyc_status === 'Pending') document.getElementById('uiHeaderKycText').innerText = "In Review";
+      }
+      updateUI();
+      renderTelecomPackages();
+    }
+  } catch (err) {
+    console.warn("Backend connection notice:", err);
+  }
 
   if (!userRegion) {
     openModal('modalCitySelect');
